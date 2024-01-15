@@ -4,7 +4,6 @@ from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from utils.singleton import Singleton
-import AllianceTransformUtils 
 
 
 class AutoSequencer(metaclass=Singleton):
@@ -50,8 +49,6 @@ class AutoSequencer(metaclass=Singleton):
     def initiaize(self):
         print("[Auto] Starting Sequencer")
         self.topLevelCmdGroup.initialize()
-
-
 
     def update(self):
         self.topLevelCmdGroup.execute()

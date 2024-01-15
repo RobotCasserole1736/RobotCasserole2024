@@ -15,46 +15,12 @@ from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
 """
 class AllianceTransformUtils:
     @staticmethod
-    def transformX( self, input):
-        
-        if wpilib._wpilib.DriverStation.Alliance == Alliance.kRed:
-            return 16.4592 - input
+    def transformX(in):
+        if DriverStation.getAlliance() == AllianceStationID.Red:
+            return Constants.FIELD_LENGTH_M - in
         else:
-            return input
+            return in
     
-    def transformY(self,input):
-        return input
-    
-    def Rotation2d(self,input):
-        if wpilib._wpilib.DriverStation.Alliance == Alliance.kRed:
-            return Rotation2d.fromDegrees(180).minus(input)
-        else: 
-            return input 
+    def transformY(in):
+        return in
 
-    def Translation2d(self,input):
-        if wpilib._wpilib.DriverStation.Alliance == Alliance.kRed:
-            return Translation2d(AllianceTransformUtils.transformX(input.getX()), input.getY())
-        else:
-            return input
-    
-    def Transform2d(self,input):
-        if wpilib._wpilib.DriverStation.Alliance == Alliance.kRed:
-            trans = AllianceTransformUtils.transform(input.getTranslation())
-            rot = AllianceTransformUtils.transform(input.getRotation())
-            return Transform2d(trans, rot)
-        else:
-            return input
-        
-    def Pose2d(self,input):
-        if wpilib._wpilib.DriverStation.Alliance == Alliance.kRed:
-            trans = AllianceTransformUtils.transform(input.getTranslation())
-            rot = AllianceTransformUtils.transform(input.getRotation())
-            return Pose2d(trans, rot)
-        else:
-            return input
-    
-    def transformChoreoTrajectoryState(self,input):
-        if wpilib._wpilib.DriverStation.Alliance == Alliance.kRed:
-            return input.flipped()
-        else:
-            return input

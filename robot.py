@@ -63,7 +63,6 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Autonomous-Specific init and update
     def autonomousInit(self):
-        
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
 
