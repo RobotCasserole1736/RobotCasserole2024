@@ -3,10 +3,10 @@ from wpilib import DriverStation
 from hal import AllianceStationID
 
 from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
-from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
-from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
-from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
-from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
+
+from utils.constants import FIELD_LENGTH_FT
+
+from utils.units import m2ft
 
 """
  Utilities to help transform from blue alliance to red if needed
@@ -14,13 +14,15 @@ from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
  bottom left on the blue alliance
 """
 class AllianceTransformUtils:
+
+
     @staticmethod
-    def transformX(in):
-        if DriverStation.getAlliance() == AllianceStationID.Red:
-            return Constants.FIELD_LENGTH_M - in
+    def transformX(input):
+        if DriverStation.getAlliance() == AllianceStationID.Red: # type: ignore
+            return m2ft(FIELD_LENGTH_FT) - input
         else:
-            return in
+            return input
     
-    def transformY(in):
-        return in
+    def transformY(input):
+        return input
 
