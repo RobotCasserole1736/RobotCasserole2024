@@ -25,7 +25,7 @@ def m2ft(inVal):
 
 
 def ft2m(inVal):
-    return inVal / 3.28084
+    return float(inVal / 3.28084)
 
 
 def m2in(inVal):
