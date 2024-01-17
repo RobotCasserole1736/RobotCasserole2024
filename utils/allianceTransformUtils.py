@@ -1,11 +1,8 @@
 import wpilib
-from wpilib import DriverStation
-
 from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
 from jormungandr.choreoTrajectory import ChoreoTrajectoryState
-
 from utils.constants import FIELD_LENGTH_FT
-from utils.units import ft2m, m2ft
+from utils.units import ft2m
 
 """
  Utilities to help transform from blue alliance to red if needed
@@ -13,8 +10,6 @@ from utils.units import ft2m, m2ft
  bottom left on the blue alliance
 """
 class AllianceTransformUtils:
-
-    """
     #We think the code makes sense. We just don't have the actual values and don't know where they are.
     @staticmethod
     def transformX(in_):
@@ -22,13 +17,13 @@ class AllianceTransformUtils:
             return (ft2m(FIELD_LENGTH_FT) - in_)
         else:
             return in_
-    
+
     def transformY(self,in_):
         return in_
-    
+
     def transformRotation(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            return (Rotation2d.fromDegrees(180).__sub__.in_)
+            return (Rotation2d.fromDegrees(180) - in_)
         else: 
             return in_
 
@@ -39,7 +34,7 @@ class AllianceTransformUtils:
             return in_
         else:
             return in_
-    
+
     def transformTransform(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
             #translation = Transform2d((self, AllianceTransformUtils.transformX(x value), AllianceTranformUtils.transformY(y value)))
@@ -48,7 +43,7 @@ class AllianceTransformUtils:
             return in_
         else:
             return in_
-        
+
     def transformPose(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
             #trans = AllianceTransformUtils.transformTranlation(translation value)
@@ -57,9 +52,7 @@ class AllianceTransformUtils:
             return in_
         else:
             return in_
-    """
-    
-    
+
     def transformChoreoTrajectoryState(self,input):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
             return input.flipped()
