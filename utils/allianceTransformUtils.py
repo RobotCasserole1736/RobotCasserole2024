@@ -29,26 +29,26 @@ class AllianceTransformUtils:
             return in_
 
     # Translation
-    def transform(self,in_):
+    def transformTranslation(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            return Translation2d(self, AllianceTransformUtils.transformX(in_.getx()), in_.gety())
+            return Translation2d(self.transformX(in_.getx()), in_.gety())
         else:
             return in_
 
     # Transform
-    def transform(self,in_):
+    def transformTransform(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            translation = Transform2d((self, AllianceTransformUtils.transformX(in_.X()), in_.Y()))
-            rotation = AllianceTransformUtils.transformRotation(in_.rotation())
-            return Transform2d(self, translation, rotation)
+            translation = Translation2d(in_.X(),in_.Y())
+            rotation = self.transformRotation(in_.rotation())
+            return Transform2d(translation, rotation)
         else:
             return in_
 
     # Pose2d
-    def transform(self,in_):
+    def transformPose2d(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            trans = AllianceTransformUtils.transformTranlation(in_.translation())
-            rot = AllianceTransformUtils.transformPose(in_.rotation())
+            trans = self.transformTranslation(in_.translation())
+            rot = self.transformRotation(in_.rotation())
             return Pose2d(trans, rot)
         else:
             return in_
