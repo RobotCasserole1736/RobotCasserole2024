@@ -21,35 +21,35 @@ class AllianceTransformUtils:
     def transformY(self,in_):
         return in_
 
+    # Rotation
     def transformRotation(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
             return (Rotation2d.fromDegrees(180) - in_)
         else: 
             return in_
 
-    def transformTranslation(self,in_): 
+    # Translation
+    def transform(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            #return Translation2d(self, AllianceTransformUtils.transformX(x value), AllianceTranformUtils.transformY(y value))
-            #We need to get an x to transform it, but we don't know where to get said x from. Same with y
-            return in_
+            return Translation2d(self, AllianceTransformUtils.transformX(in_.getx()), in_.gety())
         else:
             return in_
 
-    def transformTransform(self,in_):
+    # Transform
+    def transform(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            #translation = Transform2d((self, AllianceTransformUtils.transformX(x value), AllianceTranformUtils.transformY(y value)))
-            #rotation = AllianceTransformUtils.transformRotation(rotation value)
-            #return Transform2d(self, translation, rotation)
-            return in_
+            translation = Transform2d((self, AllianceTransformUtils.transformX(in_.X()), in_.Y()))
+            rotation = AllianceTransformUtils.transformRotation(in_.rotation())
+            return Transform2d(self, translation, rotation)
         else:
             return in_
 
-    def transformPose(self,in_):
+    # Pose2d
+    def transform(self,in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            #trans = AllianceTransformUtils.transformTranlation(translation value)
-            #rot = AllianceTransformUtils.transformPose(rotation)
-            #return Pose2d(trans, rot)
-            return in_
+            trans = AllianceTransformUtils.transformTranlation(in_.translation())
+            rot = AllianceTransformUtils.transformPose(in_.rotation())
+            return Pose2d(trans, rot)
         else:
             return in_
 
