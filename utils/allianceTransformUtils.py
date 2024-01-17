@@ -21,37 +21,34 @@ class AllianceTransformUtils:
     def transformY(self,in_):
         return in_
 
-    # Rotation
-    def transformRotation(self,in_):
-        if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            return (Rotation2d.fromDegrees(180) - in_)
-        else: 
-            return in_
+    def transform(self,in_):
+        if isinstance(in_,Rotation2d):
+            if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
+                return (Rotation2d.fromDegrees(180) - in_)
+            else: 
+                return in_
 
-    # Translation
-    def transformTranslation(self,in_):
-        if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            return Translation2d(self.transformX(in_.getx()), in_.gety())
-        else:
-            return in_
-
-    # Transform
-    def transformTransform(self,in_):
-        if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            translation = Translation2d(in_.X(),in_.Y())
-            rotation = self.transformRotation(in_.rotation())
-            return Transform2d(translation, rotation)
-        else:
-            return in_
-
-    # Pose2d
-    def transformPose2d(self,in_):
-        if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            trans = self.transformTranslation(in_.translation())
-            rot = self.transformRotation(in_.rotation())
-            return Pose2d(trans, rot)
-        else:
-            return in_
+        elif isinstance(in_,Translation2d):
+            if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
+                return Translation2d(self.transformX(in_.X()), in_.Y())
+            else:
+                return in_
+        
+        elif isinstance(in_,Transform2d):
+            if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
+                translation = self.transform(in_.translation())
+                rotation = self.transform(in_.rotation())
+                return Transform2d(translation, rotation)
+            else:
+                return in_
+        
+        elif isinstance(in_,Pose2d):
+            if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
+                trans = self.transform(in_.translation())
+                rot = self.transform(in_.rotation())
+                return Pose2d(trans, rot)
+            else:
+                return in_
 
     def transformChoreoTrajectoryState(self,input):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
