@@ -12,8 +12,8 @@ from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
  Utilities to help transform from blue alliance to red if needed
  We went rogue and chose a coordinate system where the origin is always in the 
  bottom left on the blue alliance
-"""
-class AllianceTransformUtils:
+
+ class AllianceTransformUtils:
     @staticmethod
     def transformX(in):
         if DriverStation.getAlliance() == AllianceStationID.Red:
@@ -23,4 +23,6 @@ class AllianceTransformUtils:
     
     def transformY(in):
         return in
+"""
+
 
