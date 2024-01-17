@@ -49,9 +49,9 @@ class AllianceTransformUtils:
                 return Pose2d(trans, rot)
             else:
                 return in_
-
-    def transformChoreoTrajectoryState(self,input):
-        if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-            return input.flipped()
-        else:
-            return input
+        
+        elif isinstance(in_,ChoreoTrajectoryState):
+            if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
+                return in_.flipped()
+            else:
+                return in_
