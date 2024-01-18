@@ -10,16 +10,12 @@ from utils.units import ft2m
  bottom left on the blue alliance
 """
 class AllianceTransformUtils:
-    #We think the code makes sense. We just don't have the actual values and don't know where they are.
     @staticmethod
     def transformX(in_):
         if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
             return (ft2m(FIELD_LENGTH_FT) - in_)
         else:
             return in_
-
-    def transformY(self,in_):
-        return in_
 
     def transform(self,in_):
         if isinstance(in_,Rotation2d):
@@ -33,15 +29,15 @@ class AllianceTransformUtils:
                 return Translation2d(self.transformX(in_.X()), in_.Y())
             else:
                 return in_
-        
+
         elif isinstance(in_,Transform2d):
             if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
-                translation = self.transform(in_.translation())
-                rotation = self.transform(in_.rotation())
-                return Transform2d(translation, rotation)
+                trans = self.transform(in_.translation())
+                rot = self.transform(in_.rotation())
+                return Transform2d(trans, rot)
             else:
                 return in_
-        
+
         elif isinstance(in_,Pose2d):
             if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
                 trans = self.transform(in_.translation())
@@ -49,9 +45,12 @@ class AllianceTransformUtils:
                 return Pose2d(trans, rot)
             else:
                 return in_
-        
+
         elif isinstance(in_,ChoreoTrajectoryState):
             if wpilib._wpilib.DriverStation.Alliance == wpilib._wpilib.DriverStation.Alliance.kRed:
                 return in_.flipped()
             else:
                 return in_
+
+        else:
+            TypeError("transform function received unknown type")
