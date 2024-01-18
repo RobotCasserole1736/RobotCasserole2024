@@ -15,23 +15,33 @@ class DriverInterface:
 
     def __init__(self):
         # contoller 
-        pass
-
+        CtrlIdx = 0
+        self.ctrl = XboxController(CtrlIdx)
+        self.vXCmd = 0
+        self.vYCmd = 0
+        self.vRotCmd = 0
+        
     def update(self):
         # value of contoller buttons
-        pass
+       
+        if self.ctrl.isConnected:
 
-    def getVxCmd(self):
-        # returnself. x velocity
-        pass
+            RawXJoyCmd = self.ctrl.getLeftX
+            #offseason used Y axis for x command. Is that what we want to do?
+            RawyJoyCmd = self.ctrl.getLeftY
+        else:
+            self.vXCmd = 0
+            self.vYCmd = 0
+            self.vRotCmd = 0
+
+
 
     def getVyCmd(self):
-        # returnself. y velocity
-        pass
+        return self.vYCmd
+        
 
     def getVrotCmd(self):
-        # returnself. V rotation
-        pass
+        return self.vRotCmd
 
     def getliftlowerCmd(self):
         # returnself. lift lower comand
@@ -44,5 +54,4 @@ class DriverInterface:
     def getAutodrivetoclimbCmd(self):
         # returnself. go to climb command
         pass
-
 
