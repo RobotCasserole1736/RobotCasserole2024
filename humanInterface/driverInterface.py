@@ -1,4 +1,5 @@
 from wpilib import XboxController
+import wpilib
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
 from drivetrain.drivetrainPhysical import MAX_FWD_REV_SPEED_MPS
@@ -8,7 +9,7 @@ from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from drivetrain.drivetrainPhysical import MAX_TRANSLATE_ACCEL_MPS2
 from utils.faults import Fault
 from utils.signalLogging import log
-
+from utils.allianceTransformUtils import onRed
 
 class DriverInterface:
     """Class to gather input from the driver of the robot"""
@@ -59,6 +60,12 @@ class DriverInterface:
             self.velYCmd = self.velYSlewRateLimiter.calculate(velYCmdRaw)
             self.velTCmd = self.velTSlewRateLimiter.calculate(velTCmdRaw)
 
+            # Adjust the commands if we're on the opposite side of the feild
+            if onRed():
+                self.velXCmd *= -1
+                self.velYCmd *= -1
+
+            
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
             self.connectedFault.setNoFault()
