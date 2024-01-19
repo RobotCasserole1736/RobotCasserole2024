@@ -3,7 +3,7 @@ import wpilib
 from jormungandr import choreo
 from AutoSequencerV2.command import Command
 from drivetrain.drivetrainControl import DrivetrainControl
-
+from utils.allianceTransformUtils import transform
 
 class DrivePathCommand(Command):
     def __init__(self, pathFile):
@@ -37,6 +37,8 @@ class DrivePathCommand(Command):
     def execute(self):
         curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
         curState = self.path.sample(curTime)
+
+        curState = transform(curState)
 
         self.drivetrain.setCmdTrajectory(curState)
 

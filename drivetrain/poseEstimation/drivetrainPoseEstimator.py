@@ -39,11 +39,14 @@ class DrivetrainPoseEstimator:
         Args:
             knownPose (Pose2d): The pose we know we're at
         """
+        if wpilib.TimedRobot.isSimulation():
+            self._simPose = knownPose
+            self.curRawGyroAngle = knownPose.rotation()
+
         self.poseEst.resetPosition(
             self.curRawGyroAngle, self.lastModulePositions, knownPose
         )
-        if wpilib.TimedRobot.isSimulation():
-            self._simPose = knownPose
+
 
     def update(self, curModulePositions, curModuleSpeeds):
         """Periodic update, call this every 20ms.
@@ -71,7 +74,8 @@ class DrivetrainPoseEstimator:
             self._simPose = self._simPose.exp(
                 Twist2d(chSpds.vx * 0.02, chSpds.vy * 0.02, chSpds.omega * 0.02)
             )
-            self.curRawGyroAngle = self._simPose.rotation() * random.uniform(0.95, 1.05)
+            noise = Rotation2d.fromDegrees(random.uniform(-1.25, 1.25))
+            self.curRawGyroAngle = self._simPose.rotation() + noise
         else:
             # Use real hardware
             self.curRawGyroAngle = self.gyro.getRotation2d()
