@@ -12,6 +12,7 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
+from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
 
 
@@ -34,6 +35,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.dInt = DriverInterface()
 
+        self.ledCtrl = LEDControl()
+
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
 
@@ -55,6 +58,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driveTrain.update()
 
+        self.ledCtrl.update()
+
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
         FaultWrangler().update()
@@ -68,6 +73,8 @@ class MyRobot(wpilib.TimedRobot):
 
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
+
+        self.ledCtrl.setSpeakerAutoAlignActive(True)
 
     def autonomousPeriodic(self):
         self.autoSequencer.update()
@@ -95,7 +102,7 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
-        # Induce a crash
+        # TEST only - Induce a crash
         oopsie = 5 / 0.0  # pylint: disable=unused-variable
 
     #########################################################
