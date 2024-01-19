@@ -20,25 +20,43 @@ class DriverInterface:
         self.vXCmd = 0
         self.vYCmd = 0
         self.vRotCmd = 0
+        self.gryoResetCmd = False
+        
+        #Slew rate limiter
+        self.VX_SRL = SlewRateLimiter(2)
+        self.VY_SRL = SlewRateLimiter(2)
+        self.VRot_SRL = SlewRateLimiter(8)
         
     def update(self):
         # value of contoller buttons
-       
-        if self.ctrl.isConnected:
 
-            RawXJoyCmd = self.ctrl.getLeftX
-            #offseason used Y axis for x command. Is that what we want to do?
-            RawyJoyCmd = self.ctrl.getLeftY
+        if self.ctrl.isConnected:
+            VXJoyRaw = self.ctrl.getLeftX()
+            VYJoyRaw = self.ctrl.getLeftY()
+            VRotJoyRaw = self.ctrl.getRightX()
+   
+            #deadband
+            VXJoy = applyDeadband(VXJoyRaw,0.15)
+            VYJoy = applyDeadband(VYJoyRaw,0.15)
+            VRotJoy = applyDeadband(VRotJoyRaw,0.15)
+            #velocity cmd
+            self.vel_CmdX = VXJoy
+            self.vel_CmdY = VYJoy
+            self.vel_CmdRot = VRotJoy
+
+            
+            # Slew rate limiter
+            self.vel_CmdX = self.VX_SRL.calculate(VXJoyRaw)
+            self.vel_CmdY = self.VY_SRL.calculate(VYJoyRaw)
+            self.vel_CmdRot = self.VRot_SRL.calculate(VRotJoyRaw)
+        
         else:
             self.vXCmd = 0
             self.vYCmd = 0
             self.vRotCmd = 0
 
-
-
     def getVyCmd(self):
         return self.vYCmd
-        
 
     def getVrotCmd(self):
         return self.vRotCmd
@@ -55,3 +73,5 @@ class DriverInterface:
         # returnself. go to climb command
         pass
 
+    def getGyroResetCmd(self):
+        return self.gryoResetCmd
