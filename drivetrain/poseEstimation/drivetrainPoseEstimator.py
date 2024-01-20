@@ -80,7 +80,7 @@ class DrivetrainPoseEstimator:
         self.poseEst.update(self.curRawGyroAngle, curModulePositions)
         self.curEstPose = self.poseEst.getEstimatedPosition()
 
-        # Record the estimate to telemetry/logging
+        # Record the estimate to telemetry/logging-
         log("PE Gyro Angle", self.curRawGyroAngle.degrees(), "deg")
         self.telemetry.update(self.curEstPose)
 

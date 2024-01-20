@@ -83,7 +83,7 @@ class MyRobot(wpilib.TimedRobot):
     def teleopPeriodic(self):
         self.dInt.update()
         self.driveTrain.setCmdFieldRelative(
-            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVrotCmd
+            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVrotCmd()
         )
 
     #########################################################
