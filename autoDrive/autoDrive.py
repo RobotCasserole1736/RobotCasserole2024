@@ -10,3 +10,8 @@ class autoDrive():
     def __init__(self):
         pass
 
+
+    """Main update - call this once every 20ms"""
+    def update(self):
+        pass
+
