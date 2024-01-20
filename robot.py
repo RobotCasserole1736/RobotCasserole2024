@@ -2,7 +2,7 @@ import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from dashboard import Dashboard
-from humanInterface.driverInterface import DriverInterface
+from humanInterface.driverInterface import driverInterface
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -14,7 +14,7 @@ from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
 from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
-
+from climberControl.climberControl import climberControl
 
 class MyRobot(wpilib.TimedRobot):
     #########################################################
@@ -33,7 +33,10 @@ class MyRobot(wpilib.TimedRobot):
 
         self.stt = SegmentTimeTracker()
 
-        self.dInt = DriverInterface()
+        self.dInt = driverInterface()
+
+        self.climbCtrl = climberControl(9)
+
 
         self.ledCtrl = LEDControl()
 
@@ -93,6 +96,12 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.setCmdFieldRelative(
             self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
         )
+        self.climbCtrl.ctrlWinch(
+            self.dInt.velWinchCmd
+        )
+
+        self.climbCtrl.setRachet(self.dInt.RachetCmd)
+        
 
     #########################################################
     ## Disabled-Specific init and update
