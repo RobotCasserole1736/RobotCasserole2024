@@ -54,6 +54,9 @@ class DriverInterface:
             self.vXCmd = 0
             self.vYCmd = 0
             self.vRotCmd = 0
+    
+    def getVxCmd(self):
+        return self.vXCmd
 
     def getVyCmd(self):
         return self.vYCmd

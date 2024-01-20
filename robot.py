@@ -2,7 +2,7 @@ import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from dashboard import Dashboard
-from humanInterface.driverInterface import DriverInterface
+from humanInterface.DriverInterface import DriverInterface
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -83,7 +83,7 @@ class MyRobot(wpilib.TimedRobot):
     def teleopPeriodic(self):
         self.dInt.update()
         self.driveTrain.setCmdFieldRelative(
-            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
+            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVrotCmd
         )
 
     #########################################################
