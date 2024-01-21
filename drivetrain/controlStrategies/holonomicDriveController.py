@@ -1,16 +1,18 @@
 import math
 from wpimath.controller import PIDController
 from wpimath.kinematics import ChassisSpeeds
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import (
     MAX_FWD_REV_SPEED_MPS,
     MAX_ROTATE_SPEED_RAD_PER_SEC,
 )
+from jormungandr.choreoTrajectory import ChoreoTrajectoryState
 from utils.calibration import Calibration
 from utils.signalLogging import log
 from utils.mathUtils import limit
 
 
-class DrivetrainTrajectoryControl:
+class HolonomicDriveController:
     """
     Closed-loop controller suite to get the robot from where it is to where it isn't
     https://www.youtube.com/watch?v=bZe5J8SVCYQ
@@ -59,7 +61,7 @@ class DrivetrainTrajectoryControl:
         self.yCtrl.setPID(self.transP.get(), self.transI.get(), self.transD.get())
         self.tCtrl.setPID(self.rotP.get(), self.rotI.get(), self.rotD.get())
 
-    def update(self, trajCmd, curEstPose):
+    def update(self, trajCmd:ChoreoTrajectoryState, curEstPose):
         """Main periodic update, call this whenever you need new commands
 
         Args:
@@ -92,10 +94,10 @@ class DrivetrainTrajectoryControl:
         log("Drivetrain HDC yFB", yFB, "mps")
         log("Drivetrain HDC tFB", tFB, "radpersec")
 
-        vXCmd = limit(xFF + xFB, MAX_FWD_REV_SPEED_MPS)
-        vYCmd = limit(yFF + yFB, MAX_FWD_REV_SPEED_MPS)
-        vTCmd = limit(tFF + tFB, MAX_ROTATE_SPEED_RAD_PER_SEC)
+        retVal = DrivetrainCommand()
+        retVal.velX = limit(xFF + xFB, MAX_FWD_REV_SPEED_MPS)
+        retVal.velY = limit(yFF + yFB, MAX_FWD_REV_SPEED_MPS)
+        retVal.velT = limit(tFF + tFB, MAX_ROTATE_SPEED_RAD_PER_SEC)
+        retVal.desPose = trajCmd.getPose()
 
-        return ChassisSpeeds.fromFieldRelativeSpeeds(
-            vXCmd, vYCmd, vTCmd, curEstPose.rotation()
-        )
+        return retVal

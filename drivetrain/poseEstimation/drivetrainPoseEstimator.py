@@ -69,7 +69,7 @@ class DrivetrainPoseEstimator:
         # Read the gyro angle
         self.gyroDisconFault.set(not self.gyro.isConnected())
         if wpilib.TimedRobot.isSimulation():
-            # Simulate an angel based on (simulated) motor speeds with some noise
+            # Simulate an angle based on (simulated) motor speeds with some noise
             chSpds = kinematics.toChassisSpeeds(curModuleSpeeds)
             self._simPose = self._simPose.exp(
                 Twist2d(chSpds.vx * 0.02, chSpds.vy * 0.02, chSpds.omega * 0.02)

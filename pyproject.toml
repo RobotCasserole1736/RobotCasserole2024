@@ -28,6 +28,6 @@ robotpy_extras = [
 
 # Other pip packages to install
 requires = [
-    "photonlibpy",
+    "photonlibpy==2024.2.0",
     "debugpy==1.6.7",
 ]

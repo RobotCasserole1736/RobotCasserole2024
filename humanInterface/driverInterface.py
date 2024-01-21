@@ -2,6 +2,7 @@ from wpilib import XboxController
 import wpilib
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import MAX_FWD_REV_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_STRAFE_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
@@ -82,26 +83,12 @@ class DriverInterface:
         log("DI Rotate Cmd", self.velTCmd, "radPerSec")
         log("DI connected", self.ctrl.isConnected(), "bool")
 
-    def getVxCmd(self):
-        """
-        Returns:
-            float: Driver's current vX (downfield/upfield, or fwd/rev) command in meters per second
-        """
-        return self.velXCmd
-
-    def getVyCmd(self):
-        """
-        Returns:
-            float: Driver's current vY (side-to-side or strafe) command in meters per second
-        """
-        return self.velYCmd
-
-    def getVtCmd(self):
-        """
-        Returns:
-            float: Driver's current vT (rotation) command in radians per second
-        """
-        return self.velTCmd
+    def getDrivetrainCmd(self) -> DrivetrainCommand:
+        retVal = DrivetrainCommand()
+        retVal.velX = self.velXCmd
+        retVal.velY = self.velYCmd
+        retVal.velT = self.velTCmd
+        return retVal
 
     def getGyroResetCmd(self):
         """_summary_

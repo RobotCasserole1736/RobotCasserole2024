@@ -55,4 +55,4 @@ def transform(in_):
             return in_
 
     else:
-        TypeError("transform function received unknown type")
+        raise TypeError("transform function received unknown type")

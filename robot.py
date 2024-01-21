@@ -1,7 +1,10 @@
 import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
+from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
+from drivetrain.controlStrategies.trajectory import Trajectory
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from humanInterface.driverInterface import DriverInterface
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
@@ -39,6 +42,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
+        self.autoSequencer.addMode(NoteThief())
 
         self.dashboard = Dashboard()
 
@@ -80,6 +84,11 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousPeriodic(self):
         self.autoSequencer.update()
 
+        # Operators cannot control in autonomous
+        self.driveTrain.setManualCmd(
+            DrivetrainCommand()
+        )
+
     def autonomousExit(self):
         self.autoSequencer.end()
 
@@ -90,15 +99,19 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         self.dInt.update()
-        self.driveTrain.setCmdFieldRelative(
-            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
+
+        self.driveTrain.setManualCmd(
+            self.dInt.getDrivetrainCmd()
         )
+        
+        # No trajectory in Teleop
+        Trajectory().setCmd(None)
 
     #########################################################
     ## Disabled-Specific init and update
     def disabledPeriodic(self):
         self.autoSequencer.updateMode()
-        self.driveTrain.trajCtrl.updateCals()
+        Trajectory().trajCtrl.updateCals()
 
     #########################################################
     ## Test-Specific init and update

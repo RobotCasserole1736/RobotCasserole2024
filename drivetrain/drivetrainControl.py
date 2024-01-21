@@ -1,12 +1,14 @@
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.geometry import Pose2d, Rotation2d
+from drivetrain.controlStrategies.autoDrive import AutoDrive
+from drivetrain.controlStrategies.trajectory import Trajectory
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
 
 from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
 from drivetrain.swerveModuleControl import SwerveModuleControl
 from drivetrain.swerveModuleGainSet import SwerveModuleGainSet
-from drivetrain.drivetrainTrajectoryControl import DrivetrainTrajectoryControl
 from drivetrain.drivetrainPhysical import (
     FL_ENCODER_MOUNT_OFFSET_RAD,
     MAX_FWD_REV_SPEED_MPS,
@@ -39,54 +41,50 @@ class DrivetrainControl(metaclass=Singleton):
 
         self.desChSpd = ChassisSpeeds()
         self.curDesPose = Pose2d()
+        self.curManCmd = DrivetrainCommand()
+        self.curCmd = DrivetrainCommand()
 
         self.gains = SwerveModuleGainSet()
 
         self.poseEst = DrivetrainPoseEstimator(self.getModulePositions())
 
-        self.trajCtrl = DrivetrainTrajectoryControl()
-
         self._updateAllCals()
 
-    def setCmdFieldRelative(self, velX, velY, velT):
+    def setManualCmd(self, cmd:DrivetrainCommand):
         """Send commands to the robot for motion relative to the field
 
         Args:
-            velX (float): Desired speed in the field's X direction, in meters per second
-            velY (float): Desired speed in the field's Y axis, in th meters per second
-            velT (float): Desired rotational speed in the field's reference frame, in radians per second
+            cmd (DrivetrainCommand): manual command input
         """
-        tmp = ChassisSpeeds.fromFieldRelativeSpeeds(
-            velX, velY, velT, self.poseEst.getCurEstPose().rotation()
-        )
-        self.desChSpd = _discretizeChSpd(tmp)
-        self.poseEst.telemetry.setDesiredPose(self.poseEst.getCurEstPose())
 
-    def setCmdRobotRelative(self, velX, velY, velT):
-        """Send commands to the robot for motion relative to its own reference frame
-
-        Args:
-            velX (float): Desired speed in the robot's X direction, in meters per second
-            velY (float): Desired speed in the robot's Y axis, in th meters per second
-            velT (float): Desired rotational speed in the robot's reference frame, in radians per second
-        """
-        self.desChSpd = _discretizeChSpd(ChassisSpeeds(velX, velY, velT))
-        self.poseEst.telemetry.setDesiredPose(self.poseEst.getCurEstPose())
-
-    def setCmdTrajectory(self, cmd):
-        """Send commands to the robot for motion as a part of following a trajectory
-
-        Args:
-            cmd (PathPlannerState): PathPlanner trajectory sample for the current time
-        """
-        tmp = self.trajCtrl.update(cmd, self.poseEst.getCurEstPose())
-        self.desChSpd = _discretizeChSpd(tmp)
-        self.poseEst.telemetry.setDesiredPose(cmd.getPose())
 
     def update(self):
         """
         Main periodic update, should be called every 20ms
         """
+        curEstPose = self.poseEst.getCurEstPose()
+
+        # Iterate through all strategies for controlling the drivetrain to 
+        # calculate the current drivetrain commands.
+
+        self.curCmd = self.curManCmd
+        self.curCmd = Trajectory().update(self.curCmd, curEstPose)
+        self.curCmd = AutoDrive().update(self.curCmd, curEstPose) 
+
+        # Transform the current command to be robot relative
+        tmp = ChassisSpeeds.fromFieldRelativeSpeeds(
+            self.curCmd.velX, self.curCmd.velY, self.curCmd.velT, curEstPose.rotation()
+        )
+        self.desChSpd = _discretizeChSpd(tmp)
+
+        # Set the desired pose for telemetry purposes
+        if(self.curCmd.desPose is not None):
+            desPose = self.curCmd.desPose
+        else:
+            desPose = curEstPose
+        self.poseEst.telemetry.setDesiredPose(desPose)
+
+
 
         # Given the current desired chassis speeds, convert to module states
         desModStates = kinematics.toSwerveModuleStates(self.desChSpd)
@@ -132,6 +130,10 @@ class DrivetrainControl(metaclass=Singleton):
         newGyroRotation = Rotation2d(0.0) if(onRed()) else Rotation2d(180.0)
         newPose = Pose2d(curTranslation, newGyroRotation)
         self.poseEst.setKnownPose(newPose)
+
+    def getCurEstPose(self) -> Pose2d:
+        # Return the current best-guess at our pose on the field.
+        return self.poseEst.getCurEstPose()
 
 
 def _discretizeChSpd(chSpd):

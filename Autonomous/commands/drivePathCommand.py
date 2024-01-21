@@ -1,5 +1,6 @@
 import os
 import wpilib
+from drivetrain.controlStrategies.trajectory import Trajectory
 from jormungandr import choreo
 from AutoSequencerV2.command import Command
 from drivetrain.drivetrainControl import DrivetrainControl
@@ -8,6 +9,8 @@ from utils.allianceTransformUtils import transform
 class DrivePathCommand(Command):
     def __init__(self, pathFile):
         self.name = pathFile
+
+        self.trajCtrl = Trajectory()
 
         # Get the internal path file
         absPath = os.path.abspath(
@@ -28,7 +31,7 @@ class DrivePathCommand(Command):
         )  # we'll populate these for real later, just declare they'll exist
         self.duration = self.path.getTotalTime()
         self.drivetrain = DrivetrainControl()
-        self.poseTelem = DrivetrainControl().poseEst.telemetry
+        self.poseTelem = self.drivetrain.poseEst.telemetry
 
     def initialize(self):
         self.startTime = wpilib.Timer.getFPGATimestamp()
@@ -40,12 +43,12 @@ class DrivePathCommand(Command):
 
         curState = transform(curState)
 
-        self.drivetrain.setCmdTrajectory(curState)
+        self.trajCtrl.setCmd(curState)
 
         self.done = curTime >= (self.duration)
 
         if self.done:
-            self.drivetrain.setCmdRobotRelative(0, 0, 0)
+            self.trajCtrl.setCmd(None)
             self.poseTelem.setTrajectory(None)
 
     def isDone(self):
