@@ -4,7 +4,7 @@
 
 import utils.units
 
-FIELD_LENGTH_FT = 54.0
+FIELD_LENGTH_FT = 54.2685
 
 """
     This is mostly the old java stuff we used, the drivetrain is under DrivetrainPhysical

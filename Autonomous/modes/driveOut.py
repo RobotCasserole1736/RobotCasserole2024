@@ -14,5 +14,4 @@ class DriveOut(Mode):
 
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose
-        retVal = self.pathCmd.path.getInitialPose()
-        return transform(retVal)
+        return self.pathCmd.path.getInitialPose()

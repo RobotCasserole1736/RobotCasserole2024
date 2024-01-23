@@ -57,9 +57,6 @@ class MyRobot(wpilib.TimedRobot):
         self.stt.start()
         self.crashLogger.update()
 
-        if self.dInt.getGyroResetCmd():
-            self.driveTrain.resetGyro()
-
         self.driveTrain.update()
 
         self.ledCtrl.update()
@@ -103,9 +100,13 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.setManualCmd(
             self.dInt.getDrivetrainCmd()
         )
+
+        if self.dInt.getGyroResetCmd():
+            self.driveTrain.resetGyro()
         
         # No trajectory in Teleop
         Trajectory().setCmd(None)
+        self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
     #########################################################
     ## Disabled-Specific init and update

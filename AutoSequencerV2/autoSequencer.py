@@ -6,6 +6,8 @@ from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
+from utils.allianceTransformUtils import transform
+
 
 
 class AutoSequencer(metaclass=Singleton):
@@ -53,7 +55,7 @@ class AutoSequencer(metaclass=Singleton):
             self.topLevelCmdGroup = delayMode.getCmdGroup().andThen(
                 mainMode.getCmdGroup()
             )
-            self.startPose = mainMode.getInitialDrivetrainPose()
+            self.startPose = transform(mainMode.getInitialDrivetrainPose())
             print(
                 f"[Auto] New Modes Selected: {DriverStation.getAlliance()} {delayMode.getName()}, {mainMode.getName()}"
             )
