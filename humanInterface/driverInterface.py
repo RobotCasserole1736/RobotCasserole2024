@@ -65,10 +65,10 @@ class DriverInterface:
             self.connectedfault.setFaulted()
 
         log("DI FwdRev Cmd", self.vXCmd, "mps")
-        log("DI FwdRev Cmd", self.vYCmd, "mps")
+        log("DI Strafe Cmd", self.vYCmd, "mps")
         log("DI Rot Cmd", self.vRotCmd, "radps")
         log("DI connective fault", self.ctrl.isConnected(), "bool")
-       
+        log("DI gyroResetCmd", self.gyroResetCmd,"bool")
     
     def getVxCmd(self):
         return self.vXCmd
