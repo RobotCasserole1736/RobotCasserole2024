@@ -14,7 +14,7 @@ Before developing code on a new computer, perform the following:
 ```cmd
     python -m pip install --upgrade pip
     python -m pip install -r requirements_dev.txt
-    python -m pip install robotpy
+    python -m pip install   robotpy
     robotpy sync
 ```
 

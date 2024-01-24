@@ -39,14 +39,14 @@ class driverInterface:
         if self.ctrl.isConnected():
             # Only attempt to read from the joystick if it's plugged in
 
-            # Convert from joystic sign/axis conventions to robot velocity conventions
+            # Convert from  joystic sign/axis conventions to robot velocity conventions
             vXJoyRaw = -1.0 * self.ctrl.getLeftY()
             vYJoyRaw = -1.0 * self.ctrl.getLeftX()
             vTJoyRaw = -1.0 * self.ctrl.getRightX()
 
             # Set command for Climbing via left bumper
-            WinchRaw = self.ctrl.getLeftBumperPressed()
-            
+            WinchRawUp = self.ctrl.getLeftTriggerAxis()
+            WinchRawDown = self.ctrl.getRightTriggerAxis()
             # Set rachet command
             if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
                 self.RachetCmd = 1
@@ -66,13 +66,15 @@ class driverInterface:
             velXCmdRaw = vXJoy * MAX_FWD_REV_SPEED_MPS * sprintMult
             velYCmdRaw = vYJoy * MAX_STRAFE_SPEED_MPS * sprintMult
             velTCmdRaw = vTJoy * MAX_ROTATE_SPEED_RAD_PER_SEC
-            velWinchRaw = WinchRaw * WINCH_MAX_SPEED
+            velWinchRawUp = WinchRawUp * WINCH_MAX_SPEED
+            velWinchRawDown = WinchRawDown * WINCH_MAX_SPEED
             # Slew-rate limit the velocity units to not change faster than
             # the robot can physically accomplish
             self.velXCmd = self.velXSlewRateLimiter.calculate(velXCmdRaw)
             self.velYCmd = self.velYSlewRateLimiter.calculate(velYCmdRaw)
             self.velTCmd = self.velTSlewRateLimiter.calculate(velTCmdRaw)
-            self.velWinchCmd = self.velWinchSlewRateLimiter.calculate(velWinchRaw)
+            self.velWinchUpCmd = self.velWinchSlewRateLimiter.calculate(velWinchRawUp)
+            self.velWinchDownCmd = self.velWinchSlewRateLimiter.calculate(velWinchRawDown)
             # Adjust the commands if we're on the opposite side of the feild
             if onRed():
                 self.velXCmd *= -1
@@ -84,7 +86,8 @@ class driverInterface:
             self.connectedFault.setNoFault()
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
-            self.velWinchCmd = 0.0
+            self.velWinchCmdUp = 0.0
+            self.velWinchCmdDown = 0.0
             self.velXCmd = 0.0
             self.velYCmd = 0.0
             self.velTCmd = 0.0

@@ -97,9 +97,8 @@ class MyRobot(wpilib.TimedRobot):
             self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
         )
         self.climbCtrl.ctrlWinch(
-            self.dInt.velWinchCmd
+            self.dInt.velWinchCmdUp - self.dInt.velWinchCmdDown
         )
-
         self.climbCtrl.setRachet(self.dInt.RachetCmd)
         
 
