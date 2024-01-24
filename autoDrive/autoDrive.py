@@ -6,7 +6,7 @@ from drivetrain.drivetrainControl import DrivetrainControl
 
 
 
-class autoDrive():
+class AutoDrive():
     def __init__(self):
         pass
 
