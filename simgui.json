@@ -1,4 +1,16 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    },
+    "Timing": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -14,8 +26,10 @@
     "windows": {
       "/SmartDashboard/DT Pose 2D": {
         "Robot": {
-          "style": "Box/Image"
+          "style": "Line (Closed)"
         },
+        "bottom": 514,
+        "builtin": "2020 Infinite Recharge",
         "desTraj": {
           "arrowColor": [
             187.2151641845703,
@@ -32,6 +46,11 @@
           ],
           "style": "Line"
         },
+        "height": 8.210550308227539,
+        "left": 96,
+        "right": 1040,
+        "top": 25,
+        "width": 15.982950210571289,
         "window": {
           "visible": true
         }
@@ -46,7 +65,9 @@
     }
   },
   "NetworkTables Info": {
-    "visible": true
+    "Connections": {
+      "open": true
+    }
   },
   "NetworkTables View": {
     "visible": false
