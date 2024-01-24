@@ -2,6 +2,7 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
+from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.units import in2m
@@ -41,8 +42,6 @@ class OperatorInterface:
         self.manualSingerRot = False
 
         #I don't know what the max on the slew rate limiter should be. It should be a constant
-        MAX_MAN_VEL_MPS = in2m(12.0)
-        MAX_MANUAL_DEG_PER_SEC = 30
         self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_VEL_MPS)
         self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_DEG_PER_SEC)
 
@@ -178,4 +177,13 @@ class OperatorInterface:
     #if the manual commands to control the singer are active, we will have to know that and get them later
     def manCmdActive(self):
         return  self.manualSingerUpDown != 0 or self.manualSingerRot != 0
-    
+
+    #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
+    def manUpDownCmd_M(self):
+        pass
+    #32 to 1 gear ratio
+    #1.5 inch sprocket
+
+    #this will be degrees that the singer is rotated, with 0 being parallel to base of robot
+    def manRotCmd_Deg(self):
+        pass
