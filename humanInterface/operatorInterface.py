@@ -1,13 +1,12 @@
 #imports
-from typing import Any
 from wpilib import XboxController
 from wpimath import applyDeadband
-from utils.faults import Fault
 from wpimath.filter import SlewRateLimiter
-
+from utils.faults import Fault
+from utils.signalLogging import log
 from utils.units import in2m
 
-class operatorInterface:
+class OperatorInterface:
     def __init__(self):
         #initialize xbox controller, important values
         #is the position commands going to be a enum later? I think they should be. 
@@ -20,12 +19,12 @@ class operatorInterface:
         self.connectedFault = Fault(f"Operator XBox Controller ({ctrlIdx}) Unplugged")
 
         #Shooter commands
-        self.shooterIntake = False
-        self.shooterShoot = False
+        self.singerIntake = False
+        self.singerShoot = False
         """Idea: shouldn't shooterHold be something that happens when there is a gamepiece detected by the
         time of flight sensor? Maybe add that logic between time of flight class and the shooter wheels, 
         not operator"""
-        self.shooterEject = False
+        self.singerEject = False
 
         #element of the elevator. Goes up, down, and rotates into position
         self.carriageIntakePos = False
@@ -35,17 +34,17 @@ class operatorInterface:
         self.carriageSpeakerSubwooferPos = False
 
         #if the operator wants the auto align desired
-        self.AutoAlignDesired = False
+        self.autoAlignDesired = False
 
         #singer manual controls
         self.manualSingerUpDown = False
         self.manualSingerRot = False
 
         #I don't know what the max on the slew rate limiter should be. It should be a constant
-        #I just made up a number... it happened to be last year's number. I just picked something
         MAX_MAN_VEL_MPS = in2m(12.0)
+        MAX_MANUAL_DEG_PER_SEC = 30
         self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_VEL_MPS)
-        self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MAN_VEL_MPS)
+        self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_DEG_PER_SEC)
 
 
 
@@ -71,12 +70,12 @@ class operatorInterface:
             #Above is basically the right side of the D pad
 
             #if the operator wants the auto align desired
-            self.AutoAlignDesired = self.ctrl.getXButton()
+            self.autoAlignDesired = self.ctrl.getXButton()
 
             #manual singer controls
             self.manualSingerUpDown = applyDeadband(self.ctrl.getLeftY(),.15)
             self.manualSingerUpDown = self.manualSingerUpDownSlewRateLimiter.calculate(self.manualSingerUpDown)
-            self.manualSingerRot = applyDeadband(self.ctrl.getRightX(),.15)
+            self.manualSingerRot = applyDeadband(self.ctrl.getRightY(),.15)
             self.manualSingerRot = self.manualSingerRotSlewRateLimiter.calculate(self.manualSingerRot)
 
             self.connectedFault.setNoFault()
@@ -97,17 +96,29 @@ class operatorInterface:
             self.carriagePodiumPos = False
 
             #if the operator wants the auto align desired
-            self.AutoAlignDesired = False
+            self.autoAlignDesired = False
 
             #manual commands
             self.manualSingerUpDown = 0
             self.manualSingerRot = 0
 
+        log("OI AutoAlign Cmd", self.autoAlignDesired, "bool")
+        log("OI Singer Intake Cmd", self.singerIntake, "bool")
+        log("OI Singer Shoot Cmd", self.singerShoot, "bool")
+        log("OI Singer Eject Cmd", self.singerEject, "bool")
+        log("OI Carriage Intake Pos Cmd", self.carriageIntakePos, "bool")
+        log("OI Carriage Amp Pos Cmd", self.carriageAmpPos, "bool")
+        log("OI Carriage Trap Pos Cmd", self.carriageTrapPos, "bool")
+        log("OI Carriage Speaker/Subwoofer Pos Cmd", self.carriageSpeakerSubwooferPos, "bool")
+        log("OI Carriage Podium Pos Cmd", self.carriagePodiumPos, "bool")
+        log("OI Manual Singer Up/Down Cmd", self.manualSingerUpDown, "mps")
+        log("OI Manual Singer Rot Cmd", self.manualSingerRot, "deg/s")
+
 
  #and now a bunch of functions to call 
     def getAutoAlignCmd(self):
         #returns whether auto align is desired or not
-        return self.AutoAlignDesired
+        return self.autoAlignDesired
     
     def singerIsCmdd(self):
         return self.singerIntake or self.singerShoot or self.singerEject
@@ -151,7 +162,8 @@ class operatorInterface:
         return self.carriageTrapPos
     
     def getCarriageSpeakerSubwooferPosCmd(self):
-        #returns whether the singer is being commanded go to the position it will need to shoot from the subwoofer of the speaker
+        #returns whether the singer is being commanded go to the position it will need to shoot 
+        #from the subwoofer of the speaker
         return self.carriageSpeakerSubwooferPos
     
     def getCarriagePodiumPosCmd(self):
@@ -166,3 +178,4 @@ class operatorInterface:
     #if the manual commands to control the singer are active, we will have to know that and get them later
     def manCmdActive(self):
         return  self.manualSingerUpDown != 0 or self.manualSingerRot != 0
+    

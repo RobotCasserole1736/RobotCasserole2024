@@ -3,7 +3,7 @@ import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from dashboard import Dashboard
 from humanInterface.driverInterface import DriverInterface
-from humanInterface.operatorInterface import operatorInterface
+from humanInterface.operatorInterface import OperatorInterface
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -34,7 +34,7 @@ class MyRobot(wpilib.TimedRobot):
         self.stt = SegmentTimeTracker()
 
         self.dInt = DriverInterface()
-        self.oInt = operatorInterface()
+        self.oInt = OperatorInterface()
 
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
