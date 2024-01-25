@@ -2,7 +2,7 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
-from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC
+from singerMovement.singerConstants import GEARBOX_GEAR_RATIO, MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, SPROCKET_MULTPLICATION_RATIO
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.units import in2m
@@ -38,12 +38,15 @@ class OperatorInterface:
         self.autoAlignDesired = False
 
         #singer manual controls
-        self.manualSingerUpDown = False
-        self.manualSingerRot = False
+        self.manualSingerUpDown = 0
+        self.manualSingerRot = 0
 
         #I don't know what the max on the slew rate limiter should be. It should be a constant
         self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_VEL_MPS)
         self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_DEG_PER_SEC)
+
+        self.motorRotations = 0
+        self.LinearDisp = 0
 
 
 
@@ -179,10 +182,17 @@ class OperatorInterface:
         return  self.manualSingerUpDown != 0 or self.manualSingerRot != 0
 
     #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
-    def manUpDownCmd_M(self):
-        pass
-    #32 to 1 gear ratio
-    #1.5 inch sprocket
+    def LinearDispFromMotorRev_SingerUpDown(self):
+        self.LinearDisp = self.motorRotations * 1/GEARBOX_GEAR_RATIO * SPROCKET_MULTPLICATION_RATIO
+        #when, where, and how do you set how many motor rotations you want?
+        return self.LinearDisp
+        
+
+    def MotorRevfromLinearDisp_SingerUpDown(self):
+        self.motorRotations = self.LinearDisp * 1/SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
+        #when, where, and how do you set the linear displacement?
+        return self.motorRotations
+    
 
     #this will be degrees that the singer is rotated, with 0 being parallel to base of robot
     def manRotCmd_Deg(self):
