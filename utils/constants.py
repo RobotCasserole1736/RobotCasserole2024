@@ -5,7 +5,8 @@
 import utils.units
 
 FIELD_LENGTH_FT = 54.0
-
+WINCH_MAX_SPEED = 1
+WINCH_MAX_ACCEL = 1
 """
     This is mostly the old java stuff we used, the drivetrain is under DrivetrainPhysical
 
