@@ -100,9 +100,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt.update()
         self.dInt.update()
 
-        self.driveTrain.setManualCmd(
-            self.dInt.getDrivetrainCmd()
-        )
+        self.driveTrain.setManualCmd(self.dInt.getCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
