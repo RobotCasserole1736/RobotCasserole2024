@@ -11,13 +11,26 @@ class AutoAlign():
 
         #For now I am assuming that you are on the blue alliance
         
+        #if self.AARobotPoseEst.rotation().radians() <0:
+
         
-        returnVal = self.AARobotPoseEst.rotation().radians() - math.atan(5.547868 - self.AARobotPoseEst.Y()/self.AARobotPoseEst.X() )
+        #returnVal = (3.1415/2) - self.AARobotPoseEst.rotation().radians()# + math.atan(self.AARobotPoseEst.Y()/self.AARobotPoseEst.X() ) #
+
+        returnVal =math.atan(self.AARobotPoseEst.Y()/self.AARobotPoseEst.X()) - self.AARobotPoseEst.rotation().radians()# self.AARobotPoseEst.rotation().radians() - math.atan(  self.AARobotPoseEst.Y()/self.AARobotPoseEst.X()) + (3.1415/2)
+
+        if returnVal > 0:
+            returnVal = 1
+        elif returnVal < 0:
+            returnVal = -1
+
+
+        print(f"X:{self.AARobotPoseEst.X()} Y: {self.AARobotPoseEst.Y()} rotation: {self.AARobotPoseEst.rotation().radians()}")
         print(returnVal)
-        if returnVal >= 0 :
-            return returnVal * -1
-        else:
-            return returnVal 
+        
+        return returnVal 
+    
+
+        
         
 
 
