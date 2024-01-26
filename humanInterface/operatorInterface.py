@@ -181,19 +181,10 @@ class OperatorInterface:
     def manCmdActive(self):
         return  self.manualSingerUpDown != 0 or self.manualSingerRot != 0
 
-    #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
-    def LinearDispFromMotorRev_SingerUpDown(self):
-        self.LinearDisp = self.motorRotations * 1/GEARBOX_GEAR_RATIO * SPROCKET_MULTPLICATION_RATIO
-        #when, where, and how do you set how many motor rotations you want?
-        return self.LinearDisp
-        
+    #this will be joystick command for degrees
+    def manSingerRotCmd(self):
+        return self.manualSingerRot
 
-    def MotorRevfromLinearDisp_SingerUpDown(self):
-        self.motorRotations = self.LinearDisp * 1/SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
-        #when, where, and how do you set the linear displacement?
-        return self.motorRotations
-    
-
-    #this will be degrees that the singer is rotated, with 0 being parallel to base of robot
-    def manRotCmd_Deg(self):
-        pass
+    #this will be joystick command for going up/down
+    def manSingerUpDown(self):
+        return self.manSingerUpDown
