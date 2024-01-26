@@ -1,9 +1,9 @@
 import os
 import wpilib
 from drivetrain.controlStrategies.trajectory import Trajectory
+from drivetrain.drivetrainControl import DrivetrainControl
 from jormungandr import choreo
 from AutoSequencerV2.command import Command
-from drivetrain.drivetrainControl import DrivetrainControl
 from utils.allianceTransformUtils import transform
 
 class DrivePathCommand(Command):
