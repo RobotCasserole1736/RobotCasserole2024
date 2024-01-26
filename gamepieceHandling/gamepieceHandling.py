@@ -13,10 +13,14 @@ from utils.calibration import Calibration
 from utils import constants
 from utils.units import RPM2RadPerSec
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
+from playingwithfusion import TimeOfFlight
 
 
 class gamepieceHandling:
     def __init__(self):
+
+        #Time of flight sensor
+        self.ToFSensor = ()
 
         #Shooter Motors
         self.Shooter1 = WrapperedSparkMax(constants.SHOOTER_MOTOR1_CANID, "ShooterMotor1")
@@ -38,11 +42,11 @@ class gamepieceHandling:
         #Voltage Calibration
         self.IntakeVoltage = Calibration("IntakeVoltage", 12, "V")
 
-    def ActiveShooter(self,desVel):
+    def ActiveShooter(self,desVel): # Desired Velocity
         self.Shooter1.setVelCmd(RPM2RadPerSec(desVel)) # ArbFF default 0
         self.Shooter1.setVelCmd(RPM2RadPerSec(desVel)) # ArbFF defualt 0 
 
-    def ActiveIntake(self):
+    def ActiveIntake(self): 
         self.Intake1.setVoltage(self.IntakeVoltage)
         self.Intake2.setVoltage(self.IntakeVoltage)
 
@@ -50,6 +54,7 @@ class gamepieceHandling:
         self.FloorRoller1.setVoltage(self.IntakeVoltage)
         self.FloorRoller2.setVoltage(self.IntakeVoltage)
 
+    
    
 
         # SparkMax motor for the floor roller
@@ -59,7 +64,6 @@ class gamepieceHandling:
         pass
 
 
-    def ToFSensor():
-        pass
+
 
     # What the "note flow control" has to get, which is the xbox control, from the Operator Control node.
