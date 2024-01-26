@@ -6,6 +6,7 @@ from dashboard import Dashboard
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from humanInterface.driverInterface import DriverInterface
+from humanInterface.operatorInterface import OperatorInterface
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -37,6 +38,7 @@ class MyRobot(wpilib.TimedRobot):
         self.stt = SegmentTimeTracker()
 
         self.dInt = DriverInterface()
+        self.oInt = OperatorInterface()
 
         self.ledCtrl = LEDControl()
 
@@ -95,6 +97,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
+        self.oInt.update()
         self.dInt.update()
 
         self.driveTrain.setManualCmd(
