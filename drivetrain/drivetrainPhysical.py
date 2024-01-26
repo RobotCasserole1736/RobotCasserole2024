@@ -1,7 +1,7 @@
 import math
 from wpimath.units import inchesToMeters
 from wpimath.system.plant import DCMotor
-from wpimath.geometry import Translation2d
+from wpimath.geometry import Translation2d, Transform3d, Translation3d, Rotation3d
 from wpimath.kinematics import SwerveDrive4Kinematics
 from utils.units import lbsToKg
 from utils.units import deg2Rad
@@ -107,6 +107,36 @@ FL = 0
 FR = 1
 BL = 2
 BR = 3
+
+# Camera Mount Offsets
+# These are relative to the robot origin
+# which is in the center of the chassis on the ground
+ROBOT_TO_LEFT_CAM = Transform3d(
+    Translation3d(
+        inchesToMeters(11.0), # X
+        inchesToMeters(5.0),  # Y
+        inchesToMeters(3.0)   # Z
+    ),
+    Rotation3d(
+        0.0, # Roll
+        0.0, # Pitch
+        0.0  # Yaw
+    )
+)
+
+ROBOT_TO_RIGHT_CAM = Transform3d(
+    Translation3d(
+        inchesToMeters(11.0), # X
+        inchesToMeters(-5.0),  # Y
+        inchesToMeters(3.0)   # Z
+    ),
+    Rotation3d(
+        0.0, # Roll
+        0.0, # Pitch
+        0.0  # Yaw
+    )
+)
+
 
 # Array of translations from robot's origin (center bottom, on floor) to the module's contact patch with the ground
 robotToModuleTranslations = []

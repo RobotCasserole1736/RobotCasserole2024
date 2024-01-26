@@ -1,6 +1,7 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import MAX_FWD_REV_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_STRAFE_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
@@ -78,6 +79,13 @@ class DriverInterface:
 
     def getVrotCmd(self):
         return self.vRotCmd
+    
+    def getCmd(self):
+        retval = DrivetrainCommand()
+        retval.velX = self.getVxCmd()
+        retval.velY = self.getVyCmd()
+        retval.velT = self.getVrotCmd()
+        return retval
 
     def getliftlowerCmd(self):
         # returnself. lift lower comand

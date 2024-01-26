@@ -4,10 +4,11 @@ import wpilib
 
 from wpimath.units import metersToFeet
 from wpimath.trajectory import Trajectory
-from wpimath.geometry import Pose2d
+from wpimath.geometry import Pose2d, Pose3d
 from utils.signalLogging import log
 from utils.allianceTransformUtils import transform
-
+from drivetrain.drivetrainPhysical import ROBOT_TO_LEFT_CAM, ROBOT_TO_RIGHT_CAM
+from ntcore import NetworkTableInstance
 
 class DrivetrainPoseTelemetry:
     """
@@ -21,6 +22,9 @@ class DrivetrainPoseTelemetry:
         self.curTraj = Trajectory()
         self.desPose = Pose2d()
 
+        self.leftCamPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/LeftCamPose", Pose3d).publish()
+        self.rightCamPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/RightCamPose", Pose3d).publish()
+
     def setDesiredPose(self, desPose):
         self.desPose = desPose
 
@@ -28,6 +32,9 @@ class DrivetrainPoseTelemetry:
         self.field.getRobotObject().setPose(estPose)
         self.field.getObject("desPose").setPose(self.desPose)
         self.field.getObject("desTraj").setTrajectory(self.curTraj)
+
+        self.leftCamPosePublisher.set(Pose3d(estPose).transformBy(ROBOT_TO_LEFT_CAM))
+        self.rightCamPosePublisher.set(Pose3d(estPose).transformBy(ROBOT_TO_RIGHT_CAM))
 
         log("DT Pose Est X", metersToFeet(estPose.X()), "ft")
         log("DT Pose Est Y", metersToFeet(estPose.Y()), "ft")
