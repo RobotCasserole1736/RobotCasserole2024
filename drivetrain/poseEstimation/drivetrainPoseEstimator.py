@@ -20,7 +20,10 @@ class DrivetrainPoseEstimator:
         self.gyro = ADXRS450_Gyro()
         self.gyroDisconFault = Fault("Gyro Disconnected")
 
-        self.cam = WrapperedPhotonCamera("TEST_CAM", Transform3d())
+        self.cams = [
+            WrapperedPhotonCamera("LEFT_CAM", Transform3d()),
+            WrapperedPhotonCamera("RIGHT_CAM", Transform3d())
+        ]
         self.camTargetsVisible = False
 
         self.poseEst = SwerveDrive4PoseEstimator(
@@ -57,13 +60,15 @@ class DrivetrainPoseEstimator:
         """
 
         # Add any vision observations to the pose estimate
-        self.cam.update(self.curEstPose)
         self.camTargetsVisible = False
-        for observation in self.cam.getPoseEstimates():
-            self.poseEst.addVisionMeasurement(
-                observation.estFieldPose, observation.time
-            )
-            self.camTargetsVisible = True
+        for cam in self.cams:
+            cam.update(self.curEstPose)
+            for observation in cam.getPoseEstimates():
+                self.poseEst.addVisionMeasurement(
+                    observation.estFieldPose, observation.time
+                )
+                self.camTargetsVisible = True
+        
         log("PE Vision Targets Seen", self.camTargetsVisible, "bool")
 
         # Read the gyro angle
