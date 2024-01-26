@@ -20,7 +20,10 @@ class DrivetrainPoseEstimator:
         self.gyro = ADXRS450_Gyro()
         self.gyroDisconFault = Fault("Gyro Disconnected")
 
-        self.cam = WrapperedPhotonCamera("TEST_CAM", Transform3d())
+        self.cams = [
+            WrapperedPhotonCamera("LEFT_CAM", Transform3d()),
+            WrapperedPhotonCamera("RIGHT_CAM", Transform3d())
+        ]
         self.camTargetsVisible = False
 
         self.poseEst = SwerveDrive4PoseEstimator(
@@ -39,11 +42,14 @@ class DrivetrainPoseEstimator:
         Args:
             knownPose (Pose2d): The pose we know we're at
         """
+        if wpilib.TimedRobot.isSimulation():
+            self._simPose = knownPose
+            self.curRawGyroAngle = knownPose.rotation()
+
         self.poseEst.resetPosition(
             self.curRawGyroAngle, self.lastModulePositions, knownPose
         )
-        if wpilib.TimedRobot.isSimulation():
-            self._simPose = knownPose
+
 
     def update(self, curModulePositions, curModuleSpeeds):
         """Periodic update, call this every 20ms.
@@ -54,24 +60,27 @@ class DrivetrainPoseEstimator:
         """
 
         # Add any vision observations to the pose estimate
-        self.cam.update(self.curEstPose)
         self.camTargetsVisible = False
-        for observation in self.cam.getPoseEstimates():
-            self.poseEst.addVisionMeasurement(
-                observation.estFieldPose, observation.time
-            )
-            self.camTargetsVisible = True
+        for cam in self.cams:
+            cam.update(self.curEstPose)
+            for observation in cam.getPoseEstimates():
+                self.poseEst.addVisionMeasurement(
+                    observation.estFieldPose, observation.time
+                )
+                self.camTargetsVisible = True
+        
         log("PE Vision Targets Seen", self.camTargetsVisible, "bool")
 
         # Read the gyro angle
         self.gyroDisconFault.set(not self.gyro.isConnected())
         if wpilib.TimedRobot.isSimulation():
-            # Simulate an angel based on (simulated) motor speeds with some noise
+            # Simulate an angle based on (simulated) motor speeds with some noise
             chSpds = kinematics.toChassisSpeeds(curModuleSpeeds)
             self._simPose = self._simPose.exp(
                 Twist2d(chSpds.vx * 0.02, chSpds.vy * 0.02, chSpds.omega * 0.02)
             )
-            self.curRawGyroAngle = self._simPose.rotation() * random.uniform(0.95, 1.05)
+            noise = Rotation2d.fromDegrees(random.uniform(-1.25, 1.25))
+            self.curRawGyroAngle = self._simPose.rotation() + noise
         else:
             # Use real hardware
             self.curRawGyroAngle = self.gyro.getRotation2d()
@@ -80,7 +89,7 @@ class DrivetrainPoseEstimator:
         self.poseEst.update(self.curRawGyroAngle, curModulePositions)
         self.curEstPose = self.poseEst.getEstimatedPosition()
 
-        # Record the estimate to telemetry/logging
+        # Record the estimate to telemetry/logging-
         log("PE Gyro Angle", self.curRawGyroAngle.degrees(), "deg")
         self.telemetry.update(self.curEstPose)
 

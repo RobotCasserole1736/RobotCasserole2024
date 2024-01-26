@@ -4,9 +4,8 @@
 
 import utils.units
 
-FIELD_LENGTH_FT = 54.
+FIELD_LENGTH_FT = 54.2685
 
-#Examples
 SHOOTER_MOTOR1_CANID = 10
 SHOOTER_MOTOR2_CANID = 11
 

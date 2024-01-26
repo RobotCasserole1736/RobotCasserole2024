@@ -1,9 +1,13 @@
 from wpimath.geometry import Pose2d
+from wpilib import DriverStation
 from AutoSequencerV2.modeList import ModeList
 from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from utils.singleton import Singleton
+from utils.allianceTransformUtils import onRed
+from utils.allianceTransformUtils import transform
+
 
 
 class AutoSequencer(metaclass=Singleton):
@@ -24,7 +28,18 @@ class AutoSequencer(metaclass=Singleton):
         self.topLevelCmdGroup = SequentialCommandGroup()
         self.startPose = Pose2d()
 
+        # Alliance changes require us to re-plan autonomous
+        # This variable is used to help track when alliance changes
+        self._prevOnRed = onRed()
+
         self.updateMode(force=True)  # Ensure we load the auto sequencer at least once.
+
+    # Returns true if the alliance has changed since the last call
+    def _allianceChanged(self):
+        curRed = onRed()
+        retVal = curRed != self._prevOnRed
+        self._prevOnRed = curRed
+        return retVal
 
     def addMode(self, newMode):
         self.mainModeList.addMode(newMode)
@@ -34,21 +49,23 @@ class AutoSequencer(metaclass=Singleton):
     def updateMode(self, force=False):
         mainChanged = self.mainModeList.updateMode()
         delayChanged = self.delayModeList.updateMode()
-        if mainChanged or delayChanged or force:
+        if mainChanged or delayChanged or force or self._allianceChanged():
             mainMode = self.mainModeList.getCurMode()
             delayMode = self.delayModeList.getCurMode()
             self.topLevelCmdGroup = delayMode.getCmdGroup().andThen(
                 mainMode.getCmdGroup()
             )
-            self.startPose = mainMode.getInitialDrivetrainPose()
+            self.startPose = transform(mainMode.getInitialDrivetrainPose())
             print(
-                f"[Auto] New Modes Selected: {delayMode.getName()}, {mainMode.getName()}"
+                f"[Auto] New Modes Selected: {DriverStation.getAlliance()} {delayMode.getName()}, {mainMode.getName()}"
             )
 
     # Call this once during autonmous init to init the current command sequence
     def initiaize(self):
         print("[Auto] Starting Sequencer")
         self.topLevelCmdGroup.initialize()
+
+
 
     def update(self):
         self.topLevelCmdGroup.execute()

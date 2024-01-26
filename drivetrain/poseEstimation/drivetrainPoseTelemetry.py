@@ -6,6 +6,7 @@ from wpimath.units import metersToFeet
 from wpimath.trajectory import Trajectory
 from wpimath.geometry import Pose2d
 from utils.signalLogging import log
+from utils.allianceTransformUtils import transform
 
 
 class DrivetrainPoseTelemetry:
@@ -49,11 +50,11 @@ class DrivetrainPoseTelemetry:
             # make sure we only send a sampled subset of the positions
             sampTime = 0
             while sampTime < trajIn.getTotalTime():
-                stateList.append(self._choreoToWPIState(trajIn.sample(sampTime)))
+                stateList.append(self._choreoToWPIState(transform(trajIn.sample(sampTime))))
                 sampTime += 0.5
 
             # Make sure final pose is in the list
-            stateList.append(self._choreoToWPIState(trajIn.samples[-1]))
+            stateList.append(self._choreoToWPIState(transform(trajIn.samples[-1])))
 
             self.curTraj = Trajectory(stateList)
         else:

@@ -1,8 +1,12 @@
 import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
+from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
+from drivetrain.controlStrategies.trajectory import Trajectory
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from humanInterface.driverInterface import DriverInterface
+from humanInterface.operatorInterface import OperatorInterface
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -12,6 +16,7 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
+from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
 
 
@@ -33,9 +38,13 @@ class MyRobot(wpilib.TimedRobot):
         self.stt = SegmentTimeTracker()
 
         self.dInt = DriverInterface()
+        self.oInt = OperatorInterface()
+
+        self.ledCtrl = LEDControl()
 
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
+        self.autoSequencer.addMode(NoteThief())
 
         self.dashboard = Dashboard()
 
@@ -50,10 +59,9 @@ class MyRobot(wpilib.TimedRobot):
         self.stt.start()
         self.crashLogger.update()
 
-        if self.dInt.getGyroResetCmd():
-            self.driveTrain.resetGyro()
-
         self.driveTrain.update()
+
+        self.ledCtrl.update()
 
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
@@ -63,14 +71,22 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Autonomous-Specific init and update
     def autonomousInit(self):
+        
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
 
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
+        self.ledCtrl.setSpeakerAutoAlignActive(True)
+
     def autonomousPeriodic(self):
         self.autoSequencer.update()
+
+        # Operators cannot control in autonomous
+        self.driveTrain.setManualCmd(
+            DrivetrainCommand()
+        )
 
     def autonomousExit(self):
         self.autoSequencer.end()
@@ -81,21 +97,28 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
+        self.oInt.update()
         self.dInt.update()
-        self.driveTrain.setCmdFieldRelative(
-            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
-        )
+
+        self.driveTrain.setManualCmd(self.dInt.getCmd())
+
+        if self.dInt.getGyroResetCmd():
+            self.driveTrain.resetGyro()
+        
+        # No trajectory in Teleop
+        Trajectory().setCmd(None)
+        self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
     #########################################################
     ## Disabled-Specific init and update
     def disabledPeriodic(self):
         self.autoSequencer.updateMode()
-        self.driveTrain.trajCtrl.updateCals()
+        Trajectory().trajCtrl.updateCals()
 
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
-        # Induce a crash
+        # TEST only - Induce a crash
         oopsie = 5 / 0.0  # pylint: disable=unused-variable
 
     #########################################################

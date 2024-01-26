@@ -3,6 +3,9 @@ import math
 
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import ChassisSpeeds
+from utils.constants import FIELD_LENGTH_FT
+
+from utils.units import ft2m, m2ft
 
 
 # Doesn't appear to be pulled into python from Interpolatable
@@ -64,7 +67,7 @@ class ChoreoTrajectoryState:
     def flipped(self):
         return ChoreoTrajectoryState(
             self.timestamp,
-            16.55445 - self.x,
+            ft2m(FIELD_LENGTH_FT) - self.x,
             self.y,
             math.pi - self.heading,
             self.velocityX * -1.0,
