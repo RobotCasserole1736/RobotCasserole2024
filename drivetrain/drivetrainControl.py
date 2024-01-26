@@ -56,6 +56,7 @@ class DrivetrainControl(metaclass=Singleton):
         Args:
             cmd (DrivetrainCommand): manual command input
         """
+        self.curManCmd = cmd
 
 
     def update(self):
