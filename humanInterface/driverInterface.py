@@ -5,12 +5,13 @@ from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import MAX_FWD_REV_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_STRAFE_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
+from drivetrain.drivetrainPhysical import MAX_TRANSLATE_ACCEL_MPS2
+from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
 from utils.constants import WINCH_MAX_SPEED
 from utils.constants import WINCH_MAX_ACCEL
-from humanInterface.autoAlign import AutoAlign
 
 
 class driverInterface:

@@ -3,14 +3,10 @@ import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
-<<<<<<< HEAD
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
-from humanInterface.driverInterface import DriverInterface
 from humanInterface.operatorInterface import OperatorInterface
-=======
 from humanInterface.driverInterface import driverInterface
->>>>>>> origin/climberControl
 from drivetrain.drivetrainControl import DrivetrainControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -57,10 +53,6 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
 
-        # Uncomment this and simulate to update the code
-        # dependencies graph
-        #from codeStructureReportGen import reportGen
-        #reportGen.generate(self)
 
     def robotPeriodic(self):
         self.stt.start()
@@ -130,8 +122,10 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
-        # TEST only - Induce a crash
-        oopsie = 5 / 0.0  # pylint: disable=unused-variable
+        pass
+
+    def testUpdate(self):
+        pass
 
     #########################################################
     ## Cleanup
