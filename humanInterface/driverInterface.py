@@ -10,6 +10,8 @@ from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
 from utils.constants import WINCH_MAX_SPEED
 from utils.constants import WINCH_MAX_ACCEL
+from humanInterface.autoAlign import AutoAlign
+
 
 class driverInterface:
     """Class to gather input from the driver of the robot"""
