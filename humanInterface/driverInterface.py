@@ -48,17 +48,17 @@ class driverInterface:
             vYJoyWithDeadband = applyDeadband(vYJoyRaw,0.15)
             vRotJoyWithDeadband = applyDeadband(vRotJoyRaw,0.15)
 
-            slowMult = .5 if (self.ctrl.getRightBumper()) else 1.0
+            boostMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
 
             #velocity cmd
-            velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * slowMult
-            velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * slowMult
+            velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * boostMult
+            velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * boostMult
             velCmdRotRaw = vRotJoyWithDeadband * MAX_ROTATE_SPEED_RAD_PER_SEC
 
             # Slew rate limiter
-            self.vXCmd = self.velXSlewRateLimiter.calculate(velCmdXRaw)
-            self.vYCmd = self.velYSlewRateLimiter.calculate(velCmdYRaw)
-            self.vRotCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw)
+            self.velXCmd = self.velXSlewRateLimiter.calculate(velCmdXRaw)
+            self.velYCmd = self.velYSlewRateLimiter.calculate(velCmdYRaw)
+            self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw)
             
             # Set rachet command
             # TODO: is this needed? Can it be deleted?
@@ -85,22 +85,22 @@ class driverInterface:
             self.connectedFault.setFaulted()
 
 
-        log("DI FwdRev Cmd", self.vXCmd, "mps")
-        log("DI Strafe Cmd", self.vYCmd, "mps")
-        log("DI Rot Cmd", self.vRotCmd, "radps")
+        log("DI FwdRev Cmd", self.velXCmd, "mps")
+        log("DI Strafe Cmd", self.velYCmd, "mps")
+        log("DI Rot Cmd", self.velTCmd, "radps")
         log("DI connective fault", self.ctrl.isConnected(), "bool")
         log("DI gyroResetCmd", self.gyroResetCmd,"bool")
         log("DI velWinchCmdd", self.velWinchCmd,"bool")
     
     # TODO - are these individual getters for x/y/theta needed?
     def getVxCmd(self):
-        return self.vXCmd
+        return self.velXCmd
 
     def getVyCmd(self):
-        return self.vYCmd
+        return self.velYCmd
 
     def getVrotCmd(self):
-        return self.vRotCmd
+        return self.velTCmd
     
     def getCmd(self):
         retval = DrivetrainCommand()
