@@ -6,6 +6,15 @@ import utils.units
 
 FIELD_LENGTH_FT = 54.2685
 
+SHOOTER_MOTOR1_CANID = 10
+SHOOTER_MOTOR2_CANID = 11
+
+INTAKE_MOTOR1_CANID1 = 12
+INTAKE_MOTOR2_CANID2 = 13
+
+FlOORROLLER_MOTOR1_CANID = 14
+FLOORROLLER_MOTOR2_CANID = 15
+
 """
     This is mostly the old java stuff we used, the drivetrain is under DrivetrainPhysical
 
