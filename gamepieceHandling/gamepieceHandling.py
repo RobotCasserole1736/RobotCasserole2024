@@ -17,16 +17,16 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 class GamePieceHandling:
     def __init__(self):
         # Shooter Motors
-        self.shooterMotor1 = WrapperedSparkMax(
-            constants.SHOOTER_MOTOR1_CANID, "ShooterMotor1"
+        self.shooterMotorLeft = WrapperedSparkMax(
+            constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
         )
-        self.shooterMotor2 = WrapperedSparkMax(
-            constants.SHOOTER_MOTOR2_CANID, "ShooterMotor2"
+        self.shooterMotorRight = WrapperedSparkMax(
+            constants.SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight"
         )
 
         # Intake Motors
-        self.intakeMotor1 = WrapperedSparkMax(constants.INTAKE_MOTOR1_CANID1, "IntakeMotor1")
-        self.intakeMotor2 = WrapperedSparkMax(constants.INTAKE_MOTOR2_CANID2, "IntakeMotor2")
+        self.intakeMotorUpper = WrapperedSparkMax(constants.INTAKE_MOTOR_UPPER_CANID1, "IntakeMotorUpper")
+        self.intakeMotorLower = WrapperedSparkMax(constants.INTAKE_MOTOR_LOWER_CANID2, "IntakeMotorLower")
 
         # Floor Roller Motors
         self.floorRoolerMotor1 = WrapperedSparkMax(
@@ -59,12 +59,12 @@ class GamePieceHandling:
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
     def activeShooter(self, desVel):
-        self.shooterMotor1.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
-        self.shooterMotor1.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
+        self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
+        self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
 
     def activeIntake(self):
-        self.intakeMotor1.setVoltage(self.intakeVoltageCal)
-        self.intakeMotor2.setVoltage(self.intakeVoltageCal)
+        self.intakeMotorUpper.setVoltage(self.intakeVoltageCal)
+        self.intakeMotorLower.setVoltage(self.intakeVoltageCal)
 
     def activeFloorRoller(self):
         self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal)
