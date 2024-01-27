@@ -17,8 +17,8 @@ class climberControl:
         )
         self.cmdSpd = 0
 
-    def ctrlWinch(self, In):
-        self.cmdSpd = In
+    def ctrlWinch(self, cmdIn):
+        self.cmdSpd = cmdIn
 
     def update(self):
         if self.ratchetDebouncer.calculate(

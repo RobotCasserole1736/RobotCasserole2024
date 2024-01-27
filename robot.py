@@ -5,10 +5,11 @@ from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
+from drivetrain.drivetrainControl import DrivetrainControl
 from gamepieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.operatorInterface import OperatorInterface
-from humanInterface.driverInterface import driverInterface
-from drivetrain.drivetrainControl import DrivetrainControl
+from humanInterface.driverInterface import DriverInterface
+from humanInterface.ledControl import LEDControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -17,7 +18,6 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
-from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climberControl.climberControl import climberControl
 
@@ -40,10 +40,10 @@ class MyRobot(wpilib.TimedRobot):
         self.stt = SegmentTimeTracker()
 
         self.oInt = OperatorInterface()
-        self.dInt = driverInterface()
+        self.dInt = DriverInterface()
 
         self.climbCtrl = climberControl(
-            15
+            16
         )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 
         self.gph = GamePieceHandling()

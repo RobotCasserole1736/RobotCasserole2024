@@ -12,7 +12,8 @@ class AutoDrive(metaclass=Singleton):
         """Automatically point the drivetrain toward the speaker
 
         Args:
-            shouldAutoAlign (PathPlannerState): PathPlanner trajectory sample for the current time, or None for inactive.
+            shouldAutoAlign (PathPlannerState): PathPlanner trajectory 
+            sample for the current time, or None for inactive.
         """
         self.active = shouldAutoAlign
 
@@ -35,9 +36,12 @@ class AutoDrive(metaclass=Singleton):
 
         # if self.AARobotPoseEst.rotation().radians() <0:
 
-        # returnVal = (3.1415/2) - self.AARobotPoseEst.rotation().radians()# + math.atan(self.AARobotPoseEst.Y()/self.AARobotPoseEst.X() ) #
+        # returnVal = (3.1415/2) - self.AARobotPoseEst.rotation().radians()
+        # + math.atan(self.AARobotPoseEst.Y()/self.AARobotPoseEst.X() ) #
 
-        # returnVal = ( 2*math.pi +math.atan(self.AARobotPoseEst.Y()/self.AARobotPoseEst.X()) - 3.1415 ) - (self.AARobotPoseEst.rotation().radians() )# self.AARobotPoseEst.rotation().radians() - math.atan(  self.AARobotPoseEst.Y()/self.AARobotPoseEst.X()) + (3.1415/2)
+        # returnVal = ( 2*math.pi +math.atan(self.AARobotPoseEst.Y()/self.AARobotPoseEst.X()) - 3.1415 ) 
+        # - (self.AARobotPoseEst.rotation().radians() )# self.AARobotPoseEst.rotation().radians() 
+        # - math.atan(  self.AARobotPoseEst.Y()/self.AARobotPoseEst.X()) + (3.1415/2)
         returnVal = (
             math.atan((self.AARobotPoseEst.Y() - 2) / (self.AARobotPoseEst.X() - 2))
             - 3.1415

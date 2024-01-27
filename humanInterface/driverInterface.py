@@ -13,7 +13,7 @@ from utils.allianceTransformUtils import onRed
 from utils.constants import WINCH_MAX_ACCEL
 
 
-class driverInterface:
+class DriverInterface:
     """Class to gather input from the driver of the robot"""
 
     def __init__(self):
@@ -23,7 +23,7 @@ class driverInterface:
         self.velXCmd = 0
         self.velYCmd = 0
         self.velTCmd = 0
-        self.WinchCmd = 0
+        self.velWinchCmd = 0 
         self.gyroResetCmd = False
         self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
 

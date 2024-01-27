@@ -20,8 +20,8 @@ class Trajectory(metaclass=Singleton):
         """
         self.curTrajCmd = cmd
 
-    def update(self, cmd_in: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
+    def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.curTrajCmd is not None:
             return self.trajCtrl.update(self.curTrajCmd, curPose)
         else:
-            return cmd_in
+            return cmdIn
