@@ -9,7 +9,6 @@ from utils.allianceTransformUtils import onRed
 from utils.allianceTransformUtils import transform
 
 
-
 class AutoSequencer(metaclass=Singleton):
     """Top-level implementation of the AutoSequencer"""
 
@@ -64,8 +63,6 @@ class AutoSequencer(metaclass=Singleton):
     def initiaize(self):
         print("[Auto] Starting Sequencer")
         self.topLevelCmdGroup.initialize()
-
-
 
     def update(self):
         self.topLevelCmdGroup.execute()

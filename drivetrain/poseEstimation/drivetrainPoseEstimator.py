@@ -3,8 +3,12 @@ import random
 from wpilib import ADXRS450_Gyro
 import wpilib
 from wpimath.estimator import SwerveDrive4PoseEstimator
-from wpimath.geometry import Pose2d, Rotation2d, Transform3d, Twist2d
-from drivetrain.drivetrainPhysical import kinematics
+from wpimath.geometry import Pose2d, Rotation2d, Twist2d
+from drivetrain.drivetrainPhysical import (
+    kinematics,
+    ROBOT_TO_LEFT_CAM,
+    ROBOT_TO_RIGHT_CAM,
+)
 from drivetrain.poseEstimation.drivetrainPoseTelemetry import DrivetrainPoseTelemetry
 from utils.faults import Fault
 from utils.signalLogging import log
@@ -21,8 +25,8 @@ class DrivetrainPoseEstimator:
         self.gyroDisconFault = Fault("Gyro Disconnected")
 
         self.cams = [
-            WrapperedPhotonCamera("LEFT_CAM", Transform3d()),
-            WrapperedPhotonCamera("RIGHT_CAM", Transform3d())
+            WrapperedPhotonCamera("LEFT_CAM", ROBOT_TO_LEFT_CAM),
+            WrapperedPhotonCamera("RIGHT_CAM", ROBOT_TO_RIGHT_CAM),
         ]
         self.camTargetsVisible = False
 
@@ -50,7 +54,6 @@ class DrivetrainPoseEstimator:
             self.curRawGyroAngle, self.lastModulePositions, knownPose
         )
 
-
     def update(self, curModulePositions, curModuleSpeeds):
         """Periodic update, call this every 20ms.
 
@@ -68,7 +71,7 @@ class DrivetrainPoseEstimator:
                     observation.estFieldPose, observation.time
                 )
                 self.camTargetsVisible = True
-        
+
         log("PE Vision Targets Seen", self.camTargetsVisible, "bool")
 
         # Read the gyro angle

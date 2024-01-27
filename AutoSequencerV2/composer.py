@@ -7,7 +7,7 @@ class Composer:
         # pylint: disable=import-outside-toplevel cyclic-import
         from AutoSequencerV2.command import (
             Command,
-        )  
+        )
 
         if isinstance(first, outType) and isinstance(second, outType):
             # They're both the same type - optimize to a single command list
@@ -30,7 +30,7 @@ class Composer:
         # pylint: disable=import-outside-toplevel cyclic-import
         from .sequentialCommandGroup import (
             SequentialCommandGroup,
-        )  
+        )
 
         cmds = self._optimizeCmdList(self, other, SequentialCommandGroup)
 
@@ -40,7 +40,7 @@ class Composer:
         # pylint: disable=import-outside-toplevel cyclic-import
         from .raceCommandGroup import (
             RaceCommandGroup,
-        )  
+        )
 
         cmds = self._optimizeCmdList(self, other, RaceCommandGroup)
 
@@ -50,7 +50,7 @@ class Composer:
         # pylint: disable=import-outside-toplevel cyclic-import
         from .parallelCommandGroup import (
             ParallelCommandGroup,
-        )  
+        )
 
         cmds = self._optimizeCmdList(self, other, ParallelCommandGroup)
 

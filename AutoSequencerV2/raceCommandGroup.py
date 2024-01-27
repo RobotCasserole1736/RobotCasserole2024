@@ -6,7 +6,7 @@ class RaceCommandGroup(Runnable, Composer):
     def __init__(self, cmdList=None):
         self.cmdList = cmdList if cmdList else []
         # Set to the index of the command which finished first, or None if all are running
-        self._finishedFirstIdx = None  
+        self._finishedFirstIdx = None
 
     def execute(self):
         if not self.isDone():

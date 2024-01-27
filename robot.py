@@ -5,9 +5,11 @@ from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
-from humanInterface.driverInterface import DriverInterface
-from humanInterface.operatorInterface import OperatorInterface
 from drivetrain.drivetrainControl import DrivetrainControl
+from gamepieceHandling.gamepieceHandling import GamePieceHandling
+from humanInterface.operatorInterface import OperatorInterface
+from humanInterface.driverInterface import DriverInterface
+from humanInterface.ledControl import LEDControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -16,8 +18,8 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
-from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
+from climberControl.climberControl import ClimberControl
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -37,8 +39,14 @@ class MyRobot(wpilib.TimedRobot):
 
         self.stt = SegmentTimeTracker()
 
-        self.dInt = DriverInterface()
         self.oInt = OperatorInterface()
+        self.dInt = DriverInterface()
+
+        self.climbCtrl = ClimberControl(
+            16
+        )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
+
+        self.gph = GamePieceHandling()
 
         self.ledCtrl = LEDControl()
 
@@ -50,11 +58,6 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
 
-        # Uncomment this and simulate to update the code
-        # dependencies graph
-        #from codeStructureReportGen import reportGen
-        #reportGen.generate(self)
-
     def robotPeriodic(self):
         self.stt.start()
         self.crashLogger.update()
@@ -62,6 +65,10 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.update()
 
         self.ledCtrl.update()
+
+        self.climbCtrl.update()
+
+        self.gph.update()
 
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
@@ -71,7 +78,6 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Autonomous-Specific init and update
     def autonomousInit(self):
-        
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
 
@@ -84,9 +90,7 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer.update()
 
         # Operators cannot control in autonomous
-        self.driveTrain.setManualCmd(
-            DrivetrainCommand()
-        )
+        self.driveTrain.setManualCmd(DrivetrainCommand())
 
     def autonomousExit(self):
         self.autoSequencer.end()
@@ -104,10 +108,12 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
-        
+
         # No trajectory in Teleop
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
+
+        self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
 
     #########################################################
     ## Disabled-Specific init and update
@@ -118,8 +124,10 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
-        # TEST only - Induce a crash
-        oopsie = 5 / 0.0  # pylint: disable=unused-variable
+        pass
+
+    def testUpdate(self):
+        pass
 
     #########################################################
     ## Cleanup
@@ -133,7 +141,7 @@ def remoteRIODebugSupport():
     if __debug__ and "run" in sys.argv:
         print("Starting Remote Debug Support....")
         try:
-            import debugpy # pylint: disable=import-outside-toplevel
+            import debugpy  # pylint: disable=import-outside-toplevel
         except ModuleNotFoundError:
             pass
         else:

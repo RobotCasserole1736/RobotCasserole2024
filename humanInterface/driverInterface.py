@@ -1,83 +1,118 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
+from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import MAX_FWD_REV_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_STRAFE_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
+from drivetrain.drivetrainPhysical import MAX_TRANSLATE_ACCEL_MPS2
+from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from utils.faults import Fault
 from utils.signalLogging import log
+from utils.allianceTransformUtils import onRed
+from utils.constants import WINCH_MAX_ACCEL
+
 
 class DriverInterface:
     """Class to gather input from the driver of the robot"""
 
     def __init__(self):
-        # contoller 
+        # contoller
         ctrlIdx = 0
         self.ctrl = XboxController(ctrlIdx)
-        self.vXCmd = 0
-        self.vYCmd = 0
-        self.vRotCmd = 0
+        self.velXCmd = 0
+        self.velYCmd = 0
+        self.velTCmd = 0
+        self.velWinchCmd = 0 
         self.gyroResetCmd = False
-        
-        #Slew rate limiter
-        self.vXSlewRateLimiter = SlewRateLimiter(2)
-        self.vYSlewRateLimiter = SlewRateLimiter(2)
-        self.vRotSlewRateLimiter = SlewRateLimiter(8)
-        
-        self.connectedfault = Fault(f"Driver XBox Controller ({ctrlIdx})unplugged")
+        self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
+
+        self.velWinchSlewRateLimiter = SlewRateLimiter(rateLimit=WINCH_MAX_ACCEL)
+        self.velXSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
+        self.velYSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
+        self.velTSlewRateLimiter = SlewRateLimiter(
+            rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
+        )
 
     def update(self):
         # value of contoller buttons
 
         if self.ctrl.isConnected():
+            # Convert from  joystic sign/axis conventions to robot velocity conventions
             vXJoyRaw = self.ctrl.getLeftY() * -1
             vYJoyRaw = self.ctrl.getLeftX() * -1
             vRotJoyRaw = self.ctrl.getRightX() * -1
-   
-            #deadband
-            vXJoy = applyDeadband(vXJoyRaw,0.15)
-            vYJoy = applyDeadband(vYJoyRaw,0.15)
-            vRotJoy = applyDeadband(vRotJoyRaw,0.15)
 
-            slowMult = .5 if (self.ctrl.getRightBumper()) else 1.0
+            # Correct for alliance
+            if onRed():
+                vXJoyRaw *= -1.0
+                vYJoyRaw *= -1.0
 
-            #velocity cmd
-            velCmdXRaw = vXJoy * MAX_STRAFE_SPEED_MPS * slowMult
-            velCmdYRaw = vYJoy * MAX_FWD_REV_SPEED_MPS * slowMult
-            velCmdRotRaw = vRotJoy * MAX_ROTATE_SPEED_RAD_PER_SEC
+            # deadband
+            vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.15)
+            vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
+            vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.15)
+
+            boostMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
+
+            # velocity cmd
+            velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * boostMult
+            velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * boostMult
+            velCmdRotRaw = vRotJoyWithDeadband * MAX_ROTATE_SPEED_RAD_PER_SEC
 
             # Slew rate limiter
-            self.vXCmd = self.vXSlewRateLimiter.calculate(velCmdXRaw)
-            self.vYCmd = self.vYSlewRateLimiter.calculate(velCmdYRaw)
-            self.vRotCmd = self.vRotSlewRateLimiter.calculate(velCmdRotRaw)
-        
+            self.velXCmd = self.velXSlewRateLimiter.calculate(velCmdXRaw)
+            self.velYCmd = self.velYSlewRateLimiter.calculate(velCmdYRaw)
+            self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw)
+
+            # Set rachet command
+            # TODO: is this needed? Can it be deleted?
+            # if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
+            # self.RachetCmd = 1
+            # elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
+            # self.RachetCmd = 0
+
+            # Climber Winch Cmd
+            self.velWinchCmd = (
+                self.ctrl.getLeftTriggerAxis() + self.ctrl.getRightTriggerAxis()
+            )
 
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
-            self.connectedfault.setNoFault()
-
+            self.connectedFault.setNoFault()
 
         else:
-            self.vXCmd = 0
-            self.vYCmd = 0
-            self.vRotCmd = 0
+            # If the joystick is unplugged, pick safe-state commands and raise a fault
+            self.velWinchCmd = 0.0
+            self.velXCmd = 0.0
+            self.velYCmd = 0.0
+            self.velTCmd = 0.0
+            self.gyroResetCmd = False
+            self.connectedFault.setFaulted()
 
-            self.connectedfault.setFaulted()
-
-        log("DI FwdRev Cmd", self.vXCmd, "mps")
-        log("DI Strafe Cmd", self.vYCmd, "mps")
-        log("DI Rot Cmd", self.vRotCmd, "radps")
+        log("DI FwdRev Cmd", self.velXCmd, "mps")
+        log("DI Strafe Cmd", self.velYCmd, "mps")
+        log("DI Rot Cmd", self.velTCmd, "radps")
         log("DI connective fault", self.ctrl.isConnected(), "bool")
-        log("DI gyroResetCmd", self.gyroResetCmd,"bool")
-    
+        log("DI gyroResetCmd", self.gyroResetCmd, "bool")
+        log("DI velWinchCmdd", self.velWinchCmd, "bool")
+
+    # TODO - are these individual getters for x/y/theta needed?
     def getVxCmd(self):
-        return self.vXCmd
+        return self.velXCmd
 
     def getVyCmd(self):
-        return self.vYCmd
+        return self.velYCmd
 
     def getVrotCmd(self):
-        return self.vRotCmd
+        return self.velTCmd
+
+    def getCmd(self):
+        retval = DrivetrainCommand()
+        retval.velX = self.getVxCmd()
+        retval.velY = self.getVyCmd()
+        retval.velT = self.getVrotCmd()
+        return retval
 
     def getliftlowerCmd(self):
         # returnself. lift lower comand

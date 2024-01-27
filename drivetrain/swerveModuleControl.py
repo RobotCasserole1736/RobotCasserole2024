@@ -167,10 +167,13 @@ class SwerveModuleControl:
 
         if wpilib.TimedRobot.isSimulation():
             # Simulation - assume module is almost perfect but with some noise
-            self.actualState.angle = self.optimizedDesiredState.angle + \
-                Rotation2d.fromDegrees(random.uniform(-1,1))
-            self.actualState.speed = self.optimizedDesiredState.speed + \
-                random.uniform(-0.1, 0.1)
+            self.actualState.angle = (
+                self.optimizedDesiredState.angle
+                + Rotation2d.fromDegrees(random.uniform(-1, 1))
+            )
+            self.actualState.speed = self.optimizedDesiredState.speed + random.uniform(
+                -0.1, 0.1
+            )
             self.actualPosition.distance += self.actualState.speed * 0.02
             self.actualPosition.angle = self.actualState.angle
         else:

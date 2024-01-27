@@ -1,20 +1,21 @@
-#Constants we may need
-#Just starting with the minimum stuff we need
-#The math conversions are under units.py
-
-import utils.units
+# Constants we may need
+# Just starting with the minimum stuff we need
+# The math conversions are under units.py
 
 FIELD_LENGTH_FT = 54.2685
 
-SHOOTER_MOTOR1_CANID = 10
-SHOOTER_MOTOR2_CANID = 11
+SHOOTER_MOTOR_LEFT_CANID = 23
+SHOOTER_MOTOR_RIGHT_CANID = 12
 
-INTAKE_MOTOR1_CANID1 = 12
-INTAKE_MOTOR2_CANID2 = 13
+INTAKE_MOTOR_UPPER_CANID1 = 15
+INTAKE_MOTOR_LOWER_CANID2 = 10
 
-FlOORROLLER_MOTOR1_CANID = 14
-FLOORROLLER_MOTOR2_CANID = 15
+FLOORROLLER_MOTOR1_CANID = 14 # dont know yet
+FLOORROLLER_MOTOR2_CANID = 15 # dont know yet
 
+FIELD_LENGTH_FT = 54.0
+WINCH_MAX_SPEED = 1
+WINCH_MAX_ACCEL = 1
 """
     This is mostly the old java stuff we used, the drivetrain is under DrivetrainPhysical
 

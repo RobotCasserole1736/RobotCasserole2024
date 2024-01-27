@@ -1,6 +1,5 @@
 import math
 from wpimath.controller import PIDController
-from wpimath.kinematics import ChassisSpeeds
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import (
     MAX_FWD_REV_SPEED_MPS,
@@ -61,7 +60,7 @@ class HolonomicDriveController:
         self.yCtrl.setPID(self.transP.get(), self.transI.get(), self.transD.get())
         self.tCtrl.setPID(self.rotP.get(), self.rotI.get(), self.rotD.get())
 
-    def update(self, trajCmd:ChoreoTrajectoryState, curEstPose):
+    def update(self, trajCmd: ChoreoTrajectoryState, curEstPose):
         """Main periodic update, call this whenever you need new commands
 
         Args:

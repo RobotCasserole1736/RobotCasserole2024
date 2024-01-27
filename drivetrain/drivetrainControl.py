@@ -1,22 +1,21 @@
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.geometry import Pose2d, Rotation2d
-from drivetrain.controlStrategies.autoDrive import AutoDrive
-from drivetrain.controlStrategies.trajectory import Trajectory
-from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
-
 from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
 from drivetrain.swerveModuleControl import SwerveModuleControl
 from drivetrain.swerveModuleGainSet import SwerveModuleGainSet
 from drivetrain.drivetrainPhysical import (
     FL_ENCODER_MOUNT_OFFSET_RAD,
     MAX_FWD_REV_SPEED_MPS,
+    FR_ENCODER_MOUNT_OFFSET_RAD,
+    BL_ENCODER_MOUNT_OFFSET_RAD,
+    BR_ENCODER_MOUNT_OFFSET_RAD,
+    kinematics,
 )
-from drivetrain.drivetrainPhysical import FR_ENCODER_MOUNT_OFFSET_RAD
-from drivetrain.drivetrainPhysical import BL_ENCODER_MOUNT_OFFSET_RAD
-from drivetrain.drivetrainPhysical import BR_ENCODER_MOUNT_OFFSET_RAD
-from drivetrain.drivetrainPhysical import kinematics
+from drivetrain.controlStrategies.autoDrive import AutoDrive
+from drivetrain.controlStrategies.trajectory import Trajectory
+from drivetrain.drivetrainCommand import DrivetrainCommand
 
 
 class DrivetrainControl(metaclass=Singleton):
@@ -50,13 +49,13 @@ class DrivetrainControl(metaclass=Singleton):
 
         self._updateAllCals()
 
-    def setManualCmd(self, cmd:DrivetrainCommand):
+    def setManualCmd(self, cmd: DrivetrainCommand):
         """Send commands to the robot for motion relative to the field
 
         Args:
             cmd (DrivetrainCommand): manual command input
         """
-
+        self.curManCmd = cmd
 
     def update(self):
         """
@@ -64,12 +63,12 @@ class DrivetrainControl(metaclass=Singleton):
         """
         curEstPose = self.poseEst.getCurEstPose()
 
-        # Iterate through all strategies for controlling the drivetrain to 
+        # Iterate through all strategies for controlling the drivetrain to
         # calculate the current drivetrain commands.
 
         self.curCmd = self.curManCmd
         self.curCmd = Trajectory().update(self.curCmd, curEstPose)
-        self.curCmd = AutoDrive().update(self.curCmd, curEstPose) 
+        self.curCmd = AutoDrive().update(self.curCmd, curEstPose)
 
         # Transform the current command to be robot relative
         tmp = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -78,13 +77,11 @@ class DrivetrainControl(metaclass=Singleton):
         self.desChSpd = _discretizeChSpd(tmp)
 
         # Set the desired pose for telemetry purposes
-        if(self.curCmd.desPose is not None):
+        if self.curCmd.desPose is not None:
             desPose = self.curCmd.desPose
         else:
             desPose = curEstPose
         self.poseEst.telemetry.setDesiredPose(desPose)
-
-
 
         # Given the current desired chassis speeds, convert to module states
         desModStates = kinematics.toSwerveModuleStates(self.desChSpd)
@@ -127,7 +124,9 @@ class DrivetrainControl(metaclass=Singleton):
         # Update pose estimator to think we're at the same translation,
         # but aligned facing downfield
         curTranslation = self.poseEst.getCurEstPose().translation()
-        newGyroRotation = Rotation2d.fromDegrees(180.0) if(onRed()) else Rotation2d.fromDegrees(0.0)
+        newGyroRotation = (
+            Rotation2d.fromDegrees(180.0) if (onRed()) else Rotation2d.fromDegrees(0.0)
+        )
         newPose = Pose2d(curTranslation, newGyroRotation)
         self.poseEst.setKnownPose(newPose)
 

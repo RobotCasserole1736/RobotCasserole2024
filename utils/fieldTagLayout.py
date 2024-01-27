@@ -21,7 +21,7 @@ class FieldTagLayout(metaclass=Singleton):
 
         try:
             self.fieldTags = AprilTagFieldLayout(path=expPath)
-        except Exception: # pylint: disable=broad-exception-caught
+        except Exception:  # pylint: disable=broad-exception-caught
             self.fieldTags = None
             self.notLoadedFault.setFaulted()
 
