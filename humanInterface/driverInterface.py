@@ -46,6 +46,7 @@ class DriverInterface:
             # Correct for alliance
             if onRed():
                 vXJoyRaw *= -1.0
+                vYJoyRaw *= -1.0
 
             # deadband
             vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.15)
