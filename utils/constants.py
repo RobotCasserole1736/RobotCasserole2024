@@ -15,6 +15,9 @@ INTAKE_MOTOR2_CANID2 = 13
 FlOORROLLER_MOTOR1_CANID = 14
 FLOORROLLER_MOTOR2_CANID = 15
 
+FIELD_LENGTH_FT = 54.0
+WINCH_MAX_SPEED = 1
+WINCH_MAX_ACCEL = 1
 """
     This is mostly the old java stuff we used, the drivetrain is under DrivetrainPhysical
 

@@ -24,7 +24,6 @@ class driverInterface:
         self.velYCmd = 0
         self.velTCmd = 0
         self.WinchCmd = 0
-        self.RachetCmd = 0
         self.gyroResetCmd = False
         self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
 
@@ -64,10 +63,11 @@ class driverInterface:
             WinchRawUp = self.ctrl.getLeftTriggerAxis()
             WinchRawDown = self.ctrl.getRightTriggerAxis()
             # Set rachet command
-            if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
-                self.RachetCmd = 1
-            elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
-                self.RachetCmd = 0
+
+                #if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
+                    #self.RachetCmd = 1
+                #elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
+                    #self.RachetCmd = 0
                 
             # Apply deadband to make sure letting go of the joystick actually stops the bot
             vXJoy = applyDeadband(vXJoyRaw, 0.15)

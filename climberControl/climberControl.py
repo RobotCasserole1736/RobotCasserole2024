@@ -11,19 +11,11 @@ class climberControl():
         self.winch = WrapperedSparkMax(canID , "_winch")
         self.ratchetDebouncerTime = Calibration("RachetDebounce" , .040 , "Seconds")
         self.ratchetDebouncer = Debouncer(self.ratchetDebouncerTime.get() , Debouncer.DebounceType(2))
-        #self.hold = Calibration("ClimberHoldVoltage" , 1 , "Volts" , 0 , 12) 
 
     def ctrlWinch(self, In):
-        #Rachet Engaged = 0
-        #Rachet Disengaged = 1
-        if In == 0 and self.ratchet.get() == 1:
-            self.ratchet.set(Relay.Value(0))
-        
         if self.ratchetDebouncer.calculate(self.ratchet.get() != Relay.Value(1)):
             self.ratchet.set(Relay.Value(1))
             self.winch.setVoltage(In * 12)
-                
-        
-
-    # def setRachet(self, State):
-    #     self.relay.set(State)
+        else:
+            self.ratchet.set(Relay.Value(0))
+            
