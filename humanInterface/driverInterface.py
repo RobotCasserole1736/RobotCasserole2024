@@ -21,6 +21,9 @@ class DriverInterface:
         self.velTCmd = 0
         self.gyroResetCmd = False
         self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
+        self.intakeCmd = False
+        self.ejectCmd = False
+        self.shootCmd = False
 
         self.velXSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
         self.velYSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
@@ -61,6 +64,10 @@ class DriverInterface:
 
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
+            self.intakeCmd = self.ctrl.getLeftBumper()
+            self.ejectCmd = self.ctrl.getBButton()
+            self.shootCmd = self.ctrl.getXButton()
+
             self.connectedFault.setNoFault()
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
@@ -68,6 +75,9 @@ class DriverInterface:
             self.velYCmd = 0.0
             self.velTCmd = 0.0
             self.gyroResetCmd = False
+            self.intakeCmd = False
+            self.ejectCmd = False
+            self.shootCmd = False
             self.connectedFault.setFaulted()
 
         log("DI FwdRev Cmd", self.velXCmd, "mps")

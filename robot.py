@@ -4,6 +4,8 @@ from Autonomous.modes.driveOut import DriveOut
 from dashboard import Dashboard
 from humanInterface.driverInterface import DriverInterface
 from drivetrain.drivetrainControl import DrivetrainControl
+from prototypeMechanisms.simpleIntake import SimpleIntake
+from prototypeMechanisms.simpleShooter import SimpleShooter
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -41,6 +43,9 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
 
+        self.intake = SimpleIntake()
+        self.shooter = SimpleShooter()
+
         # Uncomment this and simulate to update the code
         # dependencies graph
         #from codeStructureReportGen import reportGen
@@ -54,6 +59,9 @@ class MyRobot(wpilib.TimedRobot):
             self.driveTrain.resetGyro()
 
         self.driveTrain.update()
+
+        self.intake.update()
+        self.shooter.update()
 
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
@@ -82,9 +90,17 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         self.dInt.update()
+
         self.driveTrain.setCmdFieldRelative(
             self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
         )
+
+        self.intake.setCmd(
+            self.dInt.intakeCmd,
+            self.dInt.ejectCmd,
+        )
+
+        self.shooter.setCmd(self.dInt.shootCmd)
 
     #########################################################
     ## Disabled-Specific init and update
