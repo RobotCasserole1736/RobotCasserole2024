@@ -19,7 +19,7 @@ from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
-from climberControl.climberControl import climberControl
+from climberControl.climberControl import ClimberControl
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -42,7 +42,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
-        self.climbCtrl = climberControl(
+        self.climbCtrl = ClimberControl(
             16
         )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 

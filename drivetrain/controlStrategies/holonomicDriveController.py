@@ -1,6 +1,5 @@
 import math
 from wpimath.controller import PIDController
-from wpimath.kinematics import ChassisSpeeds
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import (
     MAX_FWD_REV_SPEED_MPS,

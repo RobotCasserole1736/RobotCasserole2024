@@ -1,10 +1,10 @@
+from wpimath.geometry import Pose2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.controlStrategies.holonomicDriveController import (
     HolonomicDriveController,
 )
 from jormungandr.choreo import ChoreoTrajectoryState
 from utils.singleton import Singleton
-from wpimath.geometry import Pose2d
 
 
 class Trajectory(metaclass=Singleton):

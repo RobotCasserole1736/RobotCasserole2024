@@ -1,22 +1,21 @@
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.geometry import Pose2d, Rotation2d
-from drivetrain.controlStrategies.autoDrive import AutoDrive
-from drivetrain.controlStrategies.trajectory import Trajectory
-from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
-
 from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
 from drivetrain.swerveModuleControl import SwerveModuleControl
 from drivetrain.swerveModuleGainSet import SwerveModuleGainSet
 from drivetrain.drivetrainPhysical import (
     FL_ENCODER_MOUNT_OFFSET_RAD,
     MAX_FWD_REV_SPEED_MPS,
+    FR_ENCODER_MOUNT_OFFSET_RAD,
+    BL_ENCODER_MOUNT_OFFSET_RAD,
+    BR_ENCODER_MOUNT_OFFSET_RAD,
+    kinematics,
 )
-from drivetrain.drivetrainPhysical import FR_ENCODER_MOUNT_OFFSET_RAD
-from drivetrain.drivetrainPhysical import BL_ENCODER_MOUNT_OFFSET_RAD
-from drivetrain.drivetrainPhysical import BR_ENCODER_MOUNT_OFFSET_RAD
-from drivetrain.drivetrainPhysical import kinematics
+from drivetrain.controlStrategies.autoDrive import AutoDrive
+from drivetrain.controlStrategies.trajectory import Trajectory
+from drivetrain.drivetrainCommand import DrivetrainCommand
 
 
 class DrivetrainControl(metaclass=Singleton):

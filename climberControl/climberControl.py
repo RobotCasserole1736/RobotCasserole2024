@@ -4,10 +4,11 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.calibration import Calibration
 
 # needs a sparkmax, relay thing
-# the relay thing(?) should basically be a solenoid that automatically braces/locks/something so we stay up when the time is done
+# the relay thing(?) should basically be a solenoid that automatically 
+# braces/locks/something so we stay up when the time is done
 
 
-class climberControl:
+class ClimberControl:
     def __init__(self, canID):
         self.ratchet = Relay(0, Relay.Direction(0))
         self.winch = WrapperedSparkMax(canID, "_winch")

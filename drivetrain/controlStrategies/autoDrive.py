@@ -1,12 +1,13 @@
+import math
+from wpimath.geometry import Pose2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.singleton import Singleton
-from wpimath.geometry import Pose2d
-import math
 
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
+        self.AARobotPoseEst = None
 
     def setCmd(self, shouldAutoAlign):
         """Automatically point the drivetrain toward the speaker
@@ -17,7 +18,7 @@ class AutoDrive(metaclass=Singleton):
         """
         self.active = shouldAutoAlign
 
-    def update(self, cmd_in: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
+    def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.active:
             self.speakerAlign(
                 curPose
@@ -27,7 +28,7 @@ class AutoDrive(metaclass=Singleton):
                 DrivetrainCommand()
             )  # TODO - this drivetrain command is just "don't move", needs to be something else
         else:
-            return cmd_in
+            return cmdIn
 
     def speakerAlign(self, curPose):
         self.AARobotPoseEst = curPose

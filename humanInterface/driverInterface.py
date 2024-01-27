@@ -43,6 +43,10 @@ class DriverInterface:
             vYJoyRaw = self.ctrl.getLeftX() * -1
             vRotJoyRaw = self.ctrl.getRightX() * -1
 
+            # Correct for alliance
+            if onRed():
+                vXJoyRaw *= -1.0
+
             # deadband
             vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.15)
             vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)

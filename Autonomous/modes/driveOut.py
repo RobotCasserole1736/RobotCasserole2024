@@ -1,6 +1,5 @@
 from Autonomous.commands.drivePathCommand import DrivePathCommand
 from AutoSequencerV2.mode import Mode
-from utils.allianceTransformUtils import transform
 
 
 # Just drives out of the starting zone. That's all.

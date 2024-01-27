@@ -1,9 +1,9 @@
+from typing import overload
 import wpilib
 from wpimath.geometry import Pose2d, Rotation2d, Transform2d, Translation2d
 from jormungandr.choreoTrajectory import ChoreoTrajectoryState
 from utils.constants import FIELD_LENGTH_FT
 from utils.units import ft2m
-from typing import overload
 
 """
  Utilities to help transform from blue alliance to red if needed
@@ -20,11 +20,11 @@ def onRed():
 
 
 # Base transform for X axis to flip to the other side of the field.
-def transformX(in_):
+def transformX(xIn):
     if onRed():
-        return ft2m(FIELD_LENGTH_FT) - in_
+        return ft2m(FIELD_LENGTH_FT) - xIn
     else:
-        return in_
+        return xIn
 
 
 # Note that Y axis does not need any flipping
@@ -35,60 +35,60 @@ def transformX(in_):
 # The following typehints remove vscode errors by telling the linter
 # exactly how the transform() function handles different types
 @overload
-def transform(in_: Rotation2d) -> Rotation2d:
+def transform(valIn: Rotation2d) -> Rotation2d:
     pass
 
 
 @overload
-def transform(in_: Translation2d) -> Translation2d:
+def transform(valIn: Translation2d) -> Translation2d:
     pass
 
 
 @overload
-def transform(in_: Pose2d) -> Pose2d:
+def transform(valIn: Pose2d) -> Pose2d:
     pass
 
 
 @overload
-def transform(in_: ChoreoTrajectoryState) -> ChoreoTrajectoryState:
+def transform(valIn: ChoreoTrajectoryState) -> ChoreoTrajectoryState:
     pass
 
 
 # Actual implementation of the trasnform function
-def transform(in_):
-    if isinstance(in_, Rotation2d):
+def transform(valIn):
+    if isinstance(valIn, Rotation2d):
         if onRed():
-            return Rotation2d.fromDegrees(180) - in_
+            return Rotation2d.fromDegrees(180) - valIn
         else:
-            return in_
+            return valIn
 
-    elif isinstance(in_, Translation2d):
+    elif isinstance(valIn, Translation2d):
         if onRed():
-            return Translation2d(transformX(in_.X()), in_.Y())
+            return Translation2d(transformX(valIn.X()), valIn.Y())
         else:
-            return in_
+            return valIn
 
-    elif isinstance(in_, Transform2d):
+    elif isinstance(valIn, Transform2d):
         if onRed():
-            trans = transform(in_.translation())
-            rot = transform(in_.rotation())
+            trans = transform(valIn.translation())
+            rot = transform(valIn.rotation())
             return Transform2d(trans, rot)
         else:
-            return in_
+            return valIn
 
-    elif isinstance(in_, Pose2d):
+    elif isinstance(valIn, Pose2d):
         if onRed():
-            trans = transform(in_.translation())
-            rot = transform(in_.rotation())
+            trans = transform(valIn.translation())
+            rot = transform(valIn.rotation())
             return Pose2d(trans, rot)
         else:
-            return in_
+            return valIn
 
-    elif isinstance(in_, ChoreoTrajectoryState):
+    elif isinstance(valIn, ChoreoTrajectoryState):
         if onRed():
-            return in_.flipped()
+            return valIn.flipped()
         else:
-            return in_
+            return valIn
 
     else:
         raise TypeError("transform function received unknown type")

@@ -10,7 +10,6 @@ class LEDControl:
         self._noteInIntakeCounter = 0
         self.ctrl = PWMMotorController("LEDCtrl", 9)
         self._sampleTime = 0.02
-        pass
 
     def update(self):
         pwmVal = 0.0  # default = off

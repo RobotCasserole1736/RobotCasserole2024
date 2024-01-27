@@ -24,19 +24,19 @@ class CarriageControl:
     def elevatorControl(self, curElevatorHeight):
         pass
 
-    def elevatorLinearDispFromMotorRev(self):
-        self.LinearDisp = (
-            self.motorRotations * 1 / GEARBOX_GEAR_RATIO * SPROCKET_MULTPLICATION_RATIO
+    def elevatorLinearDispFromMotorRev(self, motorRotations):
+        linearDisp = (
+            motorRotations * 1 / GEARBOX_GEAR_RATIO * SPROCKET_MULTPLICATION_RATIO
         )
         # when, where, and how do you set how many motor rotations you want?
-        return self.LinearDisp
+        return linearDisp
 
-    def elevatorMotorRevfromLinearDisp(self):
-        self.motorRotations = (
-            self.LinearDisp * 1 / SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
+    def elevatorMotorRevfromLinearDisp(self, linearDisp):
+        motorRotations = (
+            linearDisp * 1 / SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
         )
         # when, where, and how do you set the linear displacement?
-        return self.motorRotations
+        return motorRotations
 
     """will need to get command position from the operator controller and
     desired singer angle for autolign"""
