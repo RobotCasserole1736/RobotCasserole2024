@@ -8,6 +8,7 @@ from drivetrain.drivetrainCommand import DrivetrainCommand
 from humanInterface.driverInterface import DriverInterface
 from humanInterface.operatorInterface import OperatorInterface
 from drivetrain.drivetrainControl import DrivetrainControl
+from gamePieceHandling.gamepieceHandling import GamePieceHandling
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -16,7 +17,7 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
-from humanInterface.ledControl import LEDControl
+# from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
 
 
@@ -40,7 +41,9 @@ class MyRobot(wpilib.TimedRobot):
         self.dInt = DriverInterface()
         self.oInt = OperatorInterface()
 
-        self.ledCtrl = LEDControl()
+        self.gamepiecehandler = GamePieceHandling()
+
+        # self.ledCtrl = LEDControl()
 
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
@@ -61,7 +64,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driveTrain.update()
 
-        self.ledCtrl.update()
+        # self.ledCtrl.update()
 
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
@@ -78,7 +81,7 @@ class MyRobot(wpilib.TimedRobot):
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
-        self.ledCtrl.setSpeakerAutoAlignActive(True)
+        # self.ledCtrl.setSpeakerAutoAlignActive(True)
 
     def autonomousPeriodic(self):
         self.autoSequencer.update()
@@ -105,6 +108,10 @@ class MyRobot(wpilib.TimedRobot):
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
         
+        # Run intake if commanded
+        if self.oInt.singerIntake:
+            self.gamepiecehandler.ActiveIntake()
+
         # No trajectory in Teleop
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)

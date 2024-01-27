@@ -12,7 +12,7 @@ from utils.calibration import Calibration
 from utils import constants, faults
 from utils.units import RPM2RadPerSec, m2in
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from playingwithfusion import TimeOfFlight
+# from playingwithfusion import TimeOfFlight
 
 class GamePieceHandling:
     def __init__(self):
@@ -38,37 +38,38 @@ class GamePieceHandling:
         self.IntakeVoltage = Calibration("IntakeVoltage", 12, "V")
 
         # Time of Flight sensor
-        self.ToFSensor = TimeOfFlight(16)
-        self.ToFSensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
-        self.ToFSensor.setRangeOfInterest(6, 6, 10, 10) # fov for sensor
-        self.hasGamePiece = False
+        # self.ToFSensor = TimeOfFlight(16)
+        # self.ToFSensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
+        # self.ToFSensor.setRangeOfInterest(6, 6, 10, 10) # fov for sensor
+        # self.hasGamePiece = False
 
         # Calibrations for Gamepiece being absent and present
-        self.GamePiecePresent = Calibration("NotePresentThresh",7,"in")
-        self.GamePieceAbsent = Calibration("NoteAbsentThresh",11,"in")
+        # self.GamePiecePresent = Calibration("NotePresentThresh",7,"in")
+        # self.GamePieceAbsent = Calibration("NoteAbsentThresh",11,"in")
 
         # TOF Disconnected Fault
-        self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
+        # self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
     def ActiveShooter(self,desVel):
         self.Shooter1.setVelCmd(RPM2RadPerSec(desVel)) # ArbFF default 0
         self.Shooter1.setVelCmd(RPM2RadPerSec(desVel)) # ArbFF defualt 0 
 
     def ActiveIntake(self):
-        self.Intake1.setVoltage(self.IntakeVoltage)
-        self.Intake2.setVoltage(self.IntakeVoltage)
+        self.Intake1.setVoltage(self.IntakeVoltage.get())
+        self.Intake2.setVoltage(self.IntakeVoltage.get())
 
     def ActiveFloorRoller(self):
-        self.FloorRoller1.setVoltage(self.IntakeVoltage)
-        self.FloorRoller2.setVoltage(self.IntakeVoltage)
+        self.FloorRoller1.setVoltage(self.IntakeVoltage.get())
+        self.FloorRoller2.setVoltage(self.IntakeVoltage.get())
 
     def update(self):
-        gamepieceDistSensorMeas = m2in(self.ToFSensor.getRange()/1000.0)
-        self.disconTOFFault.set(self.ToFSensor.getFirmwareVersion() == 0)
+        # gamepieceDistSensorMeas = m2in(self.ToFSensor.getRange()/1000.0)
+        # self.disconTOFFault.set(self.ToFSensor.getFirmwareVersion() == 0)
 
-        if (gamepieceDistSensorMeas < self.GamePiecePresent.get()):
-            self.hasGamePiece = True
-        elif(gamepieceDistSensorMeas > self.GamePieceAbsent.get()):
-            self.hasGamePiece = False
-        else:
-            pass
+        # if (gamepieceDistSensorMeas < self.GamePiecePresent.get()):
+        #     self.hasGamePiece = True
+        # elif(gamepieceDistSensorMeas > self.GamePieceAbsent.get()):
+        #     self.hasGamePiece = False
+        # else:
+        #     pass
+        pass
