@@ -7,25 +7,31 @@ from drivetrain.drivetrainPhysical import MAX_STRAFE_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
 from utils.faults import Fault
 from utils.signalLogging import log
+from utils.allianceTransformUtils import onRed
+from utils.constants import WINCH_MAX_SPEED
+from utils.constants import WINCH_MAX_ACCEL
 
-class DriverInterface:
+class driverInterface:
     """Class to gather input from the driver of the robot"""
 
     def __init__(self):
         # contoller 
         ctrlIdx = 0
         self.ctrl = XboxController(ctrlIdx)
-        self.vXCmd = 0
-        self.vYCmd = 0
-        self.vRotCmd = 0
+        self.velXCmd = 0
+        self.velYCmd = 0
+        self.velTCmd = 0
+        self.WinchCmd = 0
+        self.RachetCmd = 0
         self.gyroResetCmd = False
-        
-        #Slew rate limiter
-        self.vXSlewRateLimiter = SlewRateLimiter(2)
-        self.vYSlewRateLimiter = SlewRateLimiter(2)
-        self.vRotSlewRateLimiter = SlewRateLimiter(8)
-        
-        self.connectedfault = Fault(f"Driver XBox Controller ({ctrlIdx})unplugged")
+        self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
+
+        self.velWinchSlewRateLimiter = SlewRateLimiter(rateLimit=WINCH_MAX_ACCEL)
+        self.velXSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
+        self.velYSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
+        self.velTSlewRateLimiter = SlewRateLimiter(
+            rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
+        )
 
     def update(self):
         # value of contoller buttons
@@ -46,6 +52,25 @@ class DriverInterface:
             velCmdXRaw = vXJoy * MAX_STRAFE_SPEED_MPS * slowMult
             velCmdYRaw = vYJoy * MAX_FWD_REV_SPEED_MPS * slowMult
             velCmdRotRaw = vRotJoy * MAX_ROTATE_SPEED_RAD_PER_SEC
+            
+            # Convert from  joystic sign/axis conventions to robot velocity conventions
+            vXJoyRaw = -1.0 * self.ctrl.getLeftY()
+            vYJoyRaw = -1.0 * self.ctrl.getLeftX()
+            vTJoyRaw = -1.0 * self.ctrl.getRightX()
+
+            # Set command for Climbing via left bumper
+            WinchRawUp = self.ctrl.getLeftTriggerAxis()
+            WinchRawDown = self.ctrl.getRightTriggerAxis()
+            # Set rachet command
+            if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
+                self.RachetCmd = 1
+            elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
+                self.RachetCmd = 0
+                
+            # Apply deadband to make sure letting go of the joystick actually stops the bot
+            vXJoy = applyDeadband(vXJoyRaw, 0.15)
+            vYJoy = applyDeadband(vYJoyRaw, 0.15)
+            vTJoy = applyDeadband(vTJoyRaw, 0.15)
 
             # Slew rate limiter
             self.vXCmd = self.vXSlewRateLimiter.calculate(velCmdXRaw)
@@ -59,9 +84,14 @@ class DriverInterface:
 
 
         else:
-            self.vXCmd = 0
-            self.vYCmd = 0
-            self.vRotCmd = 0
+            # If the joystick is unplugged, pick safe-state commands and raise a fault
+            self.velWinchCmdUp = 0.0
+            self.velWinchCmdDown = 0.0
+            self.velXCmd = 0.0
+            self.velYCmd = 0.0
+            self.velTCmd = 0.0
+            self.gyroResetCmd = False
+            self.connectedFault.setFaulted()
 
             self.connectedfault.setFaulted()
 
