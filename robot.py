@@ -5,6 +5,7 @@ from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
+from gamepieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.operatorInterface import OperatorInterface
 from humanInterface.driverInterface import driverInterface
 from drivetrain.drivetrainControl import DrivetrainControl
@@ -42,6 +43,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.climbCtrl = climberControl(15) #TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 
+        self.gph = GamePieceHandling()
 
         self.ledCtrl = LEDControl()
 
@@ -61,6 +63,10 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.update()
 
         self.ledCtrl.update()
+
+        self.climbCtrl.update()
+
+        self.gph.update()
 
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
