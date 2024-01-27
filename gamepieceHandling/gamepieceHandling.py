@@ -12,6 +12,7 @@ from utils.calibration import Calibration
 from utils import constants, faults
 from utils.units import RPM2RadPerSec, m2in
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
+from humanInterface.operatorInterface import OperatorInterface
 
 
 class GamePieceHandling:
@@ -60,7 +61,7 @@ class GamePieceHandling:
 
     def activeShooter(self, desVel):
         self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
-        self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
+        self.shooterMotorRight.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
 
     def activeIntake(self):
         self.intakeMotorUpper.setVoltage(self.intakeVoltageCal)
@@ -74,9 +75,44 @@ class GamePieceHandling:
         gamepieceDistSensorMeas = m2in(self.tofSensor.getRange() / 1000.0)
         self.disconTOFFault.set(self.tofSensor.getFirmwareVersion() == 0)
 
+
         if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
             self.hasGamePiece = True
         elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
             self.hasGamePiece = False
         else:
             pass
+        
+
+    def setInput(self):
+
+        #idk if this is right :(
+
+        if (OperatorInterface.getSingerShootCmd == False):
+            pass
+        elif(OperatorInterface.getSingerShootCmd == False):
+            self.activeShooter(self, self.shooterkFCal)
+
+        if (OperatorInterface.getSingerIntakeCmd == False):
+            pass
+        elif (OperatorInterface.getSingerIntakeCmd == True):
+            self.activeIntake(self, self.intakeVoltageCal)
+
+        if (OperatorInterface.getSingerEjectCmd == False):
+            pass
+        elif(OperatorInterface.getSingerEjectCmd == True):
+            self.activeFloorRoller(self, self.intakeVoltageCal)
+
+    #def getSingerShootCmd(self):
+        # returns whether the singer is being commanded to shoot
+        #return self.singerShoot
+
+    #def getSingerIntakeCmd(self):
+        # returns whether the singer is being commanded to intake
+        #return self.singerIntake
+
+   
+    #def getSingerEjectCmd(self):
+        # returns whether the singer is being commanded to eject
+        #return self.singerEject
+
