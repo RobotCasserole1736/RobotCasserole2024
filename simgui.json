@@ -28,8 +28,7 @@
         "Robot": {
           "style": "Line (Closed)"
         },
-        "bottom": 514,
-        "builtin": "2020 Infinite Recharge",
+        "bottom": 1476,
         "desTraj": {
           "arrowColor": [
             187.2151641845703,
@@ -47,10 +46,10 @@
           "style": "Line"
         },
         "height": 8.210550308227539,
-        "left": 96,
-        "right": 1040,
-        "top": 25,
-        "width": 15.982950210571289,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
         "window": {
           "visible": true
         }

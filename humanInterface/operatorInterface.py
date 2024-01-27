@@ -2,10 +2,9 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
-from singerMovement.singerConstants import GEARBOX_GEAR_RATIO, MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, SPROCKET_MULTPLICATION_RATIO
+from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC
 from utils.faults import Fault
 from utils.signalLogging import log
-from utils.units import in2m
 
 class OperatorInterface:
     def __init__(self):

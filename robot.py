@@ -40,7 +40,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = driverInterface()
 
-        self.climbCtrl = climberControl(9)
+        self.climbCtrl = climberControl(15) #TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 
 
         self.ledCtrl = LEDControl()
@@ -109,7 +109,7 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
         self.climbCtrl.ctrlWinch(
-            self.dInt.velWinchCmdUp - self.dInt.velWinchCmdDown
+            self.dInt.velWinchCmd
         )
         
 

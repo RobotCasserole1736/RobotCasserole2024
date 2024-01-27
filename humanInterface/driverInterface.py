@@ -10,7 +10,6 @@ from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
-from utils.constants import WINCH_MAX_SPEED
 from utils.constants import WINCH_MAX_ACCEL
 
 
@@ -39,71 +38,61 @@ class driverInterface:
         # value of contoller buttons
 
         if self.ctrl.isConnected():
+            # Convert from  joystic sign/axis conventions to robot velocity conventions
             vXJoyRaw = self.ctrl.getLeftY() * -1
             vYJoyRaw = self.ctrl.getLeftX() * -1
             vRotJoyRaw = self.ctrl.getRightX() * -1
    
             #deadband
-            vXJoy = applyDeadband(vXJoyRaw,0.15)
-            vYJoy = applyDeadband(vYJoyRaw,0.15)
-            vRotJoy = applyDeadband(vRotJoyRaw,0.15)
+            vXJoyWithDeadband = applyDeadband(vXJoyRaw,0.15)
+            vYJoyWithDeadband = applyDeadband(vYJoyRaw,0.15)
+            vRotJoyWithDeadband = applyDeadband(vRotJoyRaw,0.15)
 
             slowMult = .5 if (self.ctrl.getRightBumper()) else 1.0
 
             #velocity cmd
-            velCmdXRaw = vXJoy * MAX_STRAFE_SPEED_MPS * slowMult
-            velCmdYRaw = vYJoy * MAX_FWD_REV_SPEED_MPS * slowMult
-            velCmdRotRaw = vRotJoy * MAX_ROTATE_SPEED_RAD_PER_SEC
-            
-            # Convert from  joystic sign/axis conventions to robot velocity conventions
-            vXJoyRaw = -1.0 * self.ctrl.getLeftY()
-            vYJoyRaw = -1.0 * self.ctrl.getLeftX()
-            vTJoyRaw = -1.0 * self.ctrl.getRightX()
-
-            # Set command for Climbing via left bumper
-            WinchRawUp = self.ctrl.getLeftTriggerAxis()
-            WinchRawDown = self.ctrl.getRightTriggerAxis()
-            # Set rachet command
-
-                #if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
-                    #self.RachetCmd = 1
-                #elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
-                    #self.RachetCmd = 0
-                
-            # Apply deadband to make sure letting go of the joystick actually stops the bot
-            vXJoy = applyDeadband(vXJoyRaw, 0.15)
-            vYJoy = applyDeadband(vYJoyRaw, 0.15)
-            vTJoy = applyDeadband(vTJoyRaw, 0.15)
+            velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * slowMult
+            velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * slowMult
+            velCmdRotRaw = vRotJoyWithDeadband * MAX_ROTATE_SPEED_RAD_PER_SEC
 
             # Slew rate limiter
-            self.vXCmd = self.vXSlewRateLimiter.calculate(velCmdXRaw)
-            self.vYCmd = self.vYSlewRateLimiter.calculate(velCmdYRaw)
-            self.vRotCmd = self.vRotSlewRateLimiter.calculate(velCmdRotRaw)
+            self.vXCmd = self.velXSlewRateLimiter.calculate(velCmdXRaw)
+            self.vYCmd = self.velYSlewRateLimiter.calculate(velCmdYRaw)
+            self.vRotCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw)
+            
+            # Set rachet command
+            # TODO: is this needed? Can it be deleted?
+            #if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
+                #self.RachetCmd = 1
+            #elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
+                #self.RachetCmd = 0
+            
+            # Climber Winch Cmd
+            self.velWinchCmd = self.ctrl.getLeftTriggerAxis() + self.ctrl.getRightTriggerAxis()
         
-
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
-            self.connectedfault.setNoFault()
+            self.connectedFault.setNoFault()
 
 
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
-            self.velWinchCmdUp = 0.0
-            self.velWinchCmdDown = 0.0
+            self.velWinchCmd = 0.0
             self.velXCmd = 0.0
             self.velYCmd = 0.0
             self.velTCmd = 0.0
             self.gyroResetCmd = False
             self.connectedFault.setFaulted()
 
-            self.connectedfault.setFaulted()
 
         log("DI FwdRev Cmd", self.vXCmd, "mps")
         log("DI Strafe Cmd", self.vYCmd, "mps")
         log("DI Rot Cmd", self.vRotCmd, "radps")
         log("DI connective fault", self.ctrl.isConnected(), "bool")
         log("DI gyroResetCmd", self.gyroResetCmd,"bool")
+        log("DI velWinchCmdd", self.velWinchCmd,"bool")
     
+    # TODO - are these individual getters for x/y/theta needed?
     def getVxCmd(self):
         return self.vXCmd
 

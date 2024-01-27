@@ -3,8 +3,6 @@ from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.singleton import Singleton
 from wpimath.geometry import Pose2d
 import math
-from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
-from drivetrain.drivetrainControl import DrivetrainControl
 
 class AutoDrive(metaclass=Singleton):
 
@@ -25,16 +23,16 @@ class AutoDrive(metaclass=Singleton):
     def update(self, cmd_in:DrivetrainCommand, curPose:Pose2d) -> DrivetrainCommand:
 
         if(self.active):
-            # TODO - calculate a DrivetrainCommand that keeps us pointed at the speaker
-            return DrivetrainCommand()
+            self.speakerAlign(curPose) #TODO - this needs to return a DrivetrainCommand
+
+            return DrivetrainCommand() #TODO - this drivetrain command is just "don't move", needs to be something else
         else:
             return cmd_in
         
-    def speakerAlign(self):
+    def speakerAlign(self, curPose):
         
-        self.AARobotInstance = DrivetrainControl()
 
-        self.AARobotPoseEst = self.AARobotInstance.poseEst.getCurEstPose()
+        self.AARobotPoseEst = curPose
 
         #For now I am assuming that you are on the blue alliance
         
