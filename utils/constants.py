@@ -2,8 +2,6 @@
 # Just starting with the minimum stuff we need
 # The math conversions are under units.py
 
-import utils.units
-
 FIELD_LENGTH_FT = 54.2685
 
 SHOOTER_MOTOR1_CANID = 10
@@ -12,7 +10,7 @@ SHOOTER_MOTOR2_CANID = 11
 INTAKE_MOTOR1_CANID1 = 12
 INTAKE_MOTOR2_CANID2 = 13
 
-FlOORROLLER_MOTOR1_CANID = 14
+FLOORROLLER_MOTOR1_CANID = 14
 FLOORROLLER_MOTOR2_CANID = 15
 
 FIELD_LENGTH_FT = 54.0

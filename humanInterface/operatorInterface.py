@@ -46,7 +46,7 @@ class OperatorInterface:
         self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_DEG_PER_SEC)
 
         self.motorRotations = 0
-        self.LinearDisp = 0
+        self.linearDisp = 0
 
     def update(self):
         # update the values from the xbox controller. Updates every 20(?)ms

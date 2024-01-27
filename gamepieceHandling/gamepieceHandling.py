@@ -30,7 +30,7 @@ class GamePieceHandling:
 
         # Floor Roller Motors
         self.floorRoolerMotor1 = WrapperedSparkMax(
-            constants.FlOORROLLER_MOTOR1_CANID, "FloorRollerMotor1"
+            constants.FLOORROLLER_MOTOR1_CANID, "FloorRollerMotor1"
         )
         self.floorRoolerMotor2 = WrapperedSparkMax(
             constants.FLOORROLLER_MOTOR2_CANID, "FloorRollerMotor2"

@@ -24,14 +24,14 @@ class CarriageControl:
     def elevatorControl(self, curElevatorHeight):
         pass
 
-    def LinearDispFromMotorRev_SingerUpDown(self):
+    def elevatorLinearDispFromMotorRev(self):
         self.LinearDisp = (
             self.motorRotations * 1 / GEARBOX_GEAR_RATIO * SPROCKET_MULTPLICATION_RATIO
         )
         # when, where, and how do you set how many motor rotations you want?
         return self.LinearDisp
 
-    def MotorRevfromLinearDisp_SingerUpDown(self):
+    def elevatorMotorRevfromLinearDisp(self):
         self.motorRotations = (
             self.LinearDisp * 1 / SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
         )
