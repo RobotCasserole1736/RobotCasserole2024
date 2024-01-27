@@ -1,6 +1,6 @@
-#Constants we may need
-#Just starting with the minimum stuff we need
-#The math conversions are under units.py
+# Constants we may need
+# Just starting with the minimum stuff we need
+# The math conversions are under units.py
 
 import utils.units
 

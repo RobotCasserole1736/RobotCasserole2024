@@ -10,6 +10,7 @@ from utils.allianceTransformUtils import transform
 from drivetrain.drivetrainPhysical import ROBOT_TO_LEFT_CAM, ROBOT_TO_RIGHT_CAM
 from ntcore import NetworkTableInstance
 
+
 class DrivetrainPoseTelemetry:
     """
     Helper class to wrapper sending all drivetrain Pose related information
@@ -22,8 +23,16 @@ class DrivetrainPoseTelemetry:
         self.curTraj = Trajectory()
         self.desPose = Pose2d()
 
-        self.leftCamPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/LeftCamPose", Pose3d).publish()
-        self.rightCamPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/RightCamPose", Pose3d).publish()
+        self.leftCamPosePublisher = (
+            NetworkTableInstance.getDefault()
+            .getStructTopic("/LeftCamPose", Pose3d)
+            .publish()
+        )
+        self.rightCamPosePublisher = (
+            NetworkTableInstance.getDefault()
+            .getStructTopic("/RightCamPose", Pose3d)
+            .publish()
+        )
 
     def setDesiredPose(self, desPose):
         self.desPose = desPose
@@ -57,7 +66,9 @@ class DrivetrainPoseTelemetry:
             # make sure we only send a sampled subset of the positions
             sampTime = 0
             while sampTime < trajIn.getTotalTime():
-                stateList.append(self._choreoToWPIState(transform(trajIn.sample(sampTime))))
+                stateList.append(
+                    self._choreoToWPIState(transform(trajIn.sample(sampTime)))
+                )
                 sampTime += 0.5
 
             # Make sure final pose is in the list

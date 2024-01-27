@@ -2,6 +2,7 @@ from Autonomous.commands.drivePathCommand import DrivePathCommand
 from AutoSequencerV2.mode import Mode
 from utils.allianceTransformUtils import transform
 
+
 # big ole L shape to mess up other autonomous
 class NoteThief(Mode):
     def __init__(self):

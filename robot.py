@@ -21,6 +21,7 @@ from humanInterface.ledControl import LEDControl
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climberControl.climberControl import climberControl
 
+
 class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Common init/update for all modes
@@ -41,7 +42,9 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = driverInterface()
 
-        self.climbCtrl = climberControl(15) #TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
+        self.climbCtrl = climberControl(
+            15
+        )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 
         self.gph = GamePieceHandling()
 
@@ -54,7 +57,6 @@ class MyRobot(wpilib.TimedRobot):
         self.dashboard = Dashboard()
 
         self.rioMonitor = RIOMonitor()
-
 
     def robotPeriodic(self):
         self.stt.start()
@@ -76,7 +78,6 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Autonomous-Specific init and update
     def autonomousInit(self):
-        
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
 
@@ -89,9 +90,7 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer.update()
 
         # Operators cannot control in autonomous
-        self.driveTrain.setManualCmd(
-            DrivetrainCommand()
-        )
+        self.driveTrain.setManualCmd(DrivetrainCommand())
 
     def autonomousExit(self):
         self.autoSequencer.end()
@@ -109,15 +108,12 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
-        
+
         # No trajectory in Teleop
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
-        self.climbCtrl.ctrlWinch(
-            self.dInt.velWinchCmd
-        )
-        
+        self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
 
     #########################################################
     ## Disabled-Specific init and update
@@ -145,7 +141,7 @@ def remoteRIODebugSupport():
     if __debug__ and "run" in sys.argv:
         print("Starting Remote Debug Support....")
         try:
-            import debugpy # pylint: disable=import-outside-toplevel
+            import debugpy  # pylint: disable=import-outside-toplevel
         except ModuleNotFoundError:
             pass
         else:

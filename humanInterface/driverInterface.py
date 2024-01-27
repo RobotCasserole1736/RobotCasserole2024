@@ -17,7 +17,7 @@ class driverInterface:
     """Class to gather input from the driver of the robot"""
 
     def __init__(self):
-        # contoller 
+        # contoller
         ctrlIdx = 0
         self.ctrl = XboxController(ctrlIdx)
         self.velXCmd = 0
@@ -42,15 +42,15 @@ class driverInterface:
             vXJoyRaw = self.ctrl.getLeftY() * -1
             vYJoyRaw = self.ctrl.getLeftX() * -1
             vRotJoyRaw = self.ctrl.getRightX() * -1
-   
-            #deadband
-            vXJoyWithDeadband = applyDeadband(vXJoyRaw,0.15)
-            vYJoyWithDeadband = applyDeadband(vYJoyRaw,0.15)
-            vRotJoyWithDeadband = applyDeadband(vRotJoyRaw,0.15)
+
+            # deadband
+            vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.15)
+            vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
+            vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.15)
 
             boostMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
 
-            #velocity cmd
+            # velocity cmd
             velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * boostMult
             velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * boostMult
             velCmdRotRaw = vRotJoyWithDeadband * MAX_ROTATE_SPEED_RAD_PER_SEC
@@ -59,21 +59,22 @@ class driverInterface:
             self.velXCmd = self.velXSlewRateLimiter.calculate(velCmdXRaw)
             self.velYCmd = self.velYSlewRateLimiter.calculate(velCmdYRaw)
             self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw)
-            
+
             # Set rachet command
             # TODO: is this needed? Can it be deleted?
-            #if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
-                #self.RachetCmd = 1
-            #elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
-                #self.RachetCmd = 0
-            
+            # if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
+            # self.RachetCmd = 1
+            # elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
+            # self.RachetCmd = 0
+
             # Climber Winch Cmd
-            self.velWinchCmd = self.ctrl.getLeftTriggerAxis() + self.ctrl.getRightTriggerAxis()
-        
+            self.velWinchCmd = (
+                self.ctrl.getLeftTriggerAxis() + self.ctrl.getRightTriggerAxis()
+            )
+
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
             self.connectedFault.setNoFault()
-
 
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
@@ -84,14 +85,13 @@ class driverInterface:
             self.gyroResetCmd = False
             self.connectedFault.setFaulted()
 
-
         log("DI FwdRev Cmd", self.velXCmd, "mps")
         log("DI Strafe Cmd", self.velYCmd, "mps")
         log("DI Rot Cmd", self.velTCmd, "radps")
         log("DI connective fault", self.ctrl.isConnected(), "bool")
-        log("DI gyroResetCmd", self.gyroResetCmd,"bool")
-        log("DI velWinchCmdd", self.velWinchCmd,"bool")
-    
+        log("DI gyroResetCmd", self.gyroResetCmd, "bool")
+        log("DI velWinchCmdd", self.velWinchCmd, "bool")
+
     # TODO - are these individual getters for x/y/theta needed?
     def getVxCmd(self):
         return self.velXCmd
@@ -101,7 +101,7 @@ class driverInterface:
 
     def getVrotCmd(self):
         return self.velTCmd
-    
+
     def getCmd(self):
         retval = DrivetrainCommand()
         retval.velX = self.getVxCmd()

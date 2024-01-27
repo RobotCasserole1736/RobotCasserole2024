@@ -5,14 +5,18 @@ from utils.faults import Fault
 
 
 _StatusFramePeriodConfigs = [
-    [CANSparkMax.PeriodicFrame.kStatus0, 20], # Status 0 = Motor output and Faults
-    [CANSparkMax.PeriodicFrame.kStatus1, 20], # Status 1 = Motor velocity & electrical data
-    [CANSparkMax.PeriodicFrame.kStatus2, 20], # Status 2 = Motor Position
-    [CANSparkMax.PeriodicFrame.kStatus3, 65500], # Status 3 = Analog Sensor Input
-    [CANSparkMax.PeriodicFrame.kStatus4, 65500], # Status 4 = Alternate Encoder Stats
-    [CANSparkMax.PeriodicFrame.kStatus5, 65500], # Status 5 = Duty Cycle Encoder pt1
-    [CANSparkMax.PeriodicFrame.kStatus6, 65500], # Status 5 = Duty Cycle Encoder pt2
+    [CANSparkMax.PeriodicFrame.kStatus0, 20],  # Status 0 = Motor output and Faults
+    [
+        CANSparkMax.PeriodicFrame.kStatus1,
+        20,
+    ],  # Status 1 = Motor velocity & electrical data
+    [CANSparkMax.PeriodicFrame.kStatus2, 20],  # Status 2 = Motor Position
+    [CANSparkMax.PeriodicFrame.kStatus3, 65500],  # Status 3 = Analog Sensor Input
+    [CANSparkMax.PeriodicFrame.kStatus4, 65500],  # Status 4 = Alternate Encoder Stats
+    [CANSparkMax.PeriodicFrame.kStatus5, 65500],  # Status 5 = Duty Cycle Encoder pt1
+    [CANSparkMax.PeriodicFrame.kStatus6, 65500],  # Status 5 = Duty Cycle Encoder pt2
 ]
+
 
 ## Wrappered Spark Max
 # Wrappers REV's libraries to add the following functionality for spark max controllers:
@@ -46,10 +50,8 @@ class WrapperedSparkMax:
 
             # Apply all status mode configs
             for cfg in _StatusFramePeriodConfigs:
-                errList.append(
-                    self.ctrl.setPeriodicFramePeriod(cfg[0], cfg[1])
-                )
-            
+                errList.append(self.ctrl.setPeriodicFramePeriod(cfg[0], cfg[1]))
+
             # Check if any operation triggered an error
             if any(x != REVLibError.kOk for x in errList):
                 print(
@@ -88,7 +90,7 @@ class WrapperedSparkMax:
                 arbFF,
                 SparkMaxPIDController.ArbFFUnits.kVoltage,
             )
-            
+
             self.disconFault.set(err is not REVLibError.kOk)
 
         self._updateTelem(arbFF, posCmd=posCmdRev)

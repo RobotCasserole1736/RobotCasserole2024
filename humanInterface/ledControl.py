@@ -1,8 +1,7 @@
 from wpilib import PWMMotorController
 
 
-class LEDControl():
-
+class LEDControl:
     def __init__(self):
         # Put any one-time init code here
         self.speakerAutoAlignActive = False
@@ -14,25 +13,23 @@ class LEDControl():
         pass
 
     def update(self):
-        pwmVal = 0.0 # default = off
+        pwmVal = 0.0  # default = off
 
-        if(self.noteInIntake and not self._noteInIntakePrev):
-            self._noteInIntakeCounter = int(1.0 / self._SAMPLE_TIME) # Set LED's to blink for 1 second
+        if self.noteInIntake and not self._noteInIntakePrev:
+            self._noteInIntakeCounter = int(
+                1.0 / self._SAMPLE_TIME
+            )  # Set LED's to blink for 1 second
 
-        if(self.speakerAutoAlignActive):
-            pwmVal = 0.5 # Blue Solid
-        elif(self._noteInIntakeCounter > 0):
-            pwmVal = -0.35# Green Blink
+        if self.speakerAutoAlignActive:
+            pwmVal = 0.5  # Blue Solid
+        elif self._noteInIntakeCounter > 0:
+            pwmVal = -0.35  # Green Blink
             self._noteInIntakeCounter -= 1
 
         self.ctrl.set(pwmVal)
 
-
         self._noteInIntakePrev = self.noteInIntake
 
-        
-
-    
     def setSpeakerAutoAlignActive(self, isActive):
         self.speakerAutoAlignActive = isActive
 

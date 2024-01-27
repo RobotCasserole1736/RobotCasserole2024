@@ -61,7 +61,7 @@ class HolonomicDriveController:
         self.yCtrl.setPID(self.transP.get(), self.transI.get(), self.transD.get())
         self.tCtrl.setPID(self.rotP.get(), self.rotI.get(), self.rotD.get())
 
-    def update(self, trajCmd:ChoreoTrajectoryState, curEstPose):
+    def update(self, trajCmd: ChoreoTrajectoryState, curEstPose):
         """Main periodic update, call this whenever you need new commands
 
         Args:

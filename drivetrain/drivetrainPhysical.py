@@ -113,28 +113,16 @@ BR = 3
 # which is in the center of the chassis on the ground
 ROBOT_TO_LEFT_CAM = Transform3d(
     Translation3d(
-        inchesToMeters(11.0), # X
-        inchesToMeters(5.0),  # Y
-        inchesToMeters(3.0)   # Z
+        inchesToMeters(11.0), inchesToMeters(5.0), inchesToMeters(3.0)  # X  # Y  # Z
     ),
-    Rotation3d(
-        0.0, # Roll
-        0.0, # Pitch
-        0.0  # Yaw
-    )
+    Rotation3d(0.0, 0.0, 0.0),  # Roll  # Pitch  # Yaw
 )
 
 ROBOT_TO_RIGHT_CAM = Transform3d(
     Translation3d(
-        inchesToMeters(11.0), # X
-        inchesToMeters(-5.0),  # Y
-        inchesToMeters(3.0)   # Z
+        inchesToMeters(11.0), inchesToMeters(-5.0), inchesToMeters(3.0)  # X  # Y  # Z
     ),
-    Rotation3d(
-        0.0, # Roll
-        0.0, # Pitch
-        0.0  # Yaw
-    )
+    Rotation3d(0.0, 0.0, 0.0),  # Roll  # Pitch  # Yaw
 )
 
 
