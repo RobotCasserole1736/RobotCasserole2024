@@ -70,6 +70,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.gph.update()
 
+        self.dashboard.update()
+
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
         FaultWrangler().update()

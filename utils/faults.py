@@ -38,13 +38,16 @@ class FaultWrangler(metaclass=Singleton):
             else:
                 curFaultString = ""
 
-            wpilib.SmartDashboard.putBoolean("faultActive", self.activeFaultCount > 0)
+            wpilib.SmartDashboard.putNumber("numFaults", self.activeFaultCount)
             wpilib.SmartDashboard.putString("faultDescription", curFaultString)
 
         FaultStatusLEDs().update()
 
     def register(self, fault):
         self.faultList.append(fault)
+
+    def hasActiveFaults(self):
+        return self.activeFaultCount > 0
 
 
 class FaultStatusLEDs(metaclass=Singleton):
