@@ -46,7 +46,7 @@ class GamePieceHandling:
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
 
         # Time of Flight sensor
-        self.tofSensor = TimeOfFlight(16)
+        self.tofSensor = TimeOfFlight(12)
         self.tofSensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.tofSensor.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
         self.hasGamePiece = False
