@@ -7,8 +7,8 @@ class SimpleIntake():
         self.ctrl2 = WrapperedSparkMax(15, "Intake Motor 2")
         self.intakeCmd = False
         self.ejectCmd = False
-        self.intakeSpdCal = Calibration("Intake", 7.0, "V", 0.0, 13.0)
-        self.ejectSpdCal  = Calibration("Eject", 7.0, "V", 0.0, 13.0)
+        self.intakeSpdCal = Calibration("Intake", 5.0, "V", 0.0, 13.0)
+        self.ejectSpdCal  = Calibration("Eject", 5.0, "V", 0.0, 13.0)
 
     def setCmd(self, intakeCommanded, ejectCommanded):
         self.intakeCmd = intakeCommanded
@@ -22,4 +22,4 @@ class SimpleIntake():
             spdCmd = -1.0 * self.ejectSpdCal.get()
 
         self.ctrl1.setVoltage(spdCmd)
-        self.ctrl2.setVoltage(-1.0 * spdCmd)
+        self.ctrl2.setVoltage(spdCmd)
