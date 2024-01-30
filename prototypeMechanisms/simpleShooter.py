@@ -3,8 +3,8 @@ from utils.calibration import Calibration
 
 class SimpleShooter():
     def __init__(self):
-        self.ctrl1 = WrapperedSparkMax(13, "Shooter Motor 1")
-        self.ctrl2 = WrapperedSparkMax(14, "Shooter Motor 2")
+        self.ctrl1 = WrapperedSparkMax(12, "Shooter Motor 1")
+        self.ctrl2 = WrapperedSparkMax(3, "Shooter Motor 2")
         self.shootCmd = False
         self.speedSpdCal = Calibration("Shoot", 7.0, "V", 0.0, 13.0)
 

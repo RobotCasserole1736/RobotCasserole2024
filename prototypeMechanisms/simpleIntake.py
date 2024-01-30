@@ -4,7 +4,7 @@ from utils.calibration import Calibration
 class SimpleIntake():
     def __init__(self):
         self.ctrl1 = WrapperedSparkMax(10, "Intake Motor 1")
-        self.ctrl2 = WrapperedSparkMax(11, "Intake Motor 2")
+        self.ctrl2 = WrapperedSparkMax(15, "Intake Motor 2")
         self.intakeCmd = False
         self.ejectCmd = False
         self.intakeSpdCal = Calibration("Intake", 7.0, "V", 0.0, 13.0)
