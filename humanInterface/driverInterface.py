@@ -56,10 +56,11 @@ class DriverInterface:
             velYCmdRaw = vYJoy * MAX_STRAFE_SPEED_MPS * sprintMult
             # velTCmdRaw = vTJoy * MAX_ROTATE_SPEED_RAD_PER_SEC
 
-            velTCmdRaw = self.AAInst.speakerAlign()
+            
             if self.ctrl.getXButton() is True:
                 print("This is where we will call a function")
-                velTCmdRaw = self.AAInst.speakerAlign()
+                self.AAInst.speakerAlign(2,2)
+                velTCmdRaw = 0
             else:
                 velTCmdRaw = vTJoy * MAX_ROTATE_SPEED_RAD_PER_SEC
                 
