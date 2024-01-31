@@ -2,7 +2,7 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
-from singerMovement.singerConstants import GEARBOX_GEAR_RATIO, MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, SPROCKET_MULTPLICATION_RATIO
+from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, MAX_MANUAL_ROT_ACCEL_DEGPS2, MAX_MAN_ACCEL_MPS2
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.units import in2m
@@ -42,8 +42,8 @@ class OperatorInterface:
         self.manualSingerRot = 0
 
         #I don't know what the max on the slew rate limiter should be. It should be a constant
-        self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_VEL_MPS)
-        self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_DEG_PER_SEC)
+        self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_ACCEL_MPS2)
+        self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_ROT_ACCEL_DEGPS2)
 
         self.motorRotations = 0
         self.LinearDisp = 0
@@ -52,7 +52,7 @@ class OperatorInterface:
 
 
     def update(self):
-        #update the values from the xbox controller. Updates every 20(?)ms
+        #update the values from the xbox controller. Updates every 20ms
         #Make sure there's logic for if a controller is connected and nothing happens if it doesn't
 
         if self.ctrl.isConnected():
@@ -75,10 +75,14 @@ class OperatorInterface:
             self.autoAlignDesired = self.ctrl.getXButton()
 
             #manual singer controls
-            self.manualSingerUpDown = applyDeadband(self.ctrl.getLeftY(),.15)
-            self.manualSingerUpDown = self.manualSingerUpDownSlewRateLimiter.calculate(self.manualSingerUpDown)
-            self.manualSingerRot = applyDeadband(self.ctrl.getRightY(),.15)
-            self.manualSingerRot = self.manualSingerRotSlewRateLimiter.calculate(self.manualSingerRot)
+
+            self.singerUpDownJoy = applyDeadband(self.ctrl.getLeftY(),.15)
+            self.manualSingerUpDownRaw = self.singerUpDownJoy * MAX_MAN_VEL_MPS
+            self.manualSingerUpDown = self.manualSingerUpDownSlewRateLimiter.calculate(self.manualSingerUpDownRaw)
+
+            self.singerRotJoy = applyDeadband(self.ctrl.getRightY(),.15)
+            self.manualSingerRotRaw = self.singerRotJoy * MAX_MANUAL_DEG_PER_SEC
+            self.manualSingerRot = self.manualSingerRotSlewRateLimiter.calculate(self.manualSingerRotRaw)
 
             self.connectedFault.setNoFault()
 

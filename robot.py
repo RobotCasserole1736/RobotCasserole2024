@@ -106,6 +106,26 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
+
+        #in what file is the carriage being commanded to move, and in what way? 
+        #Do we need named positions like last year?
+        if self.oInt.getCarriageAmpPosCmd:
+            pass
+        elif self.oInt.getCarriageIntakePosCmd:
+            pass
+        elif self.oInt.getCarriagePodiumPosCmd:
+            pass
+        elif self.oInt.getCarriageSpeakerSubwooferPosCmd:
+            pass
+        elif self.oInt.getCarriageTrapPosCmd:
+            pass
+        elif self.oInt.manCmdActive:
+            pass
+        else:
+            #make sure nothing happens (like no command is being given... singer stays where it is)
+            pass
+
+
         
         # No trajectory in Teleop
         Trajectory().setCmd(None)
