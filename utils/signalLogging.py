@@ -17,6 +17,7 @@ class SignalWrangler(metaclass=Singleton):
         self.publishedSigDict = {}
         self.sigUnitsDict = {}
         self.sampleList = []
+        self.fileLogging = False
 
         if ExtDriveManager().isConnected():
             wpilib.DataLogManager.start(dir=ExtDriveManager().getLogStoragePath())
@@ -24,6 +25,7 @@ class SignalWrangler(metaclass=Singleton):
                 False
             )  # We have a lot of things in NT that don't need to be logged
             self.log = wpilib.DataLogManager.getLog()
+            self.fileLogging = True
 
     # Periodic value update
     # Should be called once per periodic loop
@@ -51,7 +53,7 @@ class SignalWrangler(metaclass=Singleton):
                     sigTopic.setProperty("units", str(unitsStr))
 
                 # Set up log file publishing if enabled
-                if ExtDriveManager().isConnected():
+                if self.fileLogging:
                     sigLog = wpilog.DoubleLogEntry(
                         log=self.log, name=sigNameToNT4TopicName(name)
                     )
@@ -64,7 +66,7 @@ class SignalWrangler(metaclass=Singleton):
             # Publish value to NT
             self.publishedSigDict[name][0].set(value, time)
             # Put value to log file
-            if ExtDriveManager().isConnected():
+            if self.fileLogging:
                 self.publishedSigDict[name][1].append(value, time)
 
         # Reset sample list back to empty for next loop
@@ -79,12 +81,12 @@ class SignalWrangler(metaclass=Singleton):
 # Public API
 ###########################################
 
-
+_singletonInst = SignalWrangler() # cache a reference
 # Log a new named value
 def log(name, value, units=None):
-    SignalWrangler().addSampleForThisLoop(name, value)
-    if units is not None:
-        SignalWrangler().sigUnitsDict[name] = units
+    _singletonInst.addSampleForThisLoop(name, value)
+    #if units is not None:
+    #    _singletonInst.sigUnitsDict[name] = units
 
 
 def sigNameToNT4TopicName(name):

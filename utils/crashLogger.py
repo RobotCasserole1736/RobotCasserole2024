@@ -31,11 +31,15 @@ class CrashLogger:
             )
             self.logPrint(f"Cur FPGA Time: {wpilib.Timer.getFPGATimestamp()}")
             self.logPrint(f"==========================================")
+            self.flushPrint()
             self.prefixWritten = True
+
 
     def logPrint(self, msg):
         self.fileHandler.stream.write(msg)
         self.fileHandler.stream.write("\n")
+
+    def flushPrint(self):
         self.fileHandler.stream.flush()
 
     def __init__(self):
