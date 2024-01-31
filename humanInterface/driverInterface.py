@@ -22,22 +22,15 @@ class DriverInterface:
 
     def update(self):
         """Main update - call this once every 20ms"""
-
         if self.ctrl.isConnected():
             # Only attempt to read from the joystick if it's plugged in
-
-            # Convert from joystic sign/axis conventions to robot velocity conventions
-            
             self.intakeCmd = self.ctrl.getLeftBumper()
             self.ejectCmd = self.ctrl.getBButton()
-            self.shootCmd = self.ctrl.getXButton()
             self.connectedFault.setNoFault()
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
             self.intakeCmd = False
             self.ejectCmd = False
-            self.shootCmd = False
             self.connectedFault.setFaulted()
 
         log("DI connected", self.ctrl.isConnected(), "bool")
-        
