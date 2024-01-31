@@ -22,10 +22,6 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climberControl.climberControl import ClimberControl
 
-import cProfile, pstats, io
-from pstats import SortKey
-
-
 class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Common init/update for all modes
@@ -62,34 +58,27 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
 
-
-        self.pr = cProfile.Profile()
-
+        # Normal robot code updates every 20ms, but not everything needs to be that fast.
+        # Register slower-update periodic functions
+        self.addPeriodic(self.ledCtrl.update, self.ledCtrl.sampleTime, 0.0)
+        self.addPeriodic(self.crashLogger.update, 1.0, 0.0)
+        self.addPeriodic(CalibrationWrangler().update, 0.5, 0.0)
+        self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
 
     def robotPeriodic(self):
         self.stt.start()
 
-        self.crashLogger.update()
-
         self.driveTrain.update()
-
-        self.ledCtrl.update()
 
         self.climbCtrl.update()
 
         self.gph.update()
-
-        SignalWrangler().publishPeriodic()
-        CalibrationWrangler().update()
-        FaultWrangler().update()
 
         self.stt.end()
 
     #########################################################
     ## Autonomous-Specific init and update
     def autonomousInit(self):
-
-        self.pr.enable()
 
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
@@ -100,9 +89,9 @@ class MyRobot(wpilib.TimedRobot):
         self.ledCtrl.setSpeakerAutoAlignActive(True)
 
     def autonomousPeriodic(self):
+        SignalWrangler().markLoopStart()
 
         self.autoSequencer.update()
-        self.stt.mark("AutoSequencer")
 
         # Operators cannot control in autonomous
         self.driveTrain.setManualCmd(DrivetrainCommand())
@@ -112,23 +101,15 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousExit(self):
         self.autoSequencer.end()
 
-        self.pr.disable()
-        s = io.StringIO()
-        sortby = SortKey.CUMULATIVE
-        ps = pstats.Stats(self.pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        self.crashLogger.logPrint(s.getvalue())
-        print(s.getvalue())
-
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
         pass
 
     def teleopPeriodic(self):
+        SignalWrangler().markLoopStart()
 
         self.oInt.update()
-
         self.dInt.update()
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
@@ -140,13 +121,13 @@ class MyRobot(wpilib.TimedRobot):
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
-
         self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
 
 
     #########################################################
     ## Disabled-Specific init and update
     def disabledPeriodic(self):
+        SignalWrangler().markLoopStart()
         self.autoSequencer.updateMode()
         Trajectory().trajCtrl.updateCals()
 

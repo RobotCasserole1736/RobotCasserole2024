@@ -19,6 +19,9 @@ class SignalWrangler(metaclass=Singleton):
         self.sampleList = []
         self.fileLogging = False
 
+        # preallocate list
+        self.sampleList = [(None, None, None)] * 1000
+
         if ExtDriveManager().isConnected():
             wpilib.DataLogManager.start(dir=ExtDriveManager().getLogStoragePath())
             wpilib.DataLogManager.logNetworkTables(
@@ -31,50 +34,43 @@ class SignalWrangler(metaclass=Singleton):
     # Should be called once per periodic loop
     # Synchronously puts all `log()`'ed numbers to both disc and
     # Will empty all the samples from the sampleList and put them into NT and disk
+            
+    def markLoopStart(self):
+        self.time = nt._now()  # pylint: disable=W0212
 
-    def publishPeriodic(self):
-        time = nt._now()  # pylint: disable=W0212
-        for sample in self.sampleList:
-            name = sample[0]
-            value = sample[1]
+    def publishValue(self, name, value, units):
+        global sampIdx
+    
+        if not name in self.publishedSigDict:
+            # New signal found!
 
-            if not name in self.publishedSigDict:
-                # New signal found!
+            # Set up NT publishing
+            sigTopic = self.table.getDoubleTopic(name)
+            sigPub = sigTopic.publish(
+                nt.PubSubOptions(sendAll=True, keepDuplicates=True)
+            )
+            sigPub.setDefault(0)
 
-                # Set up NT publishing
-                sigTopic = self.table.getDoubleTopic(name)
-                sigPub = sigTopic.publish(
-                    nt.PubSubOptions(sendAll=True, keepDuplicates=True)
-                )
-                sigPub.setDefault(0)
+            if(units is not None):
+                sigTopic.setProperty("units", str(units))
 
-                if name in self.sigUnitsDict:
-                    unitsStr = self.sigUnitsDict[name]
-                    sigTopic.setProperty("units", str(unitsStr))
-
-                # Set up log file publishing if enabled
-                if self.fileLogging:
-                    sigLog = wpilog.DoubleLogEntry(
-                        log=self.log, name=sigNameToNT4TopicName(name)
-                    )
-                else:
-                    sigLog = None
-
-                # Remember handles for both
-                self.publishedSigDict[name] = (sigPub, sigLog)
-
-            # Publish value to NT
-            self.publishedSigDict[name][0].set(value, time)
-            # Put value to log file
+            # Set up log file publishing if enabled
             if self.fileLogging:
-                self.publishedSigDict[name][1].append(value, time)
+                sigLog = wpilog.DoubleLogEntry(
+                    log=self.log, name=sigNameToNT4TopicName(name)
+                )
+            else:
+                sigLog = None
 
-        # Reset sample list back to empty for next loop
-        self.sampleList = []
+            # Remember handles for both
+            self.publishedSigDict[name] = (sigPub, sigLog)
 
-    # Tack on a new floating point number sample
-    def addSampleForThisLoop(self, name, value):
-        self.sampleList.append((name, value))
+        # Publish value to NT
+        self.publishedSigDict[name][0].set(value, self.time)
+        # Put value to log file
+        if self.fileLogging:
+            self.publishedSigDict[name][1].append(value, self.time)
+
 
 
 ###########################################
@@ -84,9 +80,7 @@ class SignalWrangler(metaclass=Singleton):
 _singletonInst = SignalWrangler() # cache a reference
 # Log a new named value
 def log(name, value, units=None):
-    _singletonInst.addSampleForThisLoop(name, value)
-    #if units is not None:
-    #    _singletonInst.sigUnitsDict[name] = units
+    _singletonInst.publishValue(name, value, units)
 
 
 def sigNameToNT4TopicName(name):

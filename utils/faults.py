@@ -16,7 +16,7 @@ class FaultWrangler(metaclass=Singleton):
         self.faultList = []
         self.activeFaultCount = 0
         self.loopCounter = 0
-        self.statusUpdateLoops = 40  # Only update the status every 40 loops
+        self.statusUpdateLoops = 4  # Only update the status every 40 loops
         self.curDisplayedFaultIdx = 0
 
     def update(self):
