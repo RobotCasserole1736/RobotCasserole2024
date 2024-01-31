@@ -1,4 +1,3 @@
-import gc
 import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut

@@ -15,12 +15,8 @@ class SignalWrangler(metaclass=Singleton):
         # Default to publishing things under Shuffleboard, which makes things more available
         self.table = nt.NetworkTableInstance.getDefault().getTable(BASE_TABLE)
         self.publishedSigDict = {}
-        self.sigUnitsDict = {}
-        self.sampleList = []
         self.fileLogging = False
-
-        # preallocate list
-        self.sampleList = [(None, None, None)] * 1000
+        self.time = int(0)
 
         if ExtDriveManager().isConnected():
             wpilib.DataLogManager.start(dir=ExtDriveManager().getLogStoragePath())
@@ -30,11 +26,6 @@ class SignalWrangler(metaclass=Singleton):
             self.log = wpilib.DataLogManager.getLog()
             self.fileLogging = True
 
-    # Periodic value update
-    # Should be called once per periodic loop
-    # Synchronously puts all `log()`'ed numbers to both disc and
-    # Will empty all the samples from the sampleList and put them into NT and disk
-            
     def markLoopStart(self):
         self.time = nt._now()  # pylint: disable=W0212
 
