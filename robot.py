@@ -3,9 +3,7 @@ import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from dashboard import Dashboard
 from humanInterface.driverInterface import DriverInterface
-from drivetrain.drivetrainControl import DrivetrainControl
-from prototypeMechanisms.simpleIntake import SimpleIntake
-from prototypeMechanisms.simpleShooter import SimpleShooter
+from prototypeMechanisms.practiceBoardMotor import PracticeBoardMotor
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -30,7 +28,6 @@ class MyRobot(wpilib.TimedRobot):
         wpilib.LiveWindow.disableAllTelemetry()
         self.webserver = Webserver()
 
-        self.driveTrain = DrivetrainControl()
 
         self.stt = SegmentTimeTracker()
 
@@ -43,8 +40,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
 
-        self.intake = SimpleIntake()
-        self.shooter = SimpleShooter()
+        self.motor = PracticeBoardMotor()
 
         # Uncomment this and simulate to update the code
         # dependencies graph
@@ -55,13 +51,7 @@ class MyRobot(wpilib.TimedRobot):
         self.stt.start()
         self.crashLogger.update()
 
-        if self.dInt.getGyroResetCmd():
-            self.driveTrain.resetGyro()
-
-        self.driveTrain.update()
-
-        self.intake.update()
-        self.shooter.update()
+        self.motor.update()
 
         SignalWrangler().publishPeriodic()
         CalibrationWrangler().update()
@@ -73,9 +63,6 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
-
-        # Use the autonomous rouines starting pose to init the pose estimator
-        self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
     def autonomousPeriodic(self):
         self.autoSequencer.update()
@@ -91,22 +78,15 @@ class MyRobot(wpilib.TimedRobot):
     def teleopPeriodic(self):
         self.dInt.update()
 
-        self.driveTrain.setCmdFieldRelative(
-            self.dInt.getVxCmd(), self.dInt.getVyCmd(), self.dInt.getVtCmd()
-        )
-
-        self.intake.setCmd(
+        self.motor.setCmd(
             self.dInt.intakeCmd,
             self.dInt.ejectCmd,
         )
-
-        self.shooter.setCmd(self.dInt.shootCmd)
 
     #########################################################
     ## Disabled-Specific init and update
     def disabledPeriodic(self):
         self.autoSequencer.updateMode()
-        self.driveTrain.trajCtrl.updateCals()
 
     #########################################################
     ## Test-Specific init and update
