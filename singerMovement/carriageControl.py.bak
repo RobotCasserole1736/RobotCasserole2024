@@ -1,11 +1,27 @@
+<<<<<<< HEAD
+# this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
+from singerMovement.singerConstants import (
+    GEARBOX_GEAR_RATIO,
+    SPROCKET_MULTPLICATION_RATIO,
+)
+=======
 #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
 from singerMovement.singerConstants import GEARBOX_GEAR_RATIO, MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS, MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, SPROCKET_MULTPLICATION_RATIO
+>>>>>>> Abby_carriageControl
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.calibration import Calibration
 
-class CarriageControl:
 
+class CarriageControl:
     def __init__(self, elevatorMotorCanID, rotMotorCanID):
+<<<<<<< HEAD
+        self.upDownSingerMotor = WrapperedSparkMax(
+            elevatorMotorCanID, "carriageUpDownMotor", False
+        )
+        self.rotSingerMotor = WrapperedSparkMax(
+            rotMotorCanID, "carriageRotMotor", False
+        )
+=======
         #up/down
         self.upDownSingerMotor = WrapperedSparkMax(elevatorMotorCanID, "carriageUpDownMotor", False)
         self.kMaxVUpDown = Calibration(name="Max Vel of Carriage up/down", default=MAX_CARRIAGE_VEL_MPS)
@@ -17,10 +33,15 @@ class CarriageControl:
         self.kMaxARot = Calibration(name="Max Acceleration of Carriage singer rot", default=MAX_SINGER_ROT_ACCEL_DEGPS2)
 
 
+>>>>>>> Abby_carriageControl
 
     def update(self):
         pass
 
+<<<<<<< HEAD
+    def singerAngle(self, curSingerAngle):
+        pass
+=======
         #up/down
     
         #rot
@@ -48,13 +69,24 @@ class CarriageControl:
         #when, where, and how do you set how many motor rotations you want?
         return self.LinearDisp
             
+>>>>>>> Abby_carriageControl
 
-    def MotorRevfromLinearDisp_SingerUpDown(self):
-        self.motorRotations = self.LinearDisp * 1/SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
-        #when, where, and how do you set the linear displacement?
-        return self.motorRotations
-    
+    def elevatorControl(self, curElevatorHeight):
+        pass
+
+    def elevatorLinearDispFromMotorRev(self, motorRotations):
+        linearDisp = (
+            motorRotations * 1 / GEARBOX_GEAR_RATIO * SPROCKET_MULTPLICATION_RATIO
+        )
+        # when, where, and how do you set how many motor rotations you want?
+        return linearDisp
+
+    def elevatorMotorRevfromLinearDisp(self, linearDisp):
+        motorRotations = (
+            linearDisp * 1 / SPROCKET_MULTPLICATION_RATIO * GEARBOX_GEAR_RATIO
+        )
+        # when, where, and how do you set the linear displacement?
+        return motorRotations
 
     """will need to get command position from the operator controller and
     desired singer angle for autolign"""
-    
