@@ -1,7 +1,11 @@
 #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
+from wpilib import Timer
 from singerMovement.singerConstants import GEARBOX_GEAR_RATIO, MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS, MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, SPROCKET_MULTPLICATION_RATIO
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.calibration import Calibration
+from wpimath.geometry import Pose2d
+from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
+from wpimath.trajectory import TrapezoidProfile
 
 class CarriageControl:
 
@@ -16,17 +20,24 @@ class CarriageControl:
         self.kMaxVRot = Calibration(name="Max Vel of Carriage singer rot", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC)
         self.kMaxARot = Calibration(name="Max Acceleration of Carriage singer rot", default=MAX_SINGER_ROT_ACCEL_DEGPS2)
 
+        self.curSetpoint = Pose2d
+        self.prevSetpoint = Pose2d
+
 
 
     def update(self):
         pass
 
         #up/down
+        self.curSetpoint = DrivetrainPoseEstimator.getCurEstPose
+        curTime = Timer.getFPGATimestamp()
+
+        if(self.prevSetpoint != self.curSetpoint):
+            constraints = TrapezoidProfile.Constraints(maxVelocity=self.kMaxVUpDown.get(), maxAcceleration=self.kMaxAUpDown.get())
     
         #rot
         """
-        curSetpoint = ... #  comes in from other code to say where this thing should be physically (in units of meters or degrees or whatever)
-
+        curSetpoint = 
         curTime = Timer.getFPGATimestamp()
 
         if(prevSetpoint != curSetpoint):

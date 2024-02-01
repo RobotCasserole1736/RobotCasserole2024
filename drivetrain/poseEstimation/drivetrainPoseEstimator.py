@@ -108,4 +108,4 @@ class DrivetrainPoseEstimator:
 
     # Local helper to wrap the real hardware angle into a Rotation2d
     def _getGyroAngle(self):
-        return Rotation2d().fromDegrees(self.gyro.getAngle())
+        return Rotation2d().fromDegrees(self.gyro.getAngle(self.gyro.getYawAxis()))
