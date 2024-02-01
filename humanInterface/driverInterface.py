@@ -19,6 +19,7 @@ class DriverInterface:
         self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
         self.intakeCmd = False
         self.ejectCmd = False
+        self.autoAlignCmd = False
 
     def update(self):
         """Main update - call this once every 20ms"""
@@ -26,11 +27,13 @@ class DriverInterface:
             # Only attempt to read from the joystick if it's plugged in
             self.intakeCmd = self.ctrl.getLeftBumper()
             self.ejectCmd = self.ctrl.getBButton()
+            self.autoAlignCmd = self.ctrl.getXButton()
             self.connectedFault.setNoFault()
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
             self.intakeCmd = False
             self.ejectCmd = False
+            self.autoAlignCmd = False
             self.connectedFault.setFaulted()
 
         log("DI connected", self.ctrl.isConnected(), "bool")

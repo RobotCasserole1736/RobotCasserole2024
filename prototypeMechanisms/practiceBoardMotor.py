@@ -14,7 +14,9 @@ class PracticeBoardMotor():
 
     def update(self):
         spdCmd = 0.0 # Default
-        if(self.forwardCmd):
+        if self.forwardCmd:
             spdCmd = self.speedSpdCal.get()
+        elif self.backwardCmd:
+            spdCmd = -self.speedSpdCal.get()
 
-        self.ctrl1.setVoltage(-1.0 * spdCmd)
+        self.ctrl1.setVoltage(spdCmd)

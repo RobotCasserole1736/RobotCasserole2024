@@ -2,7 +2,9 @@ import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from dashboard import Dashboard
+from gamepieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.driverInterface import DriverInterface
+from humanInterface.ledControl import LEDControl
 from prototypeMechanisms.practiceBoardMotor import PracticeBoardMotor
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
@@ -31,7 +33,9 @@ class MyRobot(wpilib.TimedRobot):
 
         self.stt = SegmentTimeTracker()
 
+        self.gph = GamePieceHandling()
         self.dInt = DriverInterface()
+        self.led = LEDControl()
 
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
@@ -82,6 +86,11 @@ class MyRobot(wpilib.TimedRobot):
             self.dInt.intakeCmd,
             self.dInt.ejectCmd,
         )
+
+        self.gph.update()
+        self.led.setSpeakerAutoAlignActive(self.dInt.autoAlignCmd)
+        self.led.setNoteInIntake(self.gph.hasGamePiece)
+        self.led.update()
 
     #########################################################
     ## Disabled-Specific init and update
