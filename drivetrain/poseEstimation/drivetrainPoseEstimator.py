@@ -1,6 +1,6 @@
 import random
 
-from wpilib import ADXRS450_Gyro
+from wpilib import ADIS16470_IMU
 import wpilib
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Twist2d
@@ -21,7 +21,7 @@ class DrivetrainPoseEstimator:
     def __init__(self, initialModuleStates):
         self.curEstPose = Pose2d()
         self.curDesPose = Pose2d()
-        self.gyro = ADXRS450_Gyro()
+        self.gyro = ADIS16470_IMU()
         self.gyroDisconFault = Fault("Gyro Disconnected")
 
         self.cams = [
@@ -31,7 +31,7 @@ class DrivetrainPoseEstimator:
         self.camTargetsVisible = False
 
         self.poseEst = SwerveDrive4PoseEstimator(
-            kinematics, self.gyro.getRotation2d(), initialModuleStates, self.curEstPose
+            kinematics, self._getGyroAngle(), initialModuleStates, self.curEstPose
         )
         self.lastModulePositions = initialModuleStates
         self.curRawGyroAngle = Rotation2d()
@@ -86,7 +86,7 @@ class DrivetrainPoseEstimator:
             self.curRawGyroAngle = self._simPose.rotation() + noise
         else:
             # Use real hardware
-            self.curRawGyroAngle = self.gyro.getRotation2d()
+            self.curRawGyroAngle = self._getGyroAngle()
 
         # Update the WPILib Pose Estimate
         self.poseEst.update(self.curRawGyroAngle, curModulePositions)
@@ -105,3 +105,7 @@ class DrivetrainPoseEstimator:
             Pose2d: The most recent estimate of where the robot is at
         """
         return self.curEstPose
+
+    # Local helper to wrap the real hardware angle into a Rotation2d
+    def _getGyroAngle(self):
+        return Rotation2d().fromDegrees(self.gyro.getAngle())

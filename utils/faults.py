@@ -16,7 +16,7 @@ class FaultWrangler(metaclass=Singleton):
         self.faultList = []
         self.activeFaultCount = 0
         self.loopCounter = 0
-        self.statusUpdateLoops = 40  # Only update the status every 40 loops
+        self.statusUpdateLoops = 4  # Only update the status every 40 loops
         self.curDisplayedFaultIdx = 0
 
     def update(self):
@@ -38,13 +38,16 @@ class FaultWrangler(metaclass=Singleton):
             else:
                 curFaultString = ""
 
-            wpilib.SmartDashboard.putBoolean("faultActive", self.activeFaultCount > 0)
+            wpilib.SmartDashboard.putNumber("numFaults", self.activeFaultCount)
             wpilib.SmartDashboard.putString("faultDescription", curFaultString)
 
         FaultStatusLEDs().update()
 
     def register(self, fault):
         self.faultList.append(fault)
+
+    def hasActiveFaults(self):
+        return self.activeFaultCount > 0
 
 
 class FaultStatusLEDs(metaclass=Singleton):

@@ -84,8 +84,8 @@ class Calibration:
     # call to `get()`. The `isChanged()` flag will return True until `get()` is called.
     def set(self, newVal):
         if self.max >= newVal >= self.min:
-            self._changed = True
             self._desValue = newVal
+            self._changed = True
         else:
             wpilib.reportWarning(
                 f"[Calibration] Skipping value update for {self.name},"
@@ -108,6 +108,7 @@ class Calibration:
     # Gets the current value of the calibration, resetting state internally with
     # the assumption the user's code is consuming the value and doing something useful with it.
     def get(self):
-        self._curValue = self._desValue
-        self._changed = False
+        if(self._changed):
+            self._curValue = self._desValue
+            self._changed = False
         return self._curValue
