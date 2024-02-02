@@ -11,6 +11,7 @@ from utils.faults import Fault
 from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
 from utils.constants import WINCH_MAX_ACCEL
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 
 
 class DriverInterface:
@@ -33,6 +34,9 @@ class DriverInterface:
         self.velTSlewRateLimiter = SlewRateLimiter(
             rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
         )
+        self.AutoDrive = AutoDrive()
+        #Currently using the driver controller to call autoDrive. Change this to operator controller later.
+        
 
     def update(self):
         # value of contoller buttons
@@ -71,6 +75,11 @@ class DriverInterface:
             # self.RachetCmd = 1
             # elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
             # self.RachetCmd = 0
+            if self.ctrl.getXButton() == True:
+                self.AutoDrive.setCmd(True)
+            else:
+                self.AutoDrive.setCmd(False)
+
 
             # Climber Winch Cmd
             self.velWinchCmd = (
