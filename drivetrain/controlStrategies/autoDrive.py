@@ -1,5 +1,6 @@
 import math
 from wpimath.geometry import Pose2d
+from wpimath.geometry import Rotation2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.singleton import Singleton
 
@@ -18,20 +19,22 @@ class AutoDrive(metaclass=Singleton):
         """
         self.active = shouldAutoAlign
 
-    def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
+    def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d, targetPose: Pose2d) -> DrivetrainCommand:
         if self.active:
             self.speakerAlign(
-                curPose
+                curPose, targetPose
             )  # TODO - this needs to return a DrivetrainCommand
-
             return (
                 DrivetrainCommand()
             )  # TODO - this drivetrain command is just "don't move", needs to be something else
         else:
             return cmdIn
 
-    def speakerAlign(self, curPose):
+
+    def speakerAlign(self, curPose, targetPose):
         self.AARobotPoseEst = curPose
+        targetPose = (0.2297938, 5.45729583, Rotation2d)
+
 
         # For now I am assuming that you are on the blue alliance
 
@@ -64,5 +67,11 @@ class AutoDrive(metaclass=Singleton):
 
         # print(f"X:{self.AARobotPoseEst.X()} Y: {self.AARobotPoseEst.Y()} rotation: {self.AARobotPoseEst.rotation().radians()}")
         # print(returnVal)
+        
+        # This is where the singer alignment code begins
+
+        # Call carriageControl to move elevator a set amount
+
 
         return returnVal
+        
