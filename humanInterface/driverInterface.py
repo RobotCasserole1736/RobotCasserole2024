@@ -68,18 +68,14 @@ class DriverInterface:
             self.velXCmd = self.velXSlewRateLimiter.calculate(velCmdXRaw)
             self.velYCmd = self.velYSlewRateLimiter.calculate(velCmdYRaw)
             self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw)
-
+            
             # Set rachet command
             # TODO: is this needed? Can it be deleted?
             # if self.ctrl.getStartButton() == 1 and self.ctrl.getBackButton() == 0:
             # self.RachetCmd = 1
             # elif self.ctrl.getBackButton() == 0 and self.ctrl.getBackButton() == 1:
             # self.RachetCmd = 0
-            if self.ctrl.getXButton() == True:
-                self.AutoDrive.setCmd(True)
-            else:
-                self.AutoDrive.setCmd(False)
-
+ 
 
             # Climber Winch Cmd
             self.velWinchCmd = (

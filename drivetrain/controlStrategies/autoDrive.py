@@ -5,12 +5,14 @@ from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.allianceTransformUtils import onRed
 from utils.allianceTransformUtils import transform
 from utils.singleton import Singleton
-
+from singerMovement.carriageControl import CarriageControl
+from utils.signalLogging import log
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
         self.AARobotPoseEst = None
+        self.returnDriveTrainCommand = DrivetrainCommand() #We create an instance of DrivetrainCommand that we configure when actually autoAlligning
 
     def setCmd(self, shouldAutoAlign):
         """Automatically point the drivetrain toward the speaker
@@ -23,11 +25,11 @@ class AutoDrive(metaclass=Singleton):
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.active:
-            self.speakerAlign(
-                curPose, cmdIn
-            )  # TODO - this needs to return a DrivetrainCommand
+              # TODO - this needs to return a DrivetrainCommand
             return (
-                DrivetrainCommand()
+                self.speakerAlign(
+                curPose, cmdIn
+            )
             )  # TODO - this drivetrain command is just "don't move", needs to be something else
         else:
             return cmdIn
@@ -43,25 +45,29 @@ class AutoDrive(metaclass=Singleton):
             self.targetY = 5.4572958333417994
         distX = curPose.X() - self.targetX
         distY = curPose.Y() - self.targetY
-        singerHeight = 5
-        targetHeight = 80.256 - singerHeight
+        singerHeight = 1
+        targetHeight = 2.0385024 - singerHeight
         distFromTarget = math.sqrt(math.pow(distX , 2) + math.pow(distY , 2))
         noteTravelPath = math.sqrt(math.pow(targetHeight , 2) + math.pow(distFromTarget , 2))
         self.desiredAngle = math.acos(distFromTarget / noteTravelPath)
-        
 
+        log("Singer Allign desired angle", self.desiredAngle)
+        log("Singer Allign DistX, DistY", (distX,distY))
+
+        CarriageControl().singerAutoAlignment(self.desiredAngle)
 
     def speakerAlign(self, curPose,cmdIn):
         self.AARobotPoseEst = curPose
-        
-        
+        log("AutoAllign estimated pose", (self.AARobotPoseEst.X(),self.AARobotPoseEst.Y()))
         #Find out if we are on red team
         if onRed() == True:#If we are, set the target pos to the pos of the red speaker
             self.targetX = 16.54175 - 0.22987
             self.targetY = 5.4572958333417994
         else: #If we aren't, set the target pos to the pos of the blue speaker
             self.targetX = 0.22987
-            self.targetY = 5.4572958333417994
+            self.targetY = 5.
+            
+        log("AutoAllign Target", (self.targetX,self.targetY))
 
         if self.AARobotPoseEst.X() - self.targetX > 0: # test to see if we are to the right of the robot
             #If we are, we have to correct the angle by 1 pi. This is built into the following equation
@@ -73,17 +79,16 @@ class AutoDrive(metaclass=Singleton):
         #Test if the angle we calculated will be greater than 180 degrees. If it is, reverse it.
         if abs(returnVal) > math.pi:
             returnVal = ((2* math.pi) - returnVal) * -1
-        
-        
 
         if abs(returnVal) <= 0.05: #Check to see if we are making a really small correction. if we are, don't worry about it. We only need a certain level of accuracy.
             returnVal = 0
         
-        returnDriveTrainCommand = DrivetrainCommand() #We create an instance of DrivetrainCommand and configure it.
-        returnDriveTrainCommand.velT = returnVal * 5 #set the rotational vel to 5 * the angle we calculated. We multiply it by 5 so its faster :o
-        returnDriveTrainCommand.velX = cmdIn.velX #set the X vel to the original X vel.
-        returnDriveTrainCommand.velY = cmdIn.velY #Set the Y vel to the original Y vel.
-        return returnDriveTrainCommand
+        log("AutoAllign Target angle ", returnVal)
+        
+        self.returnDriveTrainCommand.velT = returnVal * 5 #set the rotational vel to 5 * the angle we calculated. We multiply it by 5 so its faster :o
+        self.returnDriveTrainCommand.velX = cmdIn.velX #set the X vel to the original X vel.
+        self.returnDriveTrainCommand.velY = cmdIn.velY #Set the Y vel to the original Y vel.
+        return self.returnDriveTrainCommand
 
 
         

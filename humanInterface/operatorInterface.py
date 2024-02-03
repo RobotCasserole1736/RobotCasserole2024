@@ -6,6 +6,7 @@ from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_S
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.units import in2m
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 
 class OperatorInterface:
     def __init__(self):
@@ -18,7 +19,7 @@ class OperatorInterface:
         self.ctrl = XboxController(ctrlIdx)
 
         self.connectedFault = Fault(f"Operator XBox Controller ({ctrlIdx}) Unplugged")
-
+        self.AutoDrive = AutoDrive()
         #Shooter commands
         self.singerIntake = False
         self.singerShoot = False
@@ -35,7 +36,7 @@ class OperatorInterface:
         self.carriageSpeakerSubwooferPos = False
 
         #if the operator wants the auto align desired
-        self.autoAlignDesired = False
+        self.AutoDrive = False
 
         #singer manual controls
         self.manualSingerUpDown = 0
@@ -72,8 +73,10 @@ class OperatorInterface:
             #Above is basically the right side of the D pad
 
             #if the operator wants the auto align desired
-            self.autoAlignDesired = self.ctrl.getXButton()
-
+            if self.ctrl.getXButton() == True:
+                AutoDrive().setCmd(True)
+            else:
+                AutoDrive().setCmd(False)
             #manual singer controls
 
             self.singerUpDownJoy = applyDeadband(self.ctrl.getLeftY(),.15)

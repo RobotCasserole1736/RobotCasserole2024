@@ -9,7 +9,7 @@ from jormungandr.choreoTrajectory import ChoreoTrajectoryState
 from utils.calibration import Calibration
 from utils.signalLogging import log
 from utils.mathUtils import limit
-
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 
 class HolonomicDriveController:
     """
