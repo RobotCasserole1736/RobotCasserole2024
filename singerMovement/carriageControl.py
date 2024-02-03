@@ -20,38 +20,33 @@ class CarriageControl:
         self.kMaxVRot = Calibration(name="Max Vel of Carriage singer rot", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC)
         self.kMaxARot = Calibration(name="Max Acceleration of Carriage singer rot", default=MAX_SINGER_ROT_ACCEL_DEGPS2)
 
-        self.curSetpoint = Pose2d
-        self.prevSetpoint = Pose2d
+        self.constraints = TrapezoidProfile.Constraints(maxVelocity=self.kMaxVUpDown.get(), maxAcceleration=self.kMaxAUpDown.get())
+
+        #self.curSetpoint = can't be drivetrain because it's just carriage?
+        self.prevProfiledSetpoint = DrivetrainPoseEstimator.getCurEstPose
 
 
 
     def update(self):
         pass
-
-        #up/down
-        self.curSetpoint = DrivetrainPoseEstimator.getCurEstPose
-        curTime = Timer.getFPGATimestamp()
-
-        if(self.prevSetpoint != self.curSetpoint):
-            constraints = TrapezoidProfile.Constraints(maxVelocity=self.kMaxVUpDown.get(), maxAcceleration=self.kMaxAUpDown.get())
-    
-        #rot
         """
-        curSetpoint = 
+        #up/down
+        #curSetpoint = can't be drivetrain setpoint because it's carriage?
         curTime = Timer.getFPGATimestamp()
 
-        if(prevSetpoint != curSetpoint):
-        #New setpoint, need to recalcualte the trajectory
-        constraints = TrapezoidProfile.Constraints(self.kMaxV, self.kMaxA)
-        profile = TrapezoidProfile(constraints, curSetpoint, self.previousProfiledSetpoint)
-        self.profileStartTime = curTime 
+        if(self.prevProfiledSetpoint != self.curSetpoint):
+            #new setpoint, need to recalculate trajectory
+            profile = TrapezoidProfile(self.constraints,curSetpoint,self.prevProfiledSetpoint)
+            self.profileStartTime = curTime
 
         curCmdState = profile.calculate(curTime - self.profileStartTime)
-
         # Use curCmdState.velocity and .position for feedforward and feedback motor control
 
-
         self.prevCmdState = curCmdState
+        """
+
+        #rot
+
     """
 
     def LinearDispFromMotorRev_SingerUpDown(self):
@@ -66,6 +61,6 @@ class CarriageControl:
         return self.motorRotations
     
 
-    """will need to get command position from the operator controller and
+    will need to get command position from the operator controller and
     desired singer angle for autolign"""
     
