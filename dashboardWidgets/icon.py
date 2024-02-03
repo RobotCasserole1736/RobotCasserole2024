@@ -12,16 +12,16 @@ class Icon(WidgetConfig):
     kBLINK_FAST = 2
     kBLINK_SLOW = 3
 
-    def __init__(self, xPos, yPos, nt4Topic_in, colorOn, symbolPath):
+    def __init__(self, xPos, yPos, nt4Topic_in, colorOn, symbolName):
         WidgetConfig.__init__(self, nt4Topic_in, xPos, yPos)
         self.nominalHeight = 5
         self.nominalWidth = 5
         self.colorOn = colorOn
-        self.symbolPath = symbolPath
+        self.symbolPath = 'icons/' + symbolName + '.svg'
         self.isVisible = True
 
     def getJSDeclaration(self):
-        return f"var widget{self.idx} = new Icon('widget{self.idx}', '{self.name}',{self.colorOn},{self.symbolPath})\n"
+        return f"var widget{self.idx} = new Icon('widget{self.idx}', '{self.name}','{self.colorOn}','{self.symbolPath}')\n"
 
     def getJSSetData(self):
         retStr = ""

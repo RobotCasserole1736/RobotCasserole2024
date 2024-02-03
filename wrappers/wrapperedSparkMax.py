@@ -82,6 +82,9 @@ class WrapperedSparkMax:
         """
         posCmdRev = rad2Rev(posCmd)
 
+        log(self.name + "_desPos", posCmd, "Rev")
+        log(self.name + "_arbFF", arbFF, "V")
+
         if self.configSuccess:
             err = self.pidCtrl.setReference(
                 posCmdRev,
@@ -93,7 +96,8 @@ class WrapperedSparkMax:
 
             self.disconFault.set(err is not REVLibError.kOk)
 
-        self._updateTelem(arbFF, posCmd=posCmdRev)
+            log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
+
 
     def setVelCmd(self, velCmd, arbFF=0.0):
         """_summary_
@@ -104,6 +108,9 @@ class WrapperedSparkMax:
         """
         velCmdRPM = radPerSec2RPM(velCmd)
 
+        log(self.name + "_desVel", velCmd, "RPM")
+        log(self.name + "_arbFF", arbFF, "V")
+
         if self.configSuccess:
             err = self.pidCtrl.setReference(
                 velCmdRPM,
@@ -113,21 +120,14 @@ class WrapperedSparkMax:
                 SparkMaxPIDController.ArbFFUnits.kVoltage,
             )
             self.disconFault.set(err is not REVLibError.kOk)
-
-        self._updateTelem(arbFF, velCmd=velCmdRPM)
+            log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
 
     def setVoltage(self, outputVoltageVolts):
         log(self.name + "_cmdVoltage", outputVoltageVolts, "V")
         if self.configSuccess:
             err = self.ctrl.setVoltage(outputVoltageVolts)
             self.disconFault.set(err is not REVLibError.kOk)
-            self._updateTelem(outputVoltageVolts)
-
-    def _updateTelem(self, arbFF, velCmd=0.0, posCmd=0.0):
-        log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
-        log(self.name + "_desVel", velCmd, "RPM")
-        log(self.name + "_desPos", posCmd, "Rev")
-        log(self.name + "_arbFF", arbFF, "V")
+            log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
 
     def getMotorPositionRad(self):
         if self.configSuccess:

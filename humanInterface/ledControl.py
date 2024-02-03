@@ -9,14 +9,14 @@ class LEDControl:
         self._noteInIntakePrev = False
         self._noteInIntakeCounter = 0
         self.ctrl = PWMMotorController("LEDCtrl", 9)
-        self._sampleTime = 0.02
+        self.sampleTime = 0.1
 
     def update(self):
         pwmVal = 0.0  # default = off
 
         if self.noteInIntake and not self._noteInIntakePrev:
             self._noteInIntakeCounter = int(
-                1.0 / self._sampleTime
+                1.0 / self.sampleTime
             )  # Set LED's to blink for 1 second
 
         if self.speakerAutoAlignActive:

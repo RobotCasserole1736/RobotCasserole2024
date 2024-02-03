@@ -28,7 +28,10 @@ class Webserver(metaclass=Singleton):
         )
 
         hostname = socket.gethostname()
-        ipAddr = socket.gethostbyname(hostname)
+        try:
+            ipAddr = socket.gethostbyname(hostname)
+        except socket.gaierror:
+            ipAddr = "UNKNOWN"
 
         self.httpServer = ThreadedTCPServer(("", httpPort), templatingHttpHandler)
 
