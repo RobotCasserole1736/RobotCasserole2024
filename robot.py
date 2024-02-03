@@ -21,6 +21,7 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climberControl.climberControl import ClimberControl
 
+
 class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Common init/update for all modes
@@ -57,29 +58,26 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
 
-        # Normal robot code updates every 20ms, but not everything needs to be that fast.
-        # Register slower-update periodic functions
-        self.addPeriodic(self.ledCtrl.update, self.ledCtrl.sampleTime, 0.0)
-        self.addPeriodic(self.dashboard.update, 0.2, 0.0)
-        self.addPeriodic(self.crashLogger.update, 1.0, 0.0)
-        self.addPeriodic(CalibrationWrangler().update, 0.5, 0.0)
-        self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
-
     def robotPeriodic(self):
         self.stt.start()
+        self.crashLogger.update()
 
         self.driveTrain.update()
+
+        self.ledCtrl.update()
 
         self.climbCtrl.update()
 
         self.gph.update()
 
+        #SignalWrangler().publishPeriodic
+        CalibrationWrangler().update()
+        FaultWrangler().update()
         self.stt.end()
 
     #########################################################
     ## Autonomous-Specific init and update
     def autonomousInit(self):
-
         # Start up the autonomous sequencer
         self.autoSequencer.initiaize()
 
@@ -89,14 +87,10 @@ class MyRobot(wpilib.TimedRobot):
         self.ledCtrl.setSpeakerAutoAlignActive(True)
 
     def autonomousPeriodic(self):
-        SignalWrangler().markLoopStart()
-
         self.autoSequencer.update()
 
         # Operators cannot control in autonomous
         self.driveTrain.setManualCmd(DrivetrainCommand())
-
-        self.climbCtrl.ctrlWinch(0.0)
 
     def autonomousExit(self):
         self.autoSequencer.end()
@@ -107,10 +101,17 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
-        SignalWrangler().markLoopStart()
-
         self.oInt.update()
         self.dInt.update()
+        
+        # Gamepiece handling input
+        self.gph.setInput(
+            self.oInt.getSingerShootCmd(),
+            self.oInt.getSingerIntakeCmd(),
+            self.oInt.getSingerEjectCmd()
+        )
+        
+        
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
 
@@ -123,11 +124,9 @@ class MyRobot(wpilib.TimedRobot):
 
         self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
 
-
     #########################################################
     ## Disabled-Specific init and update
     def disabledPeriodic(self):
-        SignalWrangler().markLoopStart()
         self.autoSequencer.updateMode()
         Trajectory().trajCtrl.updateCals()
 
