@@ -84,24 +84,27 @@ class GamePieceHandling:
             pass
         
 
-    def setInput(self):
-
+    def setInput(self, ShooterBoolean, IntakeBoolean, EjectBoolean):
+        
         #idk if this is right :(
 
-        if (OperatorInterface.getSingerShootCmd == False):
-            pass
-        elif(OperatorInterface.getSingerShootCmd == False):
-            self.activeShooter(self, self.shooterkFCal)
+        if (ShooterBoolean == False):
+            #OperatorInterface.getSingerShootCmd
+            return False
+        elif(ShooterBoolean == True):
+            self.activeShooter(self.shooterkFCal)
 
-        if (OperatorInterface.getSingerIntakeCmd == False):
-            pass
-        elif (OperatorInterface.getSingerIntakeCmd == True):
-            self.activeIntake(self, self.intakeVoltageCal)
+        if (IntakeBoolean == False):
+            #OperatorInterface.getSingerIntakeCmd
+            return False
+        elif (IntakeBoolean == True):
+            self.activeIntake(self.intakeVoltageCal)
 
-        if (OperatorInterface.getSingerEjectCmd == False):
-            pass
-        elif(OperatorInterface.getSingerEjectCmd == True):
-            self.activeFloorRoller(self, self.intakeVoltageCal)
+        if (EjectBoolean == False):
+            #OperatorInterface.getSingerEjectCmd
+            return False
+        elif(EjectBoolean == True):
+            self.activeFloorRoller(self.intakeVoltageCal)
 
     #def getSingerShootCmd(self):
         # returns whether the singer is being commanded to shoot
