@@ -45,7 +45,7 @@ class OperatorInterface:
         #I don't know what the max on the slew rate limiter should be. It should be a constant
         self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_ACCEL_MPS2)
         self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_ROT_ACCEL_DEGPS2)
-
+        
         self.motorRotations = 0
         self.LinearDisp = 0
 
@@ -111,7 +111,7 @@ class OperatorInterface:
             self.manualSingerUpDown = 0
             self.manualSingerRot = 0
 
-        log("OI AutoAlign Cmd", self.autoAlignDesired, "bool")
+        #log("OI AutoAlign Cmd", self.autoAlignDesired, "bool")
         log("OI Singer Intake Cmd", self.singerIntake, "bool")
         log("OI Singer Shoot Cmd", self.singerShoot, "bool")
         log("OI Singer Eject Cmd", self.singerEject, "bool")

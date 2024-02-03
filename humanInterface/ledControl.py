@@ -1,7 +1,7 @@
 from wpilib import PWMMotorController
+from utils.singleton import Singleton
 
-
-class LEDControl:
+class LEDControl(metaclass=Singleton):
     def __init__(self):
         # Put any one-time init code here
         self.speakerAutoAlignActive = False
@@ -26,7 +26,7 @@ class LEDControl:
             self._noteInIntakeCounter -= 1
 
         self.ctrl.set(pwmVal)
-
+        print(pwmVal)
         self._noteInIntakePrev = self.noteInIntake
 
     def setSpeakerAutoAlignActive(self, isActive):

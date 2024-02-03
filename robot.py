@@ -3,6 +3,7 @@ import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainControl import DrivetrainControl
@@ -20,6 +21,7 @@ from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climberControl.climberControl import ClimberControl
+
 
 class MyRobot(wpilib.TimedRobot):
     #########################################################

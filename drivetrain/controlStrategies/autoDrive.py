@@ -6,20 +6,24 @@ from utils.allianceTransformUtils import onRed
 from utils.singleton import Singleton
 from singerMovement.carriageControl import CarriageControl
 from utils.signalLogging import log
+from humanInterface.ledControl import LEDControl
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
         self.AARobotPoseEst = Pose2d()
         self.returnDriveTrainCommand = DrivetrainCommand()
+        self.ledControl = LEDControl()
 
     def setCmd(self, shouldAutoAlign: bool):
         self.active = shouldAutoAlign
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.active:
+            self.ledControl.setSpeakerAutoAlignActive(True)
             return self.speakerAlign(curPose, cmdIn)
         else:
+            self.ledControl.setSpeakerAutoAlignActive(False)
             return cmdIn
 
     def getDesiredAngle(self, curPose):
@@ -75,9 +79,8 @@ class AutoDrive(metaclass=Singleton):
         if abs(returnVal) > math.pi:
             returnVal = ((2* math.pi) - returnVal) * -1
         
-        
-
-        if abs(returnVal) <= 0.05: #Check to see if we are making a really small correction. if we are, don't worry about it. We only need a certain level of accuracy.
+        if abs(returnVal) <= 0.05: #Check to see if we are making a really small correction. if we are, don't worry about it. 
+                                    #We only need a certain level of accuracy.
             returnVal = 0
          # Set the rotational vel to 5 * the angle we calculated
         # We multiply it by 5 so its faster :o
