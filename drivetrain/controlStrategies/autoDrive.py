@@ -1,5 +1,6 @@
 import math
 from wpimath.geometry import Pose2d
+from wpimath.geometry import Rotation2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from utils.allianceTransformUtils import onRed
 from utils.allianceTransformUtils import transform
@@ -22,15 +23,33 @@ class AutoDrive(metaclass=Singleton):
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.active:
-            
-            
-            return (
-                self.speakerAlign(
+            self.speakerAlign(
                 curPose, cmdIn
-                )   
-            )  
+            )  # TODO - this needs to return a DrivetrainCommand
+            return (
+                DrivetrainCommand()
+            )  # TODO - this drivetrain command is just "don't move", needs to be something else
         else:
             return cmdIn
+        
+
+    def getDesiredAngle(self, curPose):
+        #Find out if we are on red team
+        if onRed() == True:#If we are, set the target pos to the pos of the red speaker
+            self.targetX = 16.54175 - 0.22987
+            self.targetY = 5.4572958333417994
+        else: #If we aren't, set the target pos to the pos of the blue speaker
+            self.targetX = 0.22987
+            self.targetY = 5.4572958333417994
+        distX = curPose.X() - self.targetX
+        distY = curPose.Y() - self.targetY
+        singerHeight = 5
+        targetHeight = 80.256 - singerHeight
+        distFromTarget = math.sqrt(math.pow(distX , 2) + math.pow(distY , 2))
+        noteTravelPath = math.sqrt(math.pow(targetHeight , 2) + math.pow(distFromTarget , 2))
+        self.desiredAngle = math.acos(distFromTarget / noteTravelPath)
+        
+
 
     def speakerAlign(self, curPose,cmdIn):
         self.AARobotPoseEst = curPose
@@ -43,12 +62,6 @@ class AutoDrive(metaclass=Singleton):
         else: #If we aren't, set the target pos to the pos of the blue speaker
             self.targetX = 0.22987
             self.targetY = 5.4572958333417994
-
-
-
-        
-        
-        
 
         if self.AARobotPoseEst.X() - self.targetX > 0: # test to see if we are to the right of the robot
             #If we are, we have to correct the angle by 1 pi. This is built into the following equation
@@ -66,12 +79,11 @@ class AutoDrive(metaclass=Singleton):
         if abs(returnVal) <= 0.05: #Check to see if we are making a really small correction. if we are, don't worry about it. We only need a certain level of accuracy.
             returnVal = 0
         
-
-
         returnDriveTrainCommand = DrivetrainCommand() #We create an instance of DrivetrainCommand and configure it.
         returnDriveTrainCommand.velT = returnVal * 5 #set the rotational vel to 5 * the angle we calculated. We multiply it by 5 so its faster :o
         returnDriveTrainCommand.velX = cmdIn.velX #set the X vel to the original X vel.
         returnDriveTrainCommand.velY = cmdIn.velY #Set the Y vel to the original Y vel.
         return returnDriveTrainCommand
+
+
         
-    

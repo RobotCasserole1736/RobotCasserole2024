@@ -63,4 +63,11 @@ class CarriageControl:
 
     will need to get command position from the operator controller and
     desired singer angle for autolign"""
+
+    def singerAutoAlignment(self, desiredAngle):
+        # TODO Move elevator set amount
+
+        # TODO take desired angle from autoDrive and set singer rotation to be said angle
+
+        return
     
