@@ -1,0 +1,42 @@
+[Follow base instructions](https://docs.photonvision.org/en/latest/docs/installation/sw_install/raspberry-pi.html) for flashing the SD Card.
+
+[Update the config.txt file to work with the ov9281 camera](https://docs.photonvision.org/en/latest/docs/hardware/picamconfig.html#updating-config-txt).
+
+You'll need to comment out the cameraAutoDetect=1 line, and uncomment the dtoverlay=ov9281 line.
+
+Discsonnect power from other raspberry pi's to ensure we're only configuring the one new device.
+
+Put the SD card into the raspberry pi, power it on, and leave it on long enough to boot.
+
+Once booted, The main UI can be accessed at `photonvision.local:5800`. 
+
+
+
+Change the following settings:
+
+ * Set the team number to 1736
+ * Set a static IP address
+ * Change the ?? mdns responder name ?? to be specific to the camera
+ * Upload `hardwareConfig.json` in this same folder.
+
+Save and reboot and access the camera again via the web interface. Note the address will have changed to whatever you set the mdns address to:
+
+leftcam.local:5800
+rightcam.local:5800
+
+Verify you can see the camera itself.
+
+Go to the calibration tab, and calibrate the 
+
+Configure the vision settings (see below)
+
+
+
+Overall Settings:
+Left Cam:
+ * IP Address - `10.17.36.11`
+ * mdns Name - `leftcam`
+ * Camera name - `LEFT_CAM`
+
+Right Cam:
+ * IP Address - `10.17.36.12`
