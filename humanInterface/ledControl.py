@@ -26,7 +26,6 @@ class LEDControl(metaclass=Singleton):
             self._noteInIntakeCounter -= 1
 
         self.ctrl.set(pwmVal)
-        print(pwmVal)
         self._noteInIntakePrev = self.noteInIntake
 
     def setSpeakerAutoAlignActive(self, isActive):
