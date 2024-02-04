@@ -1,37 +1,34 @@
 import math
 from wpimath.geometry import Pose2d
-from wpimath.geometry import Rotation2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
-from utils.allianceTransformUtils import onRed
-from utils.singleton import Singleton
 from singerMovement.carriageControl import CarriageControl
+from utils.allianceTransformUtils import onRed
 from utils.signalLogging import log
-from humanInterface.ledControl import LEDControl
+from utils.singleton import Singleton
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
         self.AARobotPoseEst = Pose2d()
         self.returnDriveTrainCommand = DrivetrainCommand()
-        self.ledControl = LEDControl()
 
     def setCmd(self, shouldAutoAlign: bool):
         self.active = shouldAutoAlign
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.active:
-            self.ledControl.setSpeakerAutoAlignActive(True)
             return self.speakerAlign(curPose, cmdIn)
         else:
-            self.ledControl.setSpeakerAutoAlignActive(False)
             return cmdIn
 
     def getDesiredAngle(self, curPose):
-        #Find out if we are on red team
-        if onRed() == True:#If we are, set the target pos to the pos of the red speaker
+        # Find out if we are on red team
+        # If we are, set the target pos to the pos of the red speaker
+        if onRed() == True:
             self.targetX = 16.54175 - 0.22987
             self.targetY = 5.4572958333417994
-        else: #If we aren't, set the target pos to the pos of the blue speaker
+        # If we aren't, set the target pos to the pos of the blue speaker
+        else:
             self.targetX = 0.22987
             self.targetY = 5.4572958333417994
         distX = curPose.X() - self.targetX
@@ -50,10 +47,12 @@ class AutoDrive(metaclass=Singleton):
     def speakerAlign(self, curPose,cmdIn):
         self.AARobotPoseEst = curPose
         
-        #Find out if we are on red team
-        if onRed() == True:#If we are, set the target pos to the pos of the red speaker
+        # Find out if we are on red team
+        # If we are, set the target pos to the pos of the red speaker
+        if onRed() == True:
             self.targetX = 16.54175 - 0.22987
             self.targetY = 5.4572958333417994
+
         # If we aren't, set the target pos to the pos of the blue speaker
         else:
             self.targetX = 0.22987
@@ -78,14 +77,14 @@ class AutoDrive(metaclass=Singleton):
         # If it is, reverse it
         if abs(returnVal) > math.pi:
             returnVal = ((2* math.pi) - returnVal) * -1
-        
-        if abs(returnVal) <= 0.05: #Check to see if we are making a really small correction. if we are, don't worry about it. 
-                                    #We only need a certain level of accuracy.
+
+        # Check to see if we are making a really small correction
+        # If we are, don't worry about it. We only need a certain level of accuracy
+        if abs(returnVal) <= 0.05:
             returnVal = 0
-         # Set the rotational vel to 5 * the angle we calculated
+        # Set the rotational vel to 5 * the angle we calculated
         # We multiply it by 5 so its faster :o
         self.returnDriveTrainCommand.velT = returnVal * 5
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
-    
