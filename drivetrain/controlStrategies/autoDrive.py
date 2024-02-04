@@ -1,16 +1,33 @@
 import math
-from wpimath.geometry import Pose2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
+from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from singerMovement.carriageControl import CarriageControl
-from utils.allianceTransformUtils import onRed
+from wpilib import Timer
+from wpimath.filter import SlewRateLimiter
+from wpimath.geometry import Pose2d
+from utils.allianceTransformUtils import onRed, transformX
+from utils.calibration import Calibration
+from utils.constants import FIELD_LENGTH_FT, SPEAKER_TARGET_HEIGHT_M
 from utils.signalLogging import log
 from utils.singleton import Singleton
+from utils.units import ft2m
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
-        self.AARobotPoseEst = Pose2d()
         self.returnDriveTrainCommand = DrivetrainCommand()
+        self.rotKp = Calibration("Auto Align Rotation Kp",1)
+        self.rotSlewRateLimiter = SlewRateLimiter(
+            rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
+        )
+
+        # Previous Rotation Speed and time for calculating derivative
+        self.prevDesAngle = 0
+        self.prevTimeStamp = Timer.getFPGATimestamp()
+
+        # Set speaker coordinates
+        self.targetX = ft2m(transformX(FIELD_LENGTH_FT))
+        self.targetY = 5.4572958333417994
 
     def setCmd(self, shouldAutoAlign: bool):
         self.active = shouldAutoAlign
@@ -21,22 +38,16 @@ class AutoDrive(metaclass=Singleton):
         else:
             return cmdIn
 
-    def getDesiredAngle(self, curPose):
-        # Find out if we are on red team
-        # If we are, set the target pos to the pos of the red speaker
-        if onRed() == True:
-            self.targetX = 16.54175 - 0.22987
-            self.targetY = 5.4572958333417994
-        # If we aren't, set the target pos to the pos of the blue speaker
-        else:
-            self.targetX = 0.22987
-            self.targetY = 5.4572958333417994
+    def getDesiredSingerAngle(self, curPose: Pose2d):
+        # Find distance to target
         distX = curPose.X() - self.targetX
         distY = curPose.Y() - self.targetY
+
+        # Get singer height from carriage control
         singerHeight = 1
-        targetHeight = 2.0385024 - singerHeight
-        distFromTarget = math.sqrt(math.pow(distX , 2) + math.pow(distY , 2))
-        noteTravelPath = math.sqrt(math.pow(targetHeight , 2) + math.pow(distFromTarget , 2))
+        targetHeight = SPEAKER_TARGET_HEIGHT_M - singerHeight
+        distFromTarget = math.sqrt(math.pow(distX, 2) + math.pow(distY , 2))
+        noteTravelPath = math.sqrt(math.pow(targetHeight, 2) + math.pow(distFromTarget , 2))
         self.desiredAngle = math.acos(distFromTarget / noteTravelPath)
 
         log("Singer Allign desired angle", self.desiredAngle)
@@ -44,47 +55,43 @@ class AutoDrive(metaclass=Singleton):
 
         CarriageControl().singerAutoAlignment(self.desiredAngle)
 
-    def speakerAlign(self, curPose,cmdIn):
-        self.AARobotPoseEst = curPose
-        
-        # Find out if we are on red team
-        # If we are, set the target pos to the pos of the red speaker
-        if onRed() == True:
-            self.targetX = 16.54175 - 0.22987
-            self.targetY = 5.4572958333417994
+    def speakerAlign(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
+        # Update x coord of speaker if necessary
+        self.targetX = ft2m(transformX(FIELD_LENGTH_FT))
 
-        # If we aren't, set the target pos to the pos of the blue speaker
-        else:
-            self.targetX = 0.22987
-            self.targetY = 5.4572958333417994
         # Test to see if we are to the right of the robot
         # If we are, we have to correct the angle by 1 pi
         # This is built into the following equation
-        if self.AARobotPoseEst.X() - self.targetX > 0:
-            returnVal = ( math.atan((self.AARobotPoseEst.Y() \
-                            - self.targetY)/(self.AARobotPoseEst.X() \
-                            - self.targetX)) - math.pi ) % (2*math.pi) \
-                            - (self.AARobotPoseEst.rotation().radians() )
-        # If we aren't, we don't need to. 
+        if curPose.X() - self.targetX > 0:
+            desAngle = (math.atan((curPose.Y() - self.targetY) / (curPose.X() - self.targetX)) \
+                        - math.pi) % (2*math.pi)
+            rotError = desAngle - curPose.rotation().radians()
+        # If we aren't, we don't need to
         # (these eqations are the same except the other one subtracts by pi and this one doesn't)
         else:
-            returnVal = ( math.atan((self.AARobotPoseEst.Y() \
-                            - self.targetY)/(self.AARobotPoseEst.X() \
-                            - self.targetX)) ) % (2*math.pi) \
-                            - (self.AARobotPoseEst.rotation().radians() )
+            desAngle = (math.atan((curPose.Y() - self.targetY)/(curPose.X() - self.targetX)) ) \
+                        % (2*math.pi)
+            rotError = desAngle - curPose.rotation().radians()
 
         # Test if the angle we calculated will be greater than 180 degrees
         # If it is, reverse it
-        if abs(returnVal) > math.pi:
-            returnVal = ((2* math.pi) - returnVal) * -1
+        if abs(rotError) > math.pi:
+            rotError = ((2* math.pi) - rotError) * -1
 
         # Check to see if we are making a really small correction
         # If we are, don't worry about it. We only need a certain level of accuracy
-        if abs(returnVal) <= 0.05:
-            returnVal = 0
-        # Set the rotational vel to 5 * the angle we calculated
-        # We multiply it by 5 so its faster :o
-        self.returnDriveTrainCommand.velT = returnVal * 5
+        if abs(rotError) <= 0.05:
+            rotError = 0
+        
+        # Calculate derivate of slew-limited angle for feed-forward angular velocity
+        desAngleLimited = self.rotSlewRateLimiter.calculate(desAngle)
+        velTCmdDer = (desAngleLimited - self.prevDesAngle)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
+
+        # Update previous values for next loop
+        self.prevDesAngle = desAngleLimited
+        self.prevTimeStamp = Timer.getFPGATimestamp()
+
+        self.returnDriveTrainCommand.velT = (velTCmdDer + (rotError * self.rotKp.get()))
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
