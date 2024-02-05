@@ -57,21 +57,19 @@ class AutoDrive(metaclass=Singleton):
 
     def speakerAlign(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
         # Update x coord of speaker if necessary
-        self.targetX = ft2m(transformX(FIELD_LENGTH_FT))
+        self.targetX = ft2m(transformX(0.22987))
 
         # Test to see if we are to the right of the robot
         # If we are, we have to correct the angle by 1 pi
         # This is built into the following equation
         if curPose.X() - self.targetX > 0:
-            desAngle = (math.atan((curPose.Y() - self.targetY) / (curPose.X() - self.targetX)) \
-                        - math.pi) % (2*math.pi)
-            rotError = desAngle - curPose.rotation().radians()
+            rotError = (math.atan((curPose.Y() - self.targetY) / (curPose.X() - self.targetX)) \
+                        - math.pi) % (2*math.pi) - curPose.rotation().radians()
         # If we aren't, we don't need to
         # (these eqations are the same except the other one subtracts by pi and this one doesn't)
         else:
-            desAngle = (math.atan((curPose.Y() - self.targetY)/(curPose.X() - self.targetX)) ) \
-                        % (2*math.pi)
-            rotError = desAngle - curPose.rotation().radians()
+            rotError = (math.atan((curPose.Y() - self.targetY)/(curPose.X() - self.targetX)) ) \
+                        % (2*math.pi) - curPose.rotation().radians()
 
         # Test if the angle we calculated will be greater than 180 degrees
         # If it is, reverse it
@@ -84,11 +82,11 @@ class AutoDrive(metaclass=Singleton):
             rotError = 0
         
         # Calculate derivate of slew-limited angle for feed-forward angular velocity
-        desAngleLimited = self.rotSlewRateLimiter.calculate(desAngle)
-        velTCmdDer = (desAngleLimited - self.prevDesAngle)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
+        rotErrorLimited = self.rotSlewRateLimiter.calculate(rotError)
+        velTCmdDer = (rotErrorLimited - self.prevDesAngle)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
 
         # Update previous values for next loop
-        self.prevDesAngle = desAngleLimited
+        self.prevrotError = rotErrorLimited
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
         self.returnDriveTrainCommand.velT = (velTCmdDer + (rotError * self.rotKp.get()))
