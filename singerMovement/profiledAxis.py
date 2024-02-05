@@ -12,7 +12,10 @@ class ProfiledAxis():
             self.profileStartTime = Timer.getFPGATimestamp()
             self.curSetpoint = newSetpoint
             const = TrapezoidProfile.Constraints(maxVelocity=maxVel, maxAcceleration=maxAccel)
-            self.profile = TrapezoidProfile(const,self.curSetpoint,TrapezoidProfile.State(position=curPos))
+            self.profile = TrapezoidProfile(const,
+                                            TrapezoidProfile.State(self.curSetpoint),
+                                            TrapezoidProfile.State(position=curPos)
+                                            )
             
     def getCurState(self):
         curTime = Timer.getFPGATimestamp()
@@ -20,4 +23,4 @@ class ProfiledAxis():
     
     def isFinished(self):
         curTime = Timer.getFPGATimestamp()
-        return self.profile.isFinished(curTime)
+        return self.profile.isFinished(curTime - self.profileStartTime)

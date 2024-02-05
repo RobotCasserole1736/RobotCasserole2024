@@ -132,7 +132,9 @@ class CarriageControl(metaclass=Singleton):
 
         # Evalute next state and transition behavior
         nextState = self.curState # Default - stay in the same state
-        if(self.curState == _CarriageStates.HOLD_ALL):
+        if(self.curPosCmd == CarriageControlCmd.HOLD):
+            nextState = _CarriageStates.HOLD_ALL
+        else:
             if(self.curPosCmd != self.prevPosCmd):
                 # New position comand is here, let's see how to handle it
                 angleErr = abs(
@@ -147,33 +149,35 @@ class CarriageControl(metaclass=Singleton):
                     # We can do the normal elevator-then-singer sequence.
                     nextState = _CarriageStates.RUN_TO_HEIGHT
 
-        elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            if(self.elevCtrl.atTarget()):
-                # If we're done moving the elevator, move on.
-                nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+            elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
+                if(self.elevCtrl.atTarget()):
+                    # If we're done moving the elevator, move on.
+                    nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
 
-        elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
-            if(self.singerCtrl.atTarget()):
-                # If we're done rotating the singer, move on.
-                nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
+            elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
+                if(self.singerCtrl.atTarget()):
+                    # If we're done rotating the singer, move on.
+                    nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
 
-        elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
-            if(self.elevCtrl.atTarget()):
-                # If we'relowering down, we're done
-                nextState = _CarriageStates.HOLD_ALL
+            elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
+                if(self.elevCtrl.atTarget()):
+                    # If we'relowering down, we're done
+                    nextState = _CarriageStates.HOLD_ALL
 
-        elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
-            if(self.elevCtrl.atTarget()):
-                # If we're done moving the elevator, move on.
-                nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
-                
-        elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
-           if(self.singerCtrl.atTarget()):
-                # If we're done rotating the singer, we're done
-                nextState = _CarriageStates.HOLD_ALL
+            elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
+                if(self.elevCtrl.atTarget()):
+                    # If we're done moving the elevator, move on.
+                    nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+                    
+            elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
+                if(self.singerCtrl.atTarget()):
+                        # If we're done rotating the singer, we're done
+                        nextState = _CarriageStates.HOLD_ALL
 
         # Finally, actually transition states
         self.curState = nextState
+
+        self.prevPosCmd = self.curPosCmd
 
         #######################################################
         # Run Motors
