@@ -1,23 +1,19 @@
 #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
-from wpilib import Timer
 from enum import Enum
-import math
-from singerMovement.singerConstants import ELEVATOR_GEARBOX_GEAR_RATIO, MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS, MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, ELEVATOR_SPOOL_RADIUS_M, SINGER_GEARBOX_RATIO
+from singerMovement.elevatorHeightControl import ElevatorHeightControl
+from singerMovement.singerAngleControl import SingerAngleControl
 from utils.singleton import Singleton
-from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.calibration import Calibration
 from utils.units import deg2Rad
-from wpimath.trajectory import TrapezoidProfile
-from playingwithfusion import TimeOfFlight
-from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 
-class _CarriageStateMachine(Enum):
+class _CarriageStates(Enum):
     HOLD_ALL = 0
     RUN_TO_SAFE_HEIGHT = 1
     ROT_AT_SAFE_HEIGHT = 2
     DESCEND_BELOW_SAFE_HEIGHT = 3
     RUN_TO_HEIGHT = 4
     ROTATE_TO_ANGLE = 5
+
 
 class CarriageControlCmd(Enum):
     HOLD = 0
@@ -29,15 +25,8 @@ class CarriageControlCmd(Enum):
 class CarriageControl(metaclass=Singleton):
 
     def __init__(self):
-        # Carriage up/down control
-        self.upDownSingerMotor = WrapperedSparkMax(1, "carriageUpDownMotor", False)
-        self.kMaxVUpDown = Calibration(name="Carriage Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
-        self.kMaxAUpDown = Calibration(name="Carriage Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
-
-        # Singer Rotation Control
-        self.rotSingerMotor = WrapperedSparkMax(2, "carriageRotMotor", False)
-        self.kMaxVRot = Calibration(name="Singer Max Rot Vel", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
-        self.kMaxARot = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
+        self.elevCtrl = ElevatorHeightControl()
+        self.singerCtrl = SingerAngleControl()
 
         # Fixed Position Cal's
         self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=60.0 )
@@ -52,32 +41,6 @@ class CarriageControl(metaclass=Singleton):
         # Minimum height that we have to go to before we can freely rotate the singer
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.65 )
 
-
-        # Absolute Sensor mount offsets
-        # After mounting the sensor, these should be tweaked one time
-        # in order to adjust whatever the sensor reads into the reference frame
-        # of the mechanism
-        self.singerRotAbsEncOffsetDeg = 0.0
-        self.elevatorHeightAbsOffsetM = 0.0
-
-        # Relative Encoder Offsets
-        # Releative encoders always start at 0 at power-on
-        # However, we may or may not have the mechanism at the "zero" position when we powered on
-        # These variables store an offset which is calculated from the absolute sensors
-        # to make sure the relative sensors inside the encoders accurately reflect
-        # the actual position of the mechanism
-        self.singerRotRelEncOffsetRad = 0.0
-        self.elevatorHeightRelEncOffsetM = 0.0
-
-        #Absolute position sensors
-        self.singerRotAbsSen = WrapperedThroughBoreHexEncoder(name="SingerRotAbsPosSen", port=2)
-        self.elevatorHeightAbsSen = TimeOfFlight(13)
-        self.elevatorHeightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
-        self.elevatorHeightAbsSen.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
-
-        self.elevatorProfileConstraints = TrapezoidProfile.Constraints(maxVelocity=self.kMaxVUpDown.get(), maxAcceleration=self.kMaxAUpDown.get())
-        self.singerRotateConstraints = TrapezoidProfile.Constraints(maxVelocity=self.kMaxVRot.get(), maxAcceleration=self.kMaxARot.get())
-
         self.curElevHeight = 0.0
         self.curSingerRot = 0.0
         self.desElevHeight = 0.0
@@ -87,6 +50,13 @@ class CarriageControl(metaclass=Singleton):
 
         self.curPosCmd = CarriageControlCmd.HOLD
         self.prevPosCmd = CarriageControlCmd.HOLD
+
+        # State Machine
+        self.curState = _CarriageStates.HOLD_ALL
+    
+    def initFromAbsoluteSensors(self):
+        self.elevCtrl.initFromAbsoluteSensor()
+        self.singerCtrl.initFromAbsoluteSensor()
 
     # Use the current position command to calculate
     # The unprofiled elevator height in meters
@@ -101,6 +71,8 @@ class CarriageControl(metaclass=Singleton):
             return self.elevatorHeightTrap.get()
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
             return self.elevatorHeightAutoAlign.get()
+        else:
+            return 0.0
 
     # Use the current position command to calculate
     # The unprofiled elevator height in radians
@@ -115,76 +87,84 @@ class CarriageControl(metaclass=Singleton):
             return deg2Rad(self.singerRotTrap.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
             return self.autoAlignSingerRotCmd 
+        else:
+            return 0.0
 
-    # Return the rotation of the signer as measured by the absolute sensor in radians
-    def _getSingerAbsRot(self):
-        return self.singerRotAbsSen.getAngleRad() - deg2Rad(self.singerRotAbsEncOffsetDeg)
-
-    # Return the height of the elevator as measured by the absolute sensor in meters
-    def _getElevatorAbsHeight(self):
-        return self.elevatorHeightAbsSen.getRange() / 1000.0 - self.elevatorHeightAbsOffsetM
-
-    # This routine uses the absolute sensors to adjust the offsets for the relative sensors
-    # so that the relative sensors match reality.
-    # It should be called.... infrequently. Likely once shortly after robot init.
-    def initFromAbsoluteSensors(self):
-        # Reset offsets to zero, so the relative sensor get functions return
-        # just whatever offset the relative sensor currently has.
-        self.singerRotRelEncOffsetRad = 0.0
-        self.elevatorHeightRelEncOffsetM = 0.0
-
-        # New Offset = real angle - current rel sensor offset ??
-        self.singerRotRelEncOffsetRad = self._getSingerAbsRot() - self.getSingerAngle()
-        self.elevatorHeightRelEncOffsetM = self._getElevatorAbsHeight() - self.getElevatorHeightM()
-
-    def _motorRevToElevatorLinearDisp(self, motorRev):
-        return motorRev * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi)
-            
-    def _elevatorLinearDispToMotorRev(self, elevLin):
-        return elevLin * 1/(ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) * ELEVATOR_GEARBOX_GEAR_RATIO
     
-    def getElevatorHeightM(self):
-        motorRot = self.upDownSingerMotor.getMotorPositionRad()
-        elevPos = self._motorRevToElevatorLinearDisp(motorRot) - self.elevatorHeightRelEncOffsetM
-        return elevPos
-    
-    def _motorRevToSingerAngle(self, motorRev):
-        return motorRev * 1/SINGER_GEARBOX_RATIO 
-            
-    def _singerAngleToMotorRev(self, elevLin):
-        return elevLin * SINGER_GEARBOX_RATIO
-    
-    def getSingerAngle(self):
-        motorRot = self.upDownSingerMotor.getMotorPositionRad()
-        elevPos = self._motorRevToElevatorLinearDisp(motorRot) - self.elevatorHeightRelEncOffsetM
-        return elevPos
-
-    def _remakeProfiles(self):
-        #new setpoint, need to recalculate trajectory
-        self.profileStartTime = Timer.getFPGATimestamp()
-        self.singerRotProfile = TrapezoidProfile(self.elevatorProfileConstraints,curSetpoint,self.prevProfiledSetpoint)
-        self.singerRotProfile = TrapezoidProfile(self.elevatorProfileConstraints,curSetpoint,self.prevProfiledSetpoint)
-        
 
     def update(self):
+
+        #######################################################
+        # Read sensor inputs
+
+        self.curElevHeight = self.elevCtrl.getHeightM()
+        self.curSingerRot = self.singerCtrl.getAngle()
  
-        #up/down
-        #curSetpoint = can't be drivetrain setpoint because it's carriage?
-        curTime = Timer.getFPGATimestamp()
-
-        if(self.prevPosCmd != self.curPosCmd):
-            self._remakeProfiles()
-
-        curCmdState = profile.calculate(curTime - self.profileStartTime)
-        # Use curCmdState.velocity and .position for feedforward and feedback motor control
-
-        self.prevCmdState = curCmdState
+        #######################################################
+        # Run the state machine
 
 
+        # Evaluate in-state behavior
+        if(self.curState == _CarriageStates.HOLD_ALL):
+            # hold - current = actual
+            self.desElevHeight = self.profiledElevHeight = self.curElevHeight
+            self.desSingerRot = self.profiledSingerRot = self.curSingerRot
+        elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
+            pass
+        elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
+            pass
+        elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
+            pass
+        elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
+            pass
+        elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
+            pass
+
+        # Evalute next state and transition behavior
+        nextState = self.curState # Default - stay in the same state
+        if(self.curState == _CarriageStates.HOLD_ALL):
+            if(self.curPosCmd != self.prevPosCmd):
+                # New position comand is here, let's see how to handle it
+                angleErr = abs(
+                    self.curSingerRot - self._getUnprofiledSingerRotCmd()
+                )
+                belowSafe = self._getUnprofiledElevHeightCmd() > self.elevatorMinSafeHeight.get()
+                if(belowSafe and angleErr > deg2Rad(10.0)):
+                    # We need to go below the safe height and we need to rotate. 
+                    # We have to go up to the safe height first.
+                    nextState = _CarriageStates.RUN_TO_SAFE_HEIGHT
+                else:
+                    # We can do the normal elevator-then-singer sequence.
+                    nextState = _CarriageStates.RUN_TO_HEIGHT
+
+        elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
+            if(self.elevCtrl.atTarget()):
+                # If we're done moving the elevator, move on.
+                nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+
+        elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
+            if(self.singerCtrl.atTarget()):
+                # If we're done rotating the singer, move on.
+                nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
+
+        elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
+            if(self.elevCtrl.atTarget()):
+                # If we'relowering down, we're done
+                nextState = _CarriageStates.HOLD_ALL
+
+        elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
+            if(self.elevCtrl.atTarget()):
+                # If we're done moving the elevator, move on.
+                nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+                
+        elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
+           if(self.singerCtrl.atTarget()):
+                # If we're done rotating the singer, we're done
+                nextState = _CarriageStates.HOLD_ALL
 
 
-
-
+        # Finally, actually transition states
+        self.curState = nextState
 
     #will need to get command position from the operator controller and
     #desired singer angle for autolign"""
