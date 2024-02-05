@@ -11,6 +11,7 @@ from gamepieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.operatorInterface import OperatorInterface
 from humanInterface.driverInterface import DriverInterface
 from humanInterface.ledControl import LEDControl
+from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -47,6 +48,7 @@ class MyRobot(wpilib.TimedRobot):
             16
         )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 
+        self.cc = CarriageControl()
         self.gph = GamePieceHandling()
 
         self.ledCtrl = LEDControl()
@@ -75,6 +77,8 @@ class MyRobot(wpilib.TimedRobot):
         self.climbCtrl.update()
 
         self.gph.update()
+
+        self.cc.update()
 
         self.stt.end()
 
@@ -118,6 +122,18 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
+
+        # Map operator command to carriage control command
+        if(self.oInt.getCarriageAmpPosCmd()):
+            self.cc.setPositionCmd(CarriageControlCmd.AMP)
+        elif(self.oInt.getCarriageIntakePosCmd()):
+            self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
+        elif(self.oInt.getCarriageTrapPosCmd()):
+            self.cc.setPositionCmd(CarriageControlCmd.TRAP)
+        else:
+            self.cc.setPositionCmd(CarriageControlCmd.HOLD)
+
+
 
         # No trajectory in Teleop
         Trajectory().setCmd(None)

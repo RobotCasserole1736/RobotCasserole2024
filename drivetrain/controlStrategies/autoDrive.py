@@ -53,7 +53,7 @@ class AutoDrive(metaclass=Singleton):
         log("Singer Allign desired angle", self.desiredAngle)
         log("Singer Allign DistX, DistY", (distX,distY))
 
-        CarriageControl().singerAutoAlignment(self.desiredAngle)
+        CarriageControl().setSignerAutoAlignAngle(self.desiredAngle)
 
     def speakerAlign(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
         # Update x coord of speaker if necessary
