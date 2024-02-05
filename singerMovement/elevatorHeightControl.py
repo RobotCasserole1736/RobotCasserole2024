@@ -3,22 +3,30 @@ import math
 from playingwithfusion import TimeOfFlight
 from singerMovement.singerConstants import ELEVATOR_GEARBOX_GEAR_RATIO, ELEVATOR_SPOOL_RADIUS_M, MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS
 from utils.calibration import Calibration
+from utils.units import sign
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from singerMovement.profiledAxis import ProfiledAxis
+from utils.signalLogging import log
 
 
 class ElevatorHeightControl():
     def __init__(self):
         # Elevator up/down control
-        self.motor = WrapperedSparkMax(1, "ElevatorMotor", False)
+        self.motor = WrapperedSparkMax(19, "ElevatorMotor", False)
         self.maxV = Calibration(name="Elevator Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
         self.profiler = ProfiledAxis()
+
+        self.curUnprofiledPosCmd = 0
 
         self.heightAbsSen = TimeOfFlight(13)
         self.heightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.heightAbsSen.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
 
+        self.kV = Calibration(name="Elevator kV", default=0.0, units="V/rps")
+        self.kS = Calibration(name="Elevator kS", default=0.0, units="V")
+
+        self.stopped = True
 
         # Absolute Sensor mount offsets
         # After mounting the sensor, these should be tweaked one time
@@ -34,15 +42,19 @@ class ElevatorHeightControl():
         # the actual position of the mechanism
         self.relEncOffsetM = 0.0
 
-    def _motorRevToElevatorLinearDisp(self, motorRev):
-        return motorRev * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi)
+        self.profiledPos = 0.0
+        self.curUnprofiledPosCmd = 0.0
+
+
+    def _motorRevToHeight(self, motorRev):
+        return motorRev * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) - self.relEncOffsetM
             
-    def _elevatorLinearDispToMotorRev(self, elevLin):
-        return elevLin * 1/(ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) * ELEVATOR_GEARBOX_GEAR_RATIO
+    def _heightToMotorRev(self, elevLin):
+        return (elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) * ELEVATOR_GEARBOX_GEAR_RATIO 
     
     def getHeightM(self):
         motorRot = self.motor.getMotorPositionRad()
-        elevPos = self._motorRevToElevatorLinearDisp(motorRot) - self.relEncOffsetM
+        elevPos = self._motorRevToHeight(motorRot)
         return elevPos
     
     # Return the height of the elevator as measured by the absolute sensor in meters
@@ -64,4 +76,34 @@ class ElevatorHeightControl():
         return self.profiler.isFinished()
     
     def setDesPos(self, desPos):
+        self.stopped = False
+        self.curUnprofiledPosCmd = desPos
         self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getHeightM())
+
+    def setStopped(self):
+        self.stopped = True
+
+    def getProfiledDesPos(self):
+        return self.profiledPos
+
+    def update(self):
+        actualPos = self.getHeightM()
+
+        if(self.stopped):
+            self.motor.setVoltage(0.0)
+            self.profiledPos = actualPos
+        else:
+            curState = self.profiler.getCurState()
+
+            self.profiledPos = curState.position
+
+            motorPosCmd = self._heightToMotorRev(curState.position)
+            motorVelCmd = self._heightToMotorRev(curState.velocity)
+
+            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd)
+
+            self.motor.setPosCmd(motorPosCmd, vFF)
+
+        log("Elevator Pos Des", self.curUnprofiledPosCmd,"m")
+        log("Elevator Pos Profiled", self.profiledPos ,"m")
+        log("Elevator Pos Act", actualPos ,"m")

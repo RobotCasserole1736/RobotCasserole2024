@@ -58,3 +58,11 @@ def wrapAngleRad(angle):
 
 def lbsToKg(lbs_in):
     return 0.4535924 * lbs_in
+
+def sign(val_in):
+    if(val_in > 0):
+        return 1.0
+    elif(val_in < 0):
+        return -1.0
+    else:
+        return 0.0

@@ -1,12 +1,15 @@
 #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
-from enum import Enum
+from enum import IntEnum
+from singerMovement.carriageTelemetry import CarriageTelemetry
 from singerMovement.elevatorHeightControl import ElevatorHeightControl
 from singerMovement.singerAngleControl import SingerAngleControl
 from utils.singleton import Singleton
 from utils.calibration import Calibration
 from utils.units import deg2Rad
+from utils.signalLogging import log
 
-class _CarriageStates(Enum):
+
+class _CarriageStates(IntEnum):
     HOLD_ALL = 0
     RUN_TO_SAFE_HEIGHT = 1
     ROT_AT_SAFE_HEIGHT = 2
@@ -15,7 +18,7 @@ class _CarriageStates(Enum):
     ROTATE_TO_ANGLE = 5
 
 
-class CarriageControlCmd(Enum):
+class CarriageControlCmd(IntEnum):
     HOLD = 0
     INTAKE = 1
     AUTO_ALIGN = 2
@@ -53,6 +56,8 @@ class CarriageControl(metaclass=Singleton):
 
         # State Machine
         self.curState = _CarriageStates.HOLD_ALL
+
+        self.telem = CarriageTelemetry()
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
@@ -91,7 +96,6 @@ class CarriageControl(metaclass=Singleton):
             return 0.0
 
     
-
     def update(self):
 
         #######################################################
@@ -103,22 +107,28 @@ class CarriageControl(metaclass=Singleton):
         #######################################################
         # Run the state machine
 
-
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
-            # hold - current = actual
-            self.desElevHeight = self.profiledElevHeight = self.curElevHeight
-            self.desSingerRot = self.profiledSingerRot = self.curSingerRot
+            self.elevCtrl.setStopped()
+            if(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
+                self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
+            else:
+                self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            pass
+            self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get())
+            self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
-            pass
+            self.elevCtrl.setStopped()
+            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd())
         elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
-            pass
+            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd())
+            self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
-            pass
+            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd())
+            self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
-            pass
+            self.elevCtrl.setStopped()
+            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd())
 
         # Evalute next state and transition behavior
         nextState = self.curState # Default - stay in the same state
@@ -162,13 +172,25 @@ class CarriageControl(metaclass=Singleton):
                 # If we're done rotating the singer, we're done
                 nextState = _CarriageStates.HOLD_ALL
 
-
         # Finally, actually transition states
         self.curState = nextState
 
-    #will need to get command position from the operator controller and
-    #desired singer angle for autolign"""
+        #######################################################
+        # Run Motors
 
+        self.elevCtrl.update()
+        self.singerCtrl.update()
+
+        log("Carriage State", self.curState, "state")
+        log("Carriage Cmd", self.curPosCmd, "state")
+        self.telem.set(
+            self.singerCtrl.getProfiledDesPos(),
+            self.singerCtrl.getAngle(),
+            self.elevCtrl.getProfiledDesPos(),
+            self.elevCtrl.getHeightM()
+        )
+
+    # Public API inputs
     def setSignerAutoAlignAngle(self, desiredAngle:float):
         self.autoAlignSingerRotCmd = desiredAngle
     
