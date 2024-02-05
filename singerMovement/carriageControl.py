@@ -13,8 +13,11 @@ from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncod
 
 class _CarriageStateMachine(Enum):
     HOLD_ALL = 0
-    RUN_SINGER_ANGLE = 1
-    RUN_ELEVATOR_
+    RUN_TO_SAFE_HEIGHT = 1
+    ROT_AT_SAFE_HEIGHT = 2
+    DESCEND_BELOW_SAFE_HEIGHT = 3
+    RUN_TO_HEIGHT = 4
+    ROTATE_TO_ANGLE = 5
 
 class CarriageControlCmd(Enum):
     HOLD = 0
