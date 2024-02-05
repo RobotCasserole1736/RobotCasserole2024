@@ -23,15 +23,15 @@ class CarriageTelemetry():
         self.root = self.mech.getRoot("Root", ROBOT_LEN_M/2.0, ELEV_MOUNT_HEIGHT_M)
         self.elev = self.root.appendLigament("Elevator", self._getElevDrawLen(0.0), ELEV_MOUNT_ANGLE_DEG, 6, ELEV_COLOR)
         self.singerSupport = self.elev.appendLigament("SingerSupport", SINGER_OFFSET_DIST, 0.0, 6, SINGER_COLOR)
-        self.singerFwd = self.elev.appendLigament("SingerFwd", SINGER_FWD_DIST, 90.0, 8, SINGER_COLOR)
-        self.singerRev = self.elev.appendLigament("SingerRev", SINGER_REV_DIST, -90.0, 8, SINGER_COLOR)
+        self.singerFwd = self.singerSupport.appendLigament("SingerFwd", SINGER_FWD_DIST, -90.0, 8, SINGER_COLOR)
+        self.singerRev = self.singerSupport.appendLigament("SingerRev", SINGER_REV_DIST, 90.0, 8, SINGER_COLOR)
         wpilib.SmartDashboard.putData("Carriage", self.mech)
 
     def _getElevDrawLen(self, len_in):
         return len_in + ELEV_MIN_DRAW_DIST
     
     def _getSingerSupportDrawAngle(self, angle_in):
-        return angle_in - ELEV_MOUNT_ANGLE_DEG
+        return angle_in - ELEV_MOUNT_ANGLE_DEG + 90.0
 
     def set(self, desSingerAngle, actSingerAngle, desElevHeight, actElevHeight):
         self.elev.setLength(self._getElevDrawLen(desElevHeight))

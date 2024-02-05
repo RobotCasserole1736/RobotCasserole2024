@@ -72,6 +72,7 @@ class SingerAngleControl():
         return self.profiler.isFinished()
 
     def setDesPos(self, desPos):
+        self.stopped = False
         self.curUnprofiledPosCmd = desPos
         self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getAngle())
 

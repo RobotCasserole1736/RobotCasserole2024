@@ -33,12 +33,12 @@ class CarriageControl(metaclass=Singleton):
 
         # Fixed Position Cal's
         self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=60.0 )
-        self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-20.0 )
+        self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-40.0 )
         self.singerRotTrap = Calibration(name="Singer Rot Trap", units="deg", default=-20.0 )
 
         self.elevatorHeightIntake = Calibration(name="Elev Height Intake", units="m", default=0.0 )
         self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.75 )
-        self.elevatorHeightTrap = Calibration(name="Elev Height Trap", units="m", default=0.75 )
+        self.elevatorHeightTrap = Calibration(name="Elev Height Trap", units="m", default=0.65 )
         self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.5 )
 
         # Minimum height that we have to go to before we can freely rotate the singer
@@ -140,7 +140,7 @@ class CarriageControl(metaclass=Singleton):
                 angleErr = abs(
                     self.curSingerRot - self._getUnprofiledSingerRotCmd()
                 )
-                belowSafe = self._getUnprofiledElevHeightCmd() > self.elevatorMinSafeHeight.get()
+                belowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
                 if(belowSafe and angleErr > deg2Rad(10.0)):
                     # We need to go below the safe height and we need to rotate. 
                     # We have to go up to the safe height first.
