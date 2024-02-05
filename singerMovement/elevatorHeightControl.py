@@ -8,11 +8,12 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from singerMovement.profiledAxis import ProfiledAxis
 from utils.signalLogging import log
 
-
+# Controls the elevator height motor, including rezeroing from absolute sensors
+# and motion profiling
 class ElevatorHeightControl():
     def __init__(self):
         # Elevator up/down control
-        self.motor = WrapperedSparkMax(19, "ElevatorMotor", False)
+        self.motor = WrapperedSparkMax(19, "ElevatorMotor", brakeMode=True,)
         self.maxV = Calibration(name="Elevator Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
         self.profiler = ProfiledAxis()

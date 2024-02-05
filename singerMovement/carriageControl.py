@@ -8,7 +8,7 @@ from utils.calibration import Calibration
 from utils.units import deg2Rad
 from utils.signalLogging import log
 
-
+# Private enum describing all states in the carriage control state machine
 class _CarriageStates(IntEnum):
     HOLD_ALL = 0
     RUN_TO_SAFE_HEIGHT = 1
@@ -17,7 +17,7 @@ class _CarriageStates(IntEnum):
     RUN_TO_HEIGHT = 4
     ROTATE_TO_ANGLE = 5
 
-
+# All possible positions the carriage can be commanded into
 class CarriageControlCmd(IntEnum):
     HOLD = 0
     INTAKE = 1
@@ -25,6 +25,8 @@ class CarriageControlCmd(IntEnum):
     AMP = 3
     TRAP = 4
 
+# Class to control the Carriage (elevator height + singer angle)
+# Handles sequencing the two axes to prevent crashing the robot into itself
 class CarriageControl(metaclass=Singleton):
 
     def __init__(self):
@@ -189,11 +191,11 @@ class CarriageControl(metaclass=Singleton):
         log("Carriage Cmd", self.curPosCmd, "state")
         self.telem.set(
             self.singerCtrl.getProfiledDesPos(),
-            self.singerCtrl.getAngle(),
+            self.curSingerRot,
             self.elevCtrl.getProfiledDesPos(),
-            self.elevCtrl.getHeightM()
+            self.curElevHeight
         )
-
+        
     # Public API inputs
     def setSignerAutoAlignAngle(self, desiredAngle:float):
         self.autoAlignSingerRotCmd = desiredAngle

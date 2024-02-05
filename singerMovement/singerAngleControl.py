@@ -6,11 +6,12 @@ from singerMovement.profiledAxis import ProfiledAxis
 from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 from utils.signalLogging import log
 
-
+# Controls the singer angle motor, including rezeroing from absolute sensors
+# and motion profiling
 class SingerAngleControl():
     def __init__(self):
         # Singer Rotation Control
-        self.motor = WrapperedSparkMax(18, "SingerRotMotor", False)
+        self.motor = WrapperedSparkMax(18, "SingerRotMotor", brakeMode=True, currentLimitA=20.0)
         self.maxV = Calibration(name="Singer Max Rot Vel", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
@@ -74,7 +75,7 @@ class SingerAngleControl():
     def setDesPos(self, desPos):
         self.stopped = False
         self.curUnprofiledPosCmd = desPos
-        self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getAngle())
+        self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngle())
 
     def setStopped(self):
         self.stopped = True
@@ -83,7 +84,7 @@ class SingerAngleControl():
         return self.profiledPos
 
     def update(self):
-        actualPos = rad2Deg(self.getAngle())
+        actualPos = self.getAngle()
         
         if(self.stopped):
             self.motor.setVoltage(0.0)
@@ -91,7 +92,7 @@ class SingerAngleControl():
         else:
             curState = self.profiler.getCurState()
 
-            self.profiledPos = rad2Deg(curState.position)
+            self.profiledPos = curState.position
 
             motorPosCmd = self._angleToMotorRev(curState.position)
             motorVelCmd = self._angleToMotorRev(curState.velocity)
@@ -101,5 +102,5 @@ class SingerAngleControl():
             self.motor.setPosCmd(motorPosCmd, vFF)
 
         log("Singer Pos Des", rad2Deg(self.curUnprofiledPosCmd),"deg")
-        log("Singer Pos Profiled", self.profiledPos ,"deg")
-        log("Singer Pos Act", actualPos ,"deg")
+        log("Singer Pos Profiled", rad2Deg(self.profiledPos) ,"deg")
+        log("Singer Pos Act", rad2Deg(actualPos) ,"deg")

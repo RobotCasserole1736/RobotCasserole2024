@@ -1,4 +1,5 @@
 from rev import CANSparkMax, SparkMaxPIDController, REVLibError, CANSparkLowLevel
+from wpilib import TimedRobot
 from utils.signalLogging import log
 from utils.units import rev2Rad, rad2Rev, radPerSec2RPM, RPM2RadPerSec
 from utils.faults import Fault
@@ -33,6 +34,7 @@ class WrapperedSparkMax:
         self.name = name
         self.configSuccess = False
         self.disconFault = Fault(f"Spark Max {name} ID {canID} disconnected")
+        self.simActPos = 0
 
         # Perform motor configuration, tracking errors and retrying until we have success
         retryCounter = 0
@@ -80,6 +82,7 @@ class WrapperedSparkMax:
             posCmd (float): motor desired shaft rotations in radians
             arbFF (int, optional): _description_. Defaults to 0.
         """
+        self.simActPos = posCmd
         posCmdRev = rad2Rev(posCmd)
 
         log(self.name + "_desPos", posCmd, "Rev")
@@ -130,10 +133,13 @@ class WrapperedSparkMax:
             log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
 
     def getMotorPositionRad(self):
-        if self.configSuccess:
-            pos = rev2Rad(self.encoder.getPosition())
+        if(TimedRobot.isSimulation()):
+            pos = self.simActPos
         else:
-            pos = 0
+            if self.configSuccess:
+                pos = rev2Rad(self.encoder.getPosition())
+            else:
+                pos = 0
         log(self.name + "_motorActPos", pos, "rad")
         return pos
 
