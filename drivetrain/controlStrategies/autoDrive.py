@@ -42,7 +42,7 @@ class AutoDrive(metaclass=Singleton):
         log("Singer Allign desired angle", self.desiredAngle)
         log("Singer Allign DistX, DistY", (distX,distY))
 
-        CarriageControl().singerAutoAlignment(self.desiredAngle)
+        CarriageControl().setSignerAutoAlignAngle(self.desiredAngle)
 
     def speakerAlign(self, curPose,cmdIn):
         self.AARobotPoseEst = curPose
