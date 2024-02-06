@@ -10,23 +10,24 @@ from utils.calibration import Calibration
 from utils.constants import FIELD_LENGTH_FT, SPEAKER_TARGET_HEIGHT_M
 from utils.signalLogging import log
 from utils.singleton import Singleton
-from utils.units import ft2m
+from utils.units import m2ft
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
         self.returnDriveTrainCommand = DrivetrainCommand()
         self.rotKp = Calibration("Auto Align Rotation Kp",1)
+        self.rotKd = Calibration("Auto Align Rotation Kd",0.5)
         self.rotSlewRateLimiter = SlewRateLimiter(
             rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
         )
 
         # Previous Rotation Speed and time for calculating derivative
-        self.prevDesAngle = 0
+        self.prevRotError = 0
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
         # Set speaker coordinates
-        self.targetX = ft2m(transformX(FIELD_LENGTH_FT))
+        self.targetX = transformX(FIELD_LENGTH_FT - m2ft(0.22987))
         self.targetY = 5.4572958333417994
 
     def setCmd(self, shouldAutoAlign: bool):
@@ -57,19 +58,21 @@ class AutoDrive(metaclass=Singleton):
 
     def speakerAlign(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
         # Update x coord of speaker if necessary
-        self.targetX = ft2m(transformX(0.22987))
+        self.targetX = transformX(m2ft(0.22987))
 
         # Test to see if we are to the right of the robot
         # If we are, we have to correct the angle by 1 pi
         # This is built into the following equation
         if curPose.X() - self.targetX > 0:
-            rotError = (math.atan((curPose.Y() - self.targetY) / (curPose.X() - self.targetX)) \
-                        - math.pi) % (2*math.pi) - curPose.rotation().radians()
+            desAngle = (math.atan((curPose.Y() - self.targetY) / (curPose.X() - self.targetX)) \
+                        - math.pi) % (2*math.pi)
+            rotError = desAngle - curPose.rotation().radians()
         # If we aren't, we don't need to
         # (these eqations are the same except the other one subtracts by pi and this one doesn't)
         else:
-            rotError = (math.atan((curPose.Y() - self.targetY)/(curPose.X() - self.targetX)) ) \
-                        % (2*math.pi) - curPose.rotation().radians()
+            desAngle = (math.atan((curPose.Y() - self.targetY)/(curPose.X() - self.targetX)) ) \
+                        % (2*math.pi)
+            rotError = desAngle - curPose.rotation().radians()
 
         # Test if the angle we calculated will be greater than 180 degrees
         # If it is, reverse it
@@ -83,13 +86,13 @@ class AutoDrive(metaclass=Singleton):
         
         # Calculate derivate of slew-limited angle for feed-forward angular velocity
         rotErrorLimited = self.rotSlewRateLimiter.calculate(rotError)
-        velTCmdDer = (rotErrorLimited - self.prevDesAngle)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
+        velTCmdDer = (rotErrorLimited - self.prevRotError)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
 
         # Update previous values for next loop
-        self.prevrotError = rotErrorLimited
+        self.prevRotError = rotErrorLimited
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
-        self.returnDriveTrainCommand.velT = (velTCmdDer + (rotError * self.rotKp.get()))
+        self.returnDriveTrainCommand.velT = rotError*self.rotKp.get() + rotError*self.rotKd.get()
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
