@@ -83,6 +83,9 @@ class ElevatorHeightControl():
 
     def setStopped(self):
         self.stopped = True
+        self.curUnprofiledPosCmd = self.getHeightM()
+        self.profiler.disable()
+
 
     def getProfiledDesPos(self):
         return self.profiledPos

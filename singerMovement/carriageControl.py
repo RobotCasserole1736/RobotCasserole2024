@@ -115,7 +115,7 @@ class CarriageControl(metaclass=Singleton):
         if(self.curState == _CarriageStates.HOLD_ALL):
             self.elevCtrl.setStopped()
             if(self.useAutoAlignAngleInHold):
-                self.singerCtrl.setDesPosUnprofiled(self.autoAlignSingerRotCmd)
+                self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
                 self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
