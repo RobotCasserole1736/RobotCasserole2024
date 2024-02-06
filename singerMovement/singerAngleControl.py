@@ -42,8 +42,6 @@ class SingerAngleControl():
         self.profiledPos = 0.0
         self.curUnprofiledPosCmd = 0.0
 
-
-
     # Return the rotation of the signer as measured by the absolute sensor in radians
     def _getAbsRot(self):
         return self.singerRotAbsSen.getAngleRad() - deg2Rad(self.absEncOffsetDeg)
@@ -78,7 +76,6 @@ class SingerAngleControl():
         self.useProfile = False
         self.curUnprofiledPosCmd = desPos
         self._setProfile(self.getAngle())
-
 
     def setDesPos(self, desPos):
         self.stopped = False

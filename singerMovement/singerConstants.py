@@ -11,10 +11,10 @@ MAX_MANUAL_ROT_ACCEL_DEGPS2 = 20
 MAX_MANUAL_DEG_PER_SEC = 30
 
 #movement that the singer can have if it's being controlled by position
-MAX_CARRIAGE_VEL_MPS = in2m(12.0)
-MAX_CARRIAGE_ACCEL_MPS2 = in2m(12.0)
-MAX_SINGER_ROT_VEL_DEG_PER_SEC = 60.0
-MAX_SINGER_ROT_ACCEL_DEGPS2 = 30.0
+MAX_CARRIAGE_VEL_MPS = in2m(24.0)
+MAX_CARRIAGE_ACCEL_MPS2 = in2m(24.0)
+MAX_SINGER_ROT_VEL_DEG_PER_SEC = 180.0
+MAX_SINGER_ROT_ACCEL_DEGPS2 = 180.0
 
 #for operator input to elevator control function in operator interface
 ELEVATOR_GEARBOX_GEAR_RATIO = 32.0/1.0

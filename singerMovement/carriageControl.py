@@ -56,6 +56,9 @@ class CarriageControl(metaclass=Singleton):
         self.curPosCmd = CarriageControlCmd.HOLD
         self.prevPosCmd = CarriageControlCmd.HOLD
 
+        self.autoAlignSingerRotCmd = 0.0
+        self.useAutoAlignAngleInHold = False
+
         # State Machine
         self.curState = _CarriageStates.HOLD_ALL
 
@@ -93,7 +96,7 @@ class CarriageControl(metaclass=Singleton):
         elif(self.curPosCmd == CarriageControlCmd.TRAP):
             return deg2Rad(self.singerRotTrap.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
-            return self.autoAlignSingerRotCmd 
+            return self.curSingerRot # No motion commanded
         else:
             return 0.0
 
@@ -111,7 +114,7 @@ class CarriageControl(metaclass=Singleton):
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
             self.elevCtrl.setStopped()
-            if(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
+            if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPosUnprofiled(self.autoAlignSingerRotCmd)
             else:
                 self.singerCtrl.setStopped()
@@ -143,10 +146,15 @@ class CarriageControl(metaclass=Singleton):
                 )
                 goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
                 currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
-                if(currentlyBelowSafe and angleErr > deg2Rad(10.0)):
-                    # We need to go below the safe height and we need to rotate. 
-                    # We have to go up to the safe height first.
+                if(currentlyBelowSafe and goingBelowSafe and angleErr > deg2Rad(3.0)):
+                    # We need to rotate, we're currently below the safe height,
+                    # and we're going to end up below it when we're done.
+                    # Command a linear translation up to the safe height first
                     nextState = _CarriageStates.RUN_TO_SAFE_HEIGHT
+                elif(goingBelowSafe and angleErr > deg2Rad(3.0)):
+                    # We're above safe height but going below it
+                    # We can rotate now, but have to rotate first before going down
+                    nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
                 else:
                     # We can do the normal elevator-then-singer sequence.
                     nextState = _CarriageStates.RUN_TO_HEIGHT
@@ -175,6 +183,10 @@ class CarriageControl(metaclass=Singleton):
                 if(self.singerCtrl.atTarget()):
                         # If we're done rotating the singer, we're done
                         nextState = _CarriageStates.HOLD_ALL
+                        
+            if(nextState == _CarriageStates.HOLD_ALL):
+                # On all transitions into HOLD_ALL, re-evaluate the auto-alignment command
+                self.useAutoAlignAngleInHold = (self.curPosCmd == CarriageControlCmd.AUTO_ALIGN)
 
         # Finally, actually transition states
         self.curState = nextState
@@ -199,7 +211,6 @@ class CarriageControl(metaclass=Singleton):
     # Public API inputs
     def setSignerAutoAlignAngle(self, desiredAngle:float):
         self.autoAlignSingerRotCmd = desiredAngle
-        print(self.autoAlignSingerRotCmd)
 
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
