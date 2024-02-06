@@ -17,7 +17,7 @@ class AutoDrive(metaclass=Singleton):
         self.active = False
         self.returnDriveTrainCommand = DrivetrainCommand()
         self.rotKp = Calibration("Auto Align Rotation Kp",1)
-        self.rotKd = Calibration("Auto Align Rotation Kd",0.5)
+        self.rotKd = Calibration("Auto Align Rotation Kd",1)
         self.rotSlewRateLimiter = SlewRateLimiter(
             rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
         )
@@ -81,6 +81,7 @@ class AutoDrive(metaclass=Singleton):
         # Test if the angle we calculated will be greater than 180 degrees
         # If it is, reverse it
         if abs(rotError) > math.pi:
+            desAngle = ((2* math.pi) - desAngle) * -1
             rotError = ((2* math.pi) - rotError) * -1
 
         # Check to see if we are making a really small correction
@@ -89,14 +90,14 @@ class AutoDrive(metaclass=Singleton):
             rotError = 0
         
         # Calculate derivate of slew-limited angle for feed-forward angular velocity
-        rotErrorLimited = self.rotSlewRateLimiter.calculate(rotError)
-        velTCmdDer = (rotErrorLimited - self.prevRotError)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
+        rotErrorLimited = self.rotSlewRateLimiter.calculate(desAngle)
+        velTCmdDer = (desAngle - self.prevRotError)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
 
         # Update previous values for next loop
         self.prevRotError = rotErrorLimited
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
-        self.returnDriveTrainCommand.velT = rotError*self.rotKp.get() + rotError*self.rotKd.get()
+        self.returnDriveTrainCommand.velT = velTCmdDer*self.rotKp.get() + rotError*self.rotKd.get()
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
