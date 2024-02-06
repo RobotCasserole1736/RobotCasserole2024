@@ -7,6 +7,7 @@ from utils.faults import Fault
 from utils.signalLogging import log
 from utils.units import in2m
 from drivetrain.controlStrategies.autoDrive import AutoDrive
+from singerMovement.carriageControl import CarriageControl
 
 class OperatorInterface:
     def __init__(self):
@@ -75,8 +76,10 @@ class OperatorInterface:
             #if the operator wants the auto align desired
             if self.ctrl.getXButton() == True:
                 AutoDrive().setCmd(True)
+                self.autoAlignDesired = True
             else:
                 AutoDrive().setCmd(False)
+                self.autoAlignDesired = False
             #manual singer controls
 
             self.singerUpDownJoy = applyDeadband(self.ctrl.getLeftY(),.15)

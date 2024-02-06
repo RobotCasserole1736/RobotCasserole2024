@@ -97,7 +97,6 @@ class CarriageControl(metaclass=Singleton):
         else:
             return 0.0
 
-    
     def update(self):
 
         #######################################################
@@ -199,6 +198,8 @@ class CarriageControl(metaclass=Singleton):
     # Public API inputs
     def setSignerAutoAlignAngle(self, desiredAngle:float):
         self.autoAlignSingerRotCmd = desiredAngle
-    
+        print(self.autoAlignSingerRotCmd)
+
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
+        

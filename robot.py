@@ -130,6 +130,8 @@ class MyRobot(wpilib.TimedRobot):
             self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
         elif(self.oInt.getCarriageTrapPosCmd()):
             self.cc.setPositionCmd(CarriageControlCmd.TRAP)
+        elif(self.oInt.getAutoAlignCmd()):
+            self.cc.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
         else:
             self.cc.setPositionCmd(CarriageControlCmd.HOLD)
 
