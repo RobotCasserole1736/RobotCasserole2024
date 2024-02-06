@@ -38,6 +38,7 @@ class SingerAngleControl():
         self.relEncOffsetRad = 0.0
 
         self.stopped = True
+        self.useProfile = True    
         self.profiledPos = 0.0
         self.curUnprofiledPosCmd = 0.0
 
@@ -71,14 +72,28 @@ class SingerAngleControl():
     
     def atTarget(self):
         return self.profiler.isFinished()
+    
+    def setDesPosUnprofiled(self, desPos):
+        self.stopped = False
+        self.useProfile = False
+        self.curUnprofiledPosCmd = desPos
+        self._setProfile(self.getAngle())
+
 
     def setDesPos(self, desPos):
         self.stopped = False
+        self.useProfile = True
         self.curUnprofiledPosCmd = desPos
-        self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngle())
+        self._setProfile(self.curUnprofiledPosCmd)
 
     def setStopped(self):
         self.stopped = True
+        self.useProfile = False
+        self.curUnprofiledPosCmd = self.getAngle()
+        self._setProfile(self.getAngle())
+
+    def _setProfile(self, desPos):
+        self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngle())
 
     def getProfiledDesPos(self):
         return self.profiledPos
@@ -90,12 +105,17 @@ class SingerAngleControl():
             self.motor.setVoltage(0.0)
             self.profiledPos = actualPos
         else:
-            curState = self.profiler.getCurState()
+            if(self.useProfile):
+                curState = self.profiler.getCurState()
 
-            self.profiledPos = curState.position
+                self.profiledPos = curState.position
 
-            motorPosCmd = self._angleToMotorRev(curState.position)
-            motorVelCmd = self._angleToMotorRev(curState.velocity)
+                motorPosCmd = self._angleToMotorRev(curState.position)
+                motorVelCmd = self._angleToMotorRev(curState.velocity)
+            else:
+                self.profiledPos = self.curUnprofiledPosCmd
+                motorPosCmd = self._angleToMotorRev(self.curUnprofiledPosCmd)
+                motorVelCmd = 0.0
 
             vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd)
 

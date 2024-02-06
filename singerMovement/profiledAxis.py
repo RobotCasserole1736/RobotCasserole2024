@@ -10,10 +10,10 @@ class ProfiledAxis():
     # Provide a new desired setpoint position for the profile
     # If this desired setpoint is changed from last call, a new
     # trajectory is calcualted.
-    def set(self, newSetpoint, maxVel, maxAccel, curPos):
-        if(newSetpoint != self.curSetpoint):
-            self.profileStartTime = Timer.getFPGATimestamp()
+    def set(self, newSetpoint, maxVel, maxAccel, curPos, force=False):
+        if(newSetpoint != self.curSetpoint or force):
             self.curSetpoint = newSetpoint
+            self.profileStartTime = Timer.getFPGATimestamp()
             const = TrapezoidProfile.Constraints(maxVelocity=maxVel, maxAcceleration=maxAccel)
             self.profile = TrapezoidProfile(const,
                                             TrapezoidProfile.State(self.curSetpoint),

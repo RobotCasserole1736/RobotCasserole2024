@@ -44,7 +44,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.5 )
 
         # Minimum height that we have to go to before we can freely rotate the singer
-        self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.65 )
+        self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
         self.curElevHeight = 0.0
         self.curSingerRot = 0.0
@@ -112,7 +112,7 @@ class CarriageControl(metaclass=Singleton):
         if(self.curState == _CarriageStates.HOLD_ALL):
             self.elevCtrl.setStopped()
             if(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
-                self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
+                self.singerCtrl.setDesPosUnprofiled(self.autoAlignSingerRotCmd)
             else:
                 self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
@@ -141,8 +141,9 @@ class CarriageControl(metaclass=Singleton):
                 angleErr = abs(
                     self.curSingerRot - self._getUnprofiledSingerRotCmd()
                 )
-                belowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
-                if(belowSafe and angleErr > deg2Rad(10.0)):
+                goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
+                currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
+                if(currentlyBelowSafe and angleErr > deg2Rad(10.0)):
                     # We need to go below the safe height and we need to rotate. 
                     # We have to go up to the safe height first.
                     nextState = _CarriageStates.RUN_TO_SAFE_HEIGHT
