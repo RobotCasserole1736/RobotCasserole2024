@@ -38,7 +38,6 @@ class SingerAngleControl():
         self.relEncOffsetRad = 0.0
 
         self.stopped = True
-        self.useProfile = True    
         self.profiledPos = 0.0
         self.curUnprofiledPosCmd = 0.0
 
@@ -70,22 +69,14 @@ class SingerAngleControl():
     
     def atTarget(self):
         return self.profiler.isFinished()
-    
-    def setDesPosUnprofiled(self, desPos):
-        self.stopped = False
-        self.useProfile = False
-        self.curUnprofiledPosCmd = desPos
-        self.profiler.disable()
 
     def setDesPos(self, desPos):
         self.stopped = False
-        self.useProfile = True
         self.curUnprofiledPosCmd = desPos
         self._setProfile(self.curUnprofiledPosCmd)
 
     def setStopped(self):
         self.stopped = True
-        self.useProfile = False
         self.curUnprofiledPosCmd = self.getAngle()
         self.profiler.disable()
 
@@ -102,17 +93,12 @@ class SingerAngleControl():
             self.motor.setVoltage(0.0)
             self.profiledPos = actualPos
         else:
-            if(self.useProfile):
-                curState = self.profiler.getCurState()
+            curState = self.profiler.getCurState()
 
-                self.profiledPos = curState.position
+            self.profiledPos = curState.position
 
-                motorPosCmd = self._angleToMotorRev(curState.position)
-                motorVelCmd = self._angleToMotorRev(curState.velocity)
-            else:
-                self.profiledPos = self.curUnprofiledPosCmd
-                motorPosCmd = self._angleToMotorRev(self.curUnprofiledPosCmd)
-                motorVelCmd = 0.0
+            motorPosCmd = self._angleToMotorRev(curState.position)
+            motorVelCmd = self._angleToMotorRev(curState.velocity)
 
             vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd)
 
