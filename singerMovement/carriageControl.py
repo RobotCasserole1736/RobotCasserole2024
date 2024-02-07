@@ -181,8 +181,8 @@ class CarriageControl(metaclass=Singleton):
                     
             elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
                 if(self.singerCtrl.atTarget()):
-                        # If we're done rotating the singer, we're done
-                        nextState = _CarriageStates.HOLD_ALL
+                    # If we're done rotating the singer, we're done
+                    nextState = _CarriageStates.HOLD_ALL
                         
             if(nextState == _CarriageStates.HOLD_ALL):
                 # On all transitions into HOLD_ALL, re-evaluate the auto-alignment command

@@ -5,11 +5,11 @@ from drivetrain.drivetrainPhysical import (
     MAX_FWD_REV_SPEED_MPS,
     MAX_ROTATE_SPEED_RAD_PER_SEC,
 )
+#from drivetrain.controlStrategies.autoDrive import AutoDrive
 from jormungandr.choreoTrajectory import ChoreoTrajectoryState
 from utils.calibration import Calibration
 from utils.signalLogging import log
 from utils.mathUtils import limit
-from drivetrain.controlStrategies.autoDrive import AutoDrive
 
 class HolonomicDriveController:
     """

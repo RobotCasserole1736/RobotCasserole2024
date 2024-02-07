@@ -2,12 +2,13 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
-from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, MAX_MANUAL_ROT_ACCEL_DEGPS2, MAX_MAN_ACCEL_MPS2
+from singerMovement.singerConstants import (MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, 
+                                            MAX_MANUAL_ROT_ACCEL_DEGPS2, MAX_MAN_ACCEL_MPS2)
+#from singerMovement.carriageControl import CarriageControl
 from utils.faults import Fault
 from utils.signalLogging import log
-from utils.units import in2m
+#from utils.units import in2m
 from drivetrain.controlStrategies.autoDrive import AutoDrive
-from singerMovement.carriageControl import CarriageControl
 
 class OperatorInterface:
     def __init__(self):
@@ -20,7 +21,7 @@ class OperatorInterface:
         self.ctrl = XboxController(ctrlIdx)
 
         self.connectedFault = Fault(f"Operator XBox Controller ({ctrlIdx}) Unplugged")
-        self.AutoDrive = AutoDrive()
+        self.autoDrive = AutoDrive()
         #Shooter commands
         self.singerIntake = False
         self.singerShoot = False
@@ -37,18 +38,24 @@ class OperatorInterface:
         self.carriageSpeakerSubwooferPos = False
 
         #if the operator wants the auto align desired
-        self.AutoDrive = False
+        self.autoDrive = False
 
-        #singer manual controls
+        #singer manual controls, initialize
         self.manualSingerUpDown = 0
         self.manualSingerRot = 0
+        self.singerUpDownJoy = 0
+        self.manualSingerUpDownRaw = 0
+        self.manualSingerRotRaw = 0
+        self.singerRotJoy = 0
 
         #I don't know what the max on the slew rate limiter should be. It should be a constant
         self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_ACCEL_MPS2)
         self.manualSingerRotSlewRateLimiter = SlewRateLimiter(MAX_MANUAL_ROT_ACCEL_DEGPS2)
         
         self.motorRotations = 0
-        self.LinearDisp = 0
+        self.linearDisp = 0
+
+        self.autoAlignDesired = False
 
 
 
@@ -74,7 +81,7 @@ class OperatorInterface:
             #Above is basically the right side of the D pad
 
             #if the operator wants the auto align desired
-            if self.ctrl.getXButton() == True:
+            if self.ctrl.getXButton():
                 AutoDrive().setCmd(True)
                 self.autoAlignDesired = True
             else:
