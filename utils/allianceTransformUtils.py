@@ -15,7 +15,7 @@ from utils.units import ft2m
 # Simple utility to check if we're on the red alliance (and therefor doing transformation is needed)
 def onRed():
     return (
-        wpilib.DriverStation.getAlliance() == wpilib._wpilib.DriverStation.Alliance.kRed
+        wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
     )
 
 

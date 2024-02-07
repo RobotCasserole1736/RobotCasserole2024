@@ -1,6 +1,6 @@
 import wpilib
 from wpimath.units import feetToMeters
-from photonlibpy.photonCamera import PhotonCamera, VisionLEDMode, setVersionCheckEnabled
+from photonlibpy.photonCamera import PhotonCamera, setVersionCheckEnabled #VisionLEDMode
 from utils.fieldTagLayout import FieldTagLayout
 from utils.faults import Fault
 

@@ -2,10 +2,13 @@
 from wpilib import XboxController
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
-from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC
+from singerMovement.singerConstants import (MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC, 
+                                            MAX_MANUAL_ROT_ACCEL_DEGPS2, MAX_MAN_ACCEL_MPS2)
+#from singerMovement.carriageControl import CarriageControl
 from utils.faults import Fault
 from utils.signalLogging import log
-
+#from utils.units import in2m
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 
 class OperatorInterface:
     def __init__(self):
@@ -40,6 +43,10 @@ class OperatorInterface:
         # singer manual controls
         self.manualSingerUpDown = 0
         self.manualSingerRot = 0
+        self.singerUpDownJoy = 0
+        self.manualSingerUpDownRaw = 0
+        self.manualSingerRotRaw = 0
+        self.singerRotJoy = 0
 
         # I don't know what the max on the slew rate limiter should be. It should be a constant
         self.manualSingerUpDownSlewRateLimiter = SlewRateLimiter(MAX_MAN_VEL_MPS)
@@ -47,6 +54,7 @@ class OperatorInterface:
 
         self.motorRotations = 0
         self.linearDisp = 0
+
 
     def update(self):
 
