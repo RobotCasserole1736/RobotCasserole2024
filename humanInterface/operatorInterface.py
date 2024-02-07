@@ -5,9 +5,6 @@ from wpimath.filter import SlewRateLimiter
 from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_SEC
 from utils.faults import Fault
 from utils.signalLogging import log
-from utils.units import in2m
-from drivetrain.controlStrategies.autoDrive import AutoDrive
-from singerMovement.carriageControl import CarriageControl
 
 
 class OperatorInterface:

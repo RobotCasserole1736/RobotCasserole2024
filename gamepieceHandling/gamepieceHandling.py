@@ -64,15 +64,15 @@ class GamePieceHandling:
 
     def activeIntake(self,intakeCmd,ejectCmd):
         if intakeCmd == True and ejectCmd == False:
-            print("Intaking")
+            #print("Intaking")
             self.intakeMotorUpper.setVoltage(-1 * self.intakeVoltageCal.get())
             self.intakeMotorLower.setVoltage(-1 * self.intakeVoltageCal.get())
         elif intakeCmd == False and ejectCmd == True:
-            print("Eject")
+            #print("Eject")
             self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
             self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
         elif intakeCmd == False and ejectCmd == False:
-            print("No intake cmd")
+            #print("No intake cmd")
             self.intakeMotorUpper.setVoltage(0)
             self.intakeMotorLower.setVoltage(0)
 
