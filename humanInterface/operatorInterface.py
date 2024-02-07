@@ -12,9 +12,6 @@ from singerMovement.carriageControl import CarriageControl
 class OperatorInterface:
     def __init__(self):
         #initialize xbox controller, important values
-        #is the position commands going to be a enum later? I think they should be. 
-        #But I also think that right now, they're booleans anyways. You don't change them to an enum until later? 
-        #At least we didn't with shooter positions last year
 
         ctrlIdx = 1
         self.ctrl = XboxController(ctrlIdx)
@@ -24,9 +21,6 @@ class OperatorInterface:
         #Shooter commands
         self.singerIntake = False
         self.singerShoot = False
-        """Idea: shouldn't shooterHold be something that happens when there is a gamepiece detected by the
-        time of flight sensor? Maybe add that logic between time of flight class and the shooter wheels, 
-        not operator"""
         self.singerEject = False
 
         #element of the elevator. Goes up, down, and rotates into position
