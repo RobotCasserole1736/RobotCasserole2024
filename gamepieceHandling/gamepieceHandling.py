@@ -12,7 +12,6 @@ from utils.calibration import Calibration
 from utils import constants, faults
 from utils.units import RPM2RadPerSec, m2in
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from humanInterface.operatorInterface import OperatorInterface
 
 
 class GamePieceHandling:
@@ -46,8 +45,8 @@ class GamePieceHandling:
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
 
-        # Time of Flight sensor for checking gamepiece present
-        self.tofSensor = TimeOfFlight(12)
+        # Time of Flight sensor
+        self.tofSensor = TimeOfFlight(16)
         self.tofSensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.tofSensor.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
         self.hasGamePiece = False
@@ -63,9 +62,19 @@ class GamePieceHandling:
         self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
         self.shooterMotorRight.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
 
-    def activeIntake(self):
-        self.intakeMotorUpper.setVoltage(self.intakeVoltageCal)
-        self.intakeMotorLower.setVoltage(self.intakeVoltageCal)
+    def activeIntake(self,intakeCmd,ejectCmd):
+        if intakeCmd == True and ejectCmd == False:
+            print("Intaking")
+            self.intakeMotorUpper.setVoltage(-1 * self.intakeVoltageCal.get())
+            self.intakeMotorLower.setVoltage(-1 * self.intakeVoltageCal.get())
+        elif intakeCmd == False and ejectCmd == True:
+            print("Eject")
+            self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
+            self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
+        elif intakeCmd == False and ejectCmd == False:
+            print("No intake cmd")
+            self.intakeMotorUpper.setVoltage(0)
+            self.intakeMotorLower.setVoltage(0)
 
     def activeFloorRoller(self):
         self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal)
@@ -75,47 +84,15 @@ class GamePieceHandling:
         gamepieceDistSensorMeas = m2in(self.tofSensor.getRange() / 1000.0)
         self.disconTOFFault.set(self.tofSensor.getFirmwareVersion() == 0)
 
-
         if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
             self.hasGamePiece = True
         elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
             self.hasGamePiece = False
         else:
             pass
-        
 
-    def setInput(self, ShooterBoolean, IntakeBoolean, EjectBoolean):
-        
-        #idk if this is right :(
+    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
+        self.activeIntake(SingerIntakeBoolean,SingerEjectBoolean)
 
-        if (ShooterBoolean == False):
-            #OperatorInterface.getSingerShootCmd
-            return False
-        elif(ShooterBoolean == True):
-            self.activeShooter(self.shooterkFCal)
-
-        if (IntakeBoolean == False):
-            #OperatorInterface.getSingerIntakeCmd
-            return False
-        elif (IntakeBoolean == True):
-            self.activeIntake(self.intakeVoltageCal)
-
-        if (EjectBoolean == False):
-            #OperatorInterface.getSingerEjectCmd
-            return False
-        elif(EjectBoolean == True):
-            self.activeFloorRoller(self.intakeVoltageCal)
-
-    #def getSingerShootCmd(self):
-        # returns whether the singer is being commanded to shoot
-        #return self.singerShoot
-
-    #def getSingerIntakeCmd(self):
-        # returns whether the singer is being commanded to intake
-        #return self.singerIntake
-
-   
-    #def getSingerEjectCmd(self):
-        # returns whether the singer is being commanded to eject
-        #return self.singerEject
-
+        if SingerShooterBoolean:
+            self.activeShooter(self.shooterkFCal.get())
