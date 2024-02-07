@@ -119,6 +119,7 @@ class MyRobot(wpilib.TimedRobot):
         self.dInt.update()
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
+        AutoDrive().setCmd(self.oInt.getAutoAlignCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
