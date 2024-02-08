@@ -4,7 +4,7 @@ from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from singerMovement.carriageControl import CarriageControl
 from wpilib import Timer
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Pose2d
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from utils.allianceTransformUtils import onRed, transformX
 from utils.calibration import Calibration
 from utils.constants import FIELD_LENGTH_FT, SPEAKER_TARGET_HEIGHT_M
@@ -23,11 +23,11 @@ class AutoDrive(metaclass=Singleton):
         )
 
         # Previous Rotation Speed and time for calculating derivative
-        self.prevRotError = 0
+        self.prevDesAngle = 0
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
         # Set speaker coordinates
-        self.targetX = transformX(FIELD_LENGTH_FT - m2ft(0.22987))
+        self.targetX = transformX(0.22987)
         self.targetY = 5.4572958333417994
 
     def setCmd(self, shouldAutoAlign: bool):
@@ -58,46 +58,34 @@ class AutoDrive(metaclass=Singleton):
 
         CarriageControl().setSignerAutoAlignAngle(self.desiredAngle)
         
-        
+    def getRotationAngle(self, curPose: Pose2d) -> Rotation2d:
+        targetLocation = Translation2d(transformX(self.targetX),self.targetY)
+        robotToTargetTrans = targetLocation - curPose.translation()
+        return Rotation2d(robotToTargetTrans.X(), robotToTargetTrans.Y())
 
     def speakerAlign(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
-        # Update x coord of speaker if necessary
-        self.targetX = transformX(m2ft(0.22987))
-
-        # Test to see if we are to the right of the robot
-        # If we are, we have to correct the angle by 1 pi
-        # This is built into the following equation
-        if curPose.X() - self.targetX > 0:
-            desAngle = (math.atan((curPose.Y() - self.targetY) / (curPose.X() - self.targetX)) \
-                        - math.pi) % (2*math.pi)
-            rotError = desAngle - curPose.rotation().radians()
-        # If we aren't, we don't need to
-        # (these eqations are the same except the other one subtracts by pi and this one doesn't)
-        else:
-            desAngle = (math.atan((curPose.Y() - self.targetY)/(curPose.X() - self.targetX)) ) \
-                        % (2*math.pi)
-            rotError = desAngle - curPose.rotation().radians()
-
-        # Test if the angle we calculated will be greater than 180 degrees
-        # If it is, reverse it
-        if abs(rotError) > math.pi:
-            desAngle = ((2* math.pi) - desAngle) * -1
-            rotError = ((2* math.pi) - rotError) * -1
+        rotError2d = self.getRotationAngle(curPose) - curPose.rotation()
 
         # Check to see if we are making a really small correction
         # If we are, don't worry about it. We only need a certain level of accuracy
-        if abs(rotError) <= 0.05:
+        if abs(rotError2d.radians()) <= 0.05:
             rotError = 0
-        
+        else:
+            rotError = rotError2d.radians()
+
+        targetLocation = Translation2d(transformX(self.targetX),self.targetY)
+        desAngle = Rotation2d(targetLocation.X(),targetLocation.Y()).radians()
+
         # Calculate derivate of slew-limited angle for feed-forward angular velocity
-        rotErrorLimited = self.rotSlewRateLimiter.calculate(desAngle)
-        velTCmdDer = (desAngle - self.prevRotError)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
+        desAngleLimited = self.rotSlewRateLimiter.calculate(desAngle)
+        velTCmdDer = (desAngleLimited - self.prevDesAngle)/(Timer.getFPGATimestamp() - self.prevTimeStamp)
 
         # Update previous values for next loop
-        self.prevRotError = rotErrorLimited
+        self.prevDesAngle = desAngleLimited
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
-        self.returnDriveTrainCommand.velT = velTCmdDer*self.rotKp.get() + rotError*self.rotKd.get()
+        # self.returnDriveTrainCommand.velT = velTCmdDer*self.rotKp.get() + rotError.degrees()*self.rotKd.get()
+        self.returnDriveTrainCommand.velT = rotError*5
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
