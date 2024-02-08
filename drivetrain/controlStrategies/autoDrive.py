@@ -7,17 +7,16 @@ from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from utils.allianceTransformUtils import onRed, transformX
 from utils.calibration import Calibration
-from utils.constants import FIELD_LENGTH_FT, SPEAKER_TARGET_HEIGHT_M
+from utils.constants import SPEAKER_TARGET_HEIGHT_M
 from utils.signalLogging import log
 from utils.singleton import Singleton
-from utils.units import m2ft
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.active = False
         self.returnDriveTrainCommand = DrivetrainCommand()
-        self.rotKp = Calibration("Auto Align Rotation Kp",1)
-        self.rotKd = Calibration("Auto Align Rotation Kd",1)
+        self.rotKp = Calibration("Auto Align Rotation Kp",2)
+        self.rotKd = Calibration("Auto Align Rotation Kd",3)
         self.rotSlewRateLimiter = SlewRateLimiter(
             rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
         )
@@ -57,7 +56,7 @@ class AutoDrive(metaclass=Singleton):
         log("Singer Allign DistY", (distY))
 
         CarriageControl().setSignerAutoAlignAngle(self.desiredAngle)
-        
+
     def getRotationAngle(self, curPose: Pose2d) -> Rotation2d:
         targetLocation = Translation2d(transformX(self.targetX),self.targetY)
         robotToTargetTrans = targetLocation - curPose.translation()
@@ -84,8 +83,7 @@ class AutoDrive(metaclass=Singleton):
         self.prevDesAngle = desAngleLimited
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
-        # self.returnDriveTrainCommand.velT = velTCmdDer*self.rotKp.get() + rotError.degrees()*self.rotKd.get()
-        self.returnDriveTrainCommand.velT = rotError*5
+        self.returnDriveTrainCommand.velT = rotError*self.rotKp.get() + velTCmdDer*self.rotKd.get()
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
