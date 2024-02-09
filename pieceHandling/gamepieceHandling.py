@@ -71,8 +71,8 @@ class GamePieceHandling:
             self.shooterMotorLeft.setVelCmd(desVel,desVel*self.shooterkFCal.get())
             self.shooterMotorRight.setVelCmd(desVel,desVel*self.shooterkFCal.get())
         else:
-            self.intakeMotorUpper.setVoltage(0.0)
-            self.intakeMotorLower.setVoltage(0.0)
+            self.shooterMotorLeft.setVoltage(0.0)
+            self.shooterMotorRight.setVoltage(0.0)
 
 
     def updateIntake(self, shouldRun):
@@ -98,12 +98,18 @@ class GamePieceHandling:
         gamepieceDistSensorMeas = m2in(self.tofSensor.getRange() / 1000.0)
         self.disconTOFFault.set(self.tofSensor.getFirmwareVersion() == 0)
 
-        if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
-            self.hasGamePiece = True
-        elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
+        if(self.disconTOFFault.isActive):
+            # Gamepiece Sensor Faulted - assume we don't have a gamepiece
             self.hasGamePiece = False
         else:
-            pass
+            # Gampiece sensor ok - normal operation
+            if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
+                self.hasGamePiece = True
+            elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
+                self.hasGamePiece = False
+            else:
+                # Hystersis - hold state
+                pass
 
         # Gamepiece Handling
         if self.intakeOnCmd:
@@ -135,7 +141,7 @@ class GamePieceHandling:
             self.updateFloorRoller(False)
             self.updateIntake(False)
 
-
+    # Take in command from the outside world
     def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
         self.shooterOnCmd = SingerShooterBoolean
         self.intakeOnCmd = SingerIntakeBoolean

@@ -3,7 +3,7 @@ import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
 from dashboard import Dashboard
-#from drivetrain.controlStrategies.autoDrive import AutoDrive
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainControl import DrivetrainControl

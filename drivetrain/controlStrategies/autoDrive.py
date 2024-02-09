@@ -39,13 +39,13 @@ class AutoDrive(metaclass=Singleton):
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.active:
             self.getDesiredSingerAngle(curPose)
-            return self.speakerAlign(curPose, cmdIn)
+            return self.calcDrivetrainCommand(curPose, cmdIn)
         else:
             return cmdIn
 
     def getDesiredSingerAngle(self, curPose: Pose2d):
         # Find distance to target
-        distX = curPose.X() - self.targetX
+        distX = curPose.X() - transformX(self.targetX)
         distY = curPose.Y() - self.targetY
 
         # Get singer height from carriage control
@@ -66,7 +66,7 @@ class AutoDrive(metaclass=Singleton):
         robotToTargetTrans = targetLocation - curPose.translation()
         return Rotation2d(robotToTargetTrans.X(), robotToTargetTrans.Y())
 
-    def speakerAlign(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
+    def calcDrivetrainCommand(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
         rotError2d = self.getRotationAngle(curPose) - curPose.rotation()
 
         # Check to see if we are making a really small correction
