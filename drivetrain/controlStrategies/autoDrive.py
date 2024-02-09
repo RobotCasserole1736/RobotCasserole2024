@@ -1,11 +1,13 @@
 import math
-from drivetrain.drivetrainCommand import DrivetrainCommand
-from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
-from singerMovement.carriageControl import CarriageControl
 from wpilib import Timer
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from utils.allianceTransformUtils import onRed, transformX
+from wpimath.geometry import Pose2d
+from drivetrain.drivetrainCommand import DrivetrainCommand
+from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
+from singerMovement.carriageControl import CarriageControl
+from utils.allianceTransformUtils import transformX #and onRed,
 from utils.calibration import Calibration
 from utils.constants import SPEAKER_TARGET_HEIGHT_M
 from utils.signalLogging import log
@@ -28,6 +30,8 @@ class AutoDrive(metaclass=Singleton):
         # Set speaker coordinates
         self.targetX = transformX(0.22987)
         self.targetY = 5.4572958333417994
+
+        self.desiredAngle = 0
 
     def setCmd(self, shouldAutoAlign: bool):
         self.active = shouldAutoAlign

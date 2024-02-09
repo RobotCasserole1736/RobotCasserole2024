@@ -10,22 +10,21 @@ class ExtDriveManager(metaclass=Singleton):
         self.driveAvailableFault = Fault("Logging USB Drive Not Available")
 
         if wpilib.RobotBase.isSimulation():
-            self.logDir = (
-                "./.simulationLogs"  # .prefix makes sure it doesn't get deployed
-            )
+            # Silently disable in sim
+            self.enableDiskLogging = False
+            self.logDir = ""
         else:
             self.logDir = "/U/logs"
+            try:
+                if not os.path.isdir(self.logDir):
+                    os.makedirs(self.logDir)
+            except PermissionError as err:
+                print("Logging disabled!")
+                print(err)
+                self.enableDiskLogging = False
+                self.driveAvailableFault.setFaulted()
 
-        try:
-            if not os.path.isdir(self.logDir):
-                os.makedirs(self.logDir)
-        except PermissionError as err:
-            print("Logging disabled!")
-            print(err)
-            self.enableDiskLogging = False
-            self.driveAvailableFault.setFaulted()
-
-        self.conn = True
+            self.conn = True
 
     def getLogStoragePath(self):
         return self.logDir

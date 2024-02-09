@@ -17,16 +17,16 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 class GamePieceHandling:
     def __init__(self):
         # Shooter Motors
-        self.shooterMotor1 = WrapperedSparkMax(
-            constants.SHOOTER_MOTOR1_CANID, "ShooterMotor1"
+        self.shooterMotorLeft = WrapperedSparkMax(
+            constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
         )
-        self.shooterMotor2 = WrapperedSparkMax(
-            constants.SHOOTER_MOTOR2_CANID, "ShooterMotor2"
+        self.shooterMotorRight = WrapperedSparkMax(
+            constants.SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight"
         )
 
         # Intake Motors
-        self.intakeMotor1 = WrapperedSparkMax(constants.INTAKE_MOTOR1_CANID1, "IntakeMotor1")
-        self.intakeMotor2 = WrapperedSparkMax(constants.INTAKE_MOTOR2_CANID2, "IntakeMotor2")
+        self.intakeMotorUpper = WrapperedSparkMax(constants.INTAKE_MOTOR_UPPER_CANID1, "IntakeMotorUpper")
+        self.intakeMotorLower = WrapperedSparkMax(constants.INTAKE_MOTOR_LOWER_CANID2, "IntakeMotorLower")
 
         # Floor Roller Motors
         self.floorRoolerMotor1 = WrapperedSparkMax(
@@ -45,8 +45,8 @@ class GamePieceHandling:
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
 
-        # Time of Flight sensor for checking gamepiece present
-        self.tofSensor = TimeOfFlight(12)
+        # Time of Flight sensor
+        self.tofSensor = TimeOfFlight(16)
         self.tofSensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.tofSensor.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
         self.hasGamePiece = False
@@ -59,12 +59,22 @@ class GamePieceHandling:
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
     def activeShooter(self, desVel):
-        self.shooterMotor1.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
-        self.shooterMotor1.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
+        self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
+        self.shooterMotorRight.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
 
-    def activeIntake(self):
-        self.intakeMotor1.setVoltage(self.intakeVoltageCal)
-        self.intakeMotor2.setVoltage(self.intakeVoltageCal)
+    def activeIntake(self,intakeCmd,ejectCmd):
+        if intakeCmd == True and ejectCmd == False:
+            #print("Intaking")
+            self.intakeMotorUpper.setVoltage(-1 * self.intakeVoltageCal.get())
+            self.intakeMotorLower.setVoltage(-1 * self.intakeVoltageCal.get())
+        elif intakeCmd == False and ejectCmd == True:
+            #print("Eject")
+            self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
+            self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
+        elif intakeCmd == False and ejectCmd == False:
+            #print("No intake cmd")
+            self.intakeMotorUpper.setVoltage(0)
+            self.intakeMotorLower.setVoltage(0)
 
     def activeFloorRoller(self):
         self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal)
@@ -80,3 +90,9 @@ class GamePieceHandling:
             self.hasGamePiece = False
         else:
             pass
+
+    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
+        self.activeIntake(SingerIntakeBoolean,SingerEjectBoolean)
+
+        if SingerShooterBoolean:
+            self.activeShooter(self.shooterkFCal.get())

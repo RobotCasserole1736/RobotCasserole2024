@@ -1,6 +1,6 @@
 import wpilib
 import ntcore as nt
-import wpiutil._wpiutil.log as wpilog  # pylint: disable=import-error,no-name-in-module
+import wpiutil.log as wpilog  # pylint: disable=import-error,no-name-in-module
 from utils.extDriveManager import ExtDriveManager
 from utils.singleton import Singleton
 
@@ -30,7 +30,7 @@ class SignalWrangler(metaclass=Singleton):
         self.time = nt._now()  # pylint: disable=W0212
 
     def publishValue(self, name, value, units):
-        global sampIdx
+        #global sampIdx
     
         if not name in self.publishedSigDict:
             # New signal found!

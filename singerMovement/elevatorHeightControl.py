@@ -1,12 +1,13 @@
 import math
 
 from playingwithfusion import TimeOfFlight
-from singerMovement.singerConstants import ELEVATOR_GEARBOX_GEAR_RATIO, ELEVATOR_SPOOL_RADIUS_M, MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS
+from singerMovement.singerConstants import (ELEVATOR_GEARBOX_GEAR_RATIO, ELEVATOR_SPOOL_RADIUS_M, 
+                                            MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS)
+from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
 from utils.units import sign
-from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from singerMovement.profiledAxis import ProfiledAxis
 from utils.signalLogging import log
+from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
 # and motion profiling
@@ -51,7 +52,8 @@ class ElevatorHeightControl():
         return motorRev * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) - self.relEncOffsetM
             
     def _heightToMotorRev(self, elevLin):
-        return (elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) * ELEVATOR_GEARBOX_GEAR_RATIO 
+        return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) 
+                * ELEVATOR_GEARBOX_GEAR_RATIO )
     
     def getHeightM(self):
         motorRot = self.motor.getMotorPositionRad()
