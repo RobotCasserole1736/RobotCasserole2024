@@ -7,7 +7,7 @@ from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainControl import DrivetrainControl
-from gamepieceHandling.gamepieceHandling import GamePieceHandling
+from pieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.operatorInterface import OperatorInterface
 from humanInterface.driverInterface import DriverInterface
 from humanInterface.ledControl import LEDControl
@@ -21,7 +21,7 @@ from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
-from climberControl.climberControl import ClimberControl
+from climbControl.climberControl import ClimberControl
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -48,7 +48,7 @@ class MyRobot(wpilib.TimedRobot):
             16
         )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
 
-        self.cc = CarriageControl()
+        self.carriageControl = CarriageControl()
         self.gph = GamePieceHandling()
 
         self.ledCtrl = LEDControl()
@@ -78,7 +78,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.gph.update()
 
-        self.cc.update()
+        self.carriageControl.update()
 
         self.stt.end()
 
@@ -119,24 +119,31 @@ class MyRobot(wpilib.TimedRobot):
         self.dInt.update()
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
+        AutoDrive().setCmd(self.oInt.getAutoAlignCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
 
         # Map operator command to carriage control command
         if(self.oInt.getCarriageAmpPosCmd()):
-            self.cc.setPositionCmd(CarriageControlCmd.AMP)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.AMP)
         elif(self.oInt.getCarriageIntakePosCmd()):
-            self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
         elif(self.oInt.getCarriageTrapPosCmd()):
-            self.cc.setPositionCmd(CarriageControlCmd.TRAP)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.TRAP)
         elif(self.oInt.getAutoAlignCmd()):
-            self.cc.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
         else:
-            self.cc.setPositionCmd(CarriageControlCmd.HOLD)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
 
-
-
+        
+        # Gamepiece handling input
+        self.gph.setInput(
+            self.oInt.getSingerShootCmd(),
+            self.oInt.getSingerIntakeCmd(),
+            self.oInt.getSingerEjectCmd()
+        )
+        
         # No trajectory in Teleop
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)

@@ -7,12 +7,11 @@ from drivetrain.drivetrainPhysical import MAX_STRAFE_SPEED_MPS
 from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
 from drivetrain.drivetrainPhysical import MAX_TRANSLATE_ACCEL_MPS2
 from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
+from drivetrain.controlStrategies.autoDrive import AutoDrive
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
 from utils.constants import WINCH_MAX_ACCEL
-from drivetrain.controlStrategies.autoDrive import AutoDrive
-
 
 class DriverInterface:
     """Class to gather input from the driver of the robot"""
@@ -34,7 +33,7 @@ class DriverInterface:
         self.velTSlewRateLimiter = SlewRateLimiter(
             rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
         )
-        self.AutoDrive = AutoDrive()
+        self.autoDrive = AutoDrive()
         #Currently using the driver controller to call autoDrive. Change this to operator controller later.
         
 

@@ -1,10 +1,11 @@
-from singerMovement.singerConstants import MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, SINGER_GEARBOX_RATIO
+from singerMovement.singerConstants import (MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, 
+                                            SINGER_GEARBOX_RATIO)
+from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
 from utils.units import deg2Rad, rad2Deg, sign
-from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from singerMovement.profiledAxis import ProfiledAxis
-from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 from utils.signalLogging import log
+from wrappers.wrapperedSparkMax import WrapperedSparkMax
+from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 
 # Controls the singer angle motor, including rezeroing from absolute sensors
 # and motion profiling

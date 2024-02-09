@@ -86,7 +86,7 @@ class WrapperedSparkMax:
         posCmdRev = rad2Rev(posCmd)
 
         log(self.name + "_desPos", posCmd, "Rev")
-        log(self.name + "_arbFF", arbFF, "V")
+        log(self.name + "_cmdVoltage", arbFF, "V")
 
         if self.configSuccess:
             err = self.pidCtrl.setReference(
@@ -112,7 +112,7 @@ class WrapperedSparkMax:
         velCmdRPM = radPerSec2RPM(velCmd)
 
         log(self.name + "_desVel", velCmd, "RPM")
-        log(self.name + "_arbFF", arbFF, "V")
+        log(self.name + "_cmdVoltage", arbFF, "V")
 
         if self.configSuccess:
             err = self.pidCtrl.setReference(
