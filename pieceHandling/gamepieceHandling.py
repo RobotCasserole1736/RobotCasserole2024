@@ -16,6 +16,11 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 class GamePieceHandling:
     def __init__(self):
+        # Booleans
+        self.shooterOn = False
+        self.intakeOn = False
+        self.ejectOn = False
+
         # Shooter Motors
         self.shooterMotorLeft = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
@@ -41,6 +46,10 @@ class GamePieceHandling:
         # Shooter Calibrations (PID Controller)
         self.shooterkFCal = Calibration("ShooterkF", 0.00255, "V/RPM")
         self.shooterkPCal = Calibration("ShooterkP", 0)
+        self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
+
+        self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
+        self.shooterMotorRight.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
@@ -58,29 +67,26 @@ class GamePieceHandling:
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
-    def activeShooter(self, desVel):
-        self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
-        self.shooterMotorRight.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
+    def activeShooter(self):
+        desVel = RPM2RadPerSec(self.shooterVel)
+        self.shooterMotorLeft.setVelCmd(desVel,desVel*self.shooterkFCal.get())
+        self.shooterMotorRight.setVelCmd(desVel,desVel*self.shooterkFCal.get())
 
-    def activeIntake(self,intakeCmd,ejectCmd):
-        if intakeCmd == True and ejectCmd == False:
-            #print("Intaking")
-            self.intakeMotorUpper.setVoltage(-1 * self.intakeVoltageCal.get())
-            self.intakeMotorLower.setVoltage(-1 * self.intakeVoltageCal.get())
-        elif intakeCmd == False and ejectCmd == True:
-            #print("Eject")
-            self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
-            self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
-        elif intakeCmd == False and ejectCmd == False:
-            #print("No intake cmd")
-            self.intakeMotorUpper.setVoltage(0)
-            self.intakeMotorLower.setVoltage(0)
+    def activeIntake(self):
+        self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
+        self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
 
     def activeFloorRoller(self):
-        self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal)
-        self.floorRoolerMotor2.setVoltage(self.intakeVoltageCal)
+        self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal.get())
+        self.floorRoolerMotor2.setVoltage(self.intakeVoltageCal.get())
 
     def update(self):
+        # Update PID Gains if needed
+        if self.shooterkPCal.isChanged() or self.shooterkFCal.isChanged():
+            self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
+            self.shooterMotorRight.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
+
+        # TOF Sensor Update
         gamepieceDistSensorMeas = m2in(self.tofSensor.getRange() / 1000.0)
         self.disconTOFFault.set(self.tofSensor.getFirmwareVersion() == 0)
 
@@ -91,8 +97,17 @@ class GamePieceHandling:
         else:
             pass
 
-    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
-        self.activeIntake(SingerIntakeBoolean,SingerEjectBoolean)
+        # Gamepiece Handling
+        if self.intakeOn and not self.hasGamePiece:
+            self.activeIntake()
+            self.activeFloorRoller()
+        elif self.shooterOn:
+            self.activeShooter()
+            curShooterVel = max(self.shooterMotorLeft.getMotorVelocityRadPerSec(),self.shooterMotorRight.getMotorVelocityRadPerSec())
+            if abs(RPM2RadPerSec(self.shooterVel) - curShooterVel) < 0.05:
+                self.activeIntake()
 
-        if SingerShooterBoolean:
-            self.activeShooter(self.shooterkFCal.get())
+    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
+        self.shooterOn = SingerShooterBoolean
+        self.intakeOn = SingerIntakeBoolean
+        self.ejectOn = SingerEjectBoolean
