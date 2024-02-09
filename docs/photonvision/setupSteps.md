@@ -28,7 +28,7 @@ Make sure the Camera name is correct - this is what the code uses to reference w
 
 Overall Settings:
 Left Cam:
- * IP Address - `10.17.36.11`
+ * IP Address - `10.17.36.13`
  * mdns Name - `leftcam`
  * Camera name - `LEFT_CAM`
 
@@ -37,6 +37,10 @@ Right Cam:
  * mdns Name - `rightcam`
  * Camera name - `RIGHT_CAM`
 
+Spare Cam:
+ * IP Address - `10.17.36.11`
+ * mdns Name - `sparecam`
+ * Camera name - `SPARE_CAM`
 
 Common Vision Settings:
  * Aurco pipeline
