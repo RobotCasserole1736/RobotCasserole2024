@@ -16,6 +16,11 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 class GamePieceHandling:
     def __init__(self):
+        # Booleans
+        self.shooterOnCmd = False
+        self.intakeOnCmd = False
+        self.ejectOnCmd = False
+
         # Shooter Motors
         self.shooterMotorLeft = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
@@ -41,6 +46,8 @@ class GamePieceHandling:
         # Shooter Calibrations (PID Controller)
         self.shooterkFCal = Calibration("ShooterkF", 0.00255, "V/RPM")
         self.shooterkPCal = Calibration("ShooterkP", 0)
+        self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
+        self._updateCals()
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
@@ -58,29 +65,36 @@ class GamePieceHandling:
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
-    def activeShooter(self, desVel):
-        self.shooterMotorLeft.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF default 0
-        self.shooterMotorRight.setVelCmd(RPM2RadPerSec(desVel))  # ArbFF defualt 0
+    def updateShooter(self, shouldRun):
+        if(shouldRun):
+            desVel = RPM2RadPerSec(self.shooterVel.get())
+            self.shooterMotorLeft.setVelCmd(desVel,desVel*self.shooterkFCal.get())
+            self.shooterMotorRight.setVelCmd(desVel,desVel*self.shooterkFCal.get())
+        else:
+            self.intakeMotorUpper.setVoltage(0.0)
+            self.intakeMotorLower.setVoltage(0.0)
 
-    def activeIntake(self,intakeCmd,ejectCmd):
-        if intakeCmd == True and ejectCmd == False:
-            #print("Intaking")
-            self.intakeMotorUpper.setVoltage(-1 * self.intakeVoltageCal.get())
-            self.intakeMotorLower.setVoltage(-1 * self.intakeVoltageCal.get())
-        elif intakeCmd == False and ejectCmd == True:
-            #print("Eject")
-            self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
-            self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
-        elif intakeCmd == False and ejectCmd == False:
-            #print("No intake cmd")
-            self.intakeMotorUpper.setVoltage(0)
-            self.intakeMotorLower.setVoltage(0)
 
-    def activeFloorRoller(self):
-        self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal)
-        self.floorRoolerMotor2.setVoltage(self.intakeVoltageCal)
+    def updateIntake(self, shouldRun):
+        voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
+        self.intakeMotorUpper.setVoltage(voltage)
+        self.intakeMotorLower.setVoltage(voltage)
+
+    def updateFloorRoller(self, shouldRun):
+        voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
+        self.floorRoolerMotor1.setVoltage(voltage)
+        self.floorRoolerMotor2.setVoltage(voltage)
+
+    def _updateCals(self):
+            self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
+            self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
+        # Update PID Gains if needed
+        if self.shooterkPCal.isChanged():
+            self._updateCals()
+
+        # TOF Sensor Update
         gamepieceDistSensorMeas = m2in(self.tofSensor.getRange() / 1000.0)
         self.disconTOFFault.set(self.tofSensor.getFirmwareVersion() == 0)
 
@@ -91,8 +105,38 @@ class GamePieceHandling:
         else:
             pass
 
-    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
-        self.activeIntake(SingerIntakeBoolean,SingerEjectBoolean)
+        # Gamepiece Handling
+        if self.intakeOnCmd:
+            # Intake desired - run if we don't yet have a gamepiece
+            if self.hasGamePiece:
+                self.updateIntake(False)
+                self.updateFloorRoller(False)
+            else:
+                self.updateIntake(True)
+                self.updateFloorRoller(True)
 
-        if SingerShooterBoolean:
-            self.activeShooter(self.shooterkFCal.get())
+            # And don't shoot
+            self.updateShooter(False)
+            
+        elif self.shooterOnCmd:
+            # Shooting Commanded
+            self.updateShooter(True)
+            self.updateFloorRoller(False)
+            curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
+            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(30.0):
+                # We're at the right shooter speed, go ahead and inject the gamepiece
+                self.updateIntake(True)
+            else:
+                # Wait for spoolup
+                self.updateIntake(False)
+        else:
+            # Nothing commanded
+            self.updateShooter(False)
+            self.updateFloorRoller(False)
+            self.updateIntake(False)
+
+
+    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
+        self.shooterOnCmd = SingerShooterBoolean
+        self.intakeOnCmd = SingerIntakeBoolean
+        self.ejectOnCmd = SingerEjectBoolean
