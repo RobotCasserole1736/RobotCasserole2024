@@ -1,5 +1,5 @@
 # RobotCasserole2023
-Software for Robot Casserole's 2023 Charged Up 🔋⚡ Competition Season
+Software for Robot Casserole's 2024 Crescendo 🎸🎵 Competition Season
 
 ![Logo](ReadMeImages/Donut_Shirt_Colored_FINAL-1.jpg)
 
