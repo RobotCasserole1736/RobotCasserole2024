@@ -8,6 +8,7 @@ from utils.faults import FaultWrangler
 from humanInterface.operatorInterface import OperatorInterface
 from utils.signalLogging import log
 from webserver.webserver import Webserver
+from dashboardWidgets.circularGauge import CircularGauge
 
 class Dashboard:
     def __init__(self):
@@ -21,6 +22,9 @@ class Dashboard:
         webServer.addDashboardWidget(Icon(55, 60, "/SmartDashboard/GamepieceIconState", "#00FF00", "newIntakeimg"))
         webServer.addDashboardWidget(Icon(65, 60, "/SmartDashboard/AutoAlignIconState", "#0000FF", "autoAlign"))
 
+
+        webServer.addDashboardWidget(
+            CircularGauge(25, 40, "/SmartDashboard/LeftRightShooterGauge/", -10,10,-5,5))
 
         webServer.addDashboardWidget(Text(50, 75, "/SmartDashboard/faultDescription"))
         webServer.addDashboardWidget(SwerveState(85, 15))
