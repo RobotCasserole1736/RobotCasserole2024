@@ -59,6 +59,9 @@ class CarriageControl(metaclass=Singleton):
         self.autoAlignSingerRotCmd = 0.0
         self.useAutoAlignAngleInHold = False
 
+        #Code to disable all elevator & singer movement
+        self.DISABLE_SINGER_MOVEMENT = False
+
         # State Machine
         self.curState = _CarriageStates.HOLD_ALL
 
@@ -195,9 +198,9 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Run Motors
-
-        self.elevCtrl.update()
-        self.singerCtrl.update()
+        if self.DISABLE_SINGER_MOVEMENT == False:
+            self.elevCtrl.update()
+            self.singerCtrl.update()
 
         log("Carriage State", self.curState, "state")
         log("Carriage Cmd", self.curPosCmd, "state")
