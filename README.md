@@ -1,70 +1,35 @@
-# firstRoboPy
-A very simple first attempt at robot written in python
+# RobotCasserole2024
+Software for Robot Casserole's 2024 Crescendo 🎸🎵 Competition Season
 
-![Workflow Status](https://github.com/RobotCasserole1736/firstRoboPy/actions/workflows/ci.yml/badge.svg)
+![Logo](ReadMeImages/Rusty_Album_Cover.webp)
 
-## Installation
+## Contents
+1. Driver View
+2. Main Source Code
+3. LocalHost Link
+4. Controller Mapping
+5. Necessary Fractal
 
-Before developing code on a new computer, perform the following:
+## 1. Driver View Website
+  The Driver View web site is used to help test and tweak our code, and used to help drive team during match. The driver view is a javascript/HTML based viewer of data logs captured from the robot during operation. These data logs are then used to tweak code before, during, and after competition. 
 
-1. [Download and install wpilib](https://github.com/wpilibsuite/allwpilib/releases)
-2. [Download and install python](https://www.python.org/downloads/)
-3. Run these commands:
+## 2. Main Source Code
+![Jazzy](ReadMeImages/1_5EI2F_7k5zJKVYg_12g5wA.png)
+  
+  So far we have the majority of functional robot code written in Python.  Here is the Repo if you want to take a gander.
+   [here](https://github.com/RobotCasserole1736/RobotCasserole2024/tree/main/RobotCode).
+  
+## 3. LocalHost Website 
+  Here is a link to the localhost website used for sims and robot testing.  Some minor updates have occured but otherwise it is the classic website.
+  (Just a heads up you'll need running code in simulation for the link to work.)
+  [Super cool people click this link (Totally not a virus)](http://localhost:5805/)
 
-```cmd
-    python -m pip install --upgrade pip
-    python -m pip install -r requirements_dev.txt
-    python -m pip install robotpy
-    robotpy sync
-```
+## 4. Controller Mapping
+  Here are our two mappings for our driver and operator controllers:
+  ![Driver](ReadMeImages/Driver_Controller.png)
+  ![Operator](ReadMeImages/Operator_Controller.png)
 
-## Docs
 
-[Click here to see documentation for common libraries](docs/UserAPI).
+## 5. Yo what's up.  It would be pretty cool if you took a look at this sick fractal yo.
+  ![FractyTime](ReadMeImages/Mandelbrot_zoom.gif) 
 
-## Deploying to the Robot
-
-`robotpy deploy` will deploy all code to the robot. Be sure to be on the same network as the robot.
-
-`.deploy_cfg` contains specific configuration about the deploy process.
-
-Note any folder or file prefixed with a `.` will be skipped in the deploy.
-
-## Linting
-
-"Linting" is the process of checking our code format and style to keep it looking nice
-
-In vsCode, run the lint check via the tasks
-
-`.pylintrc` contains configuration about what checks the linter runs, and what formatting it enforces
-
-## Testing
-
-Run the `Test` configuration in the debugger in vsCode.
-
-## Simulating
-
-Run the `Simulate` configuration in the debugger in vsCode.
-
-## Continuous Integration
-
-Github runs our code on its servers on every commit to ensure our code stays high quality. This is called "Continuous Integration".
-
-`.github/workflows/ci.yml` contains configuration for all the commands that our continuous integration environment.
-
-To minimize frustration and rework, before committing, be sure to:
-
-1. Run the test suite
-2. Run linter and fix any formatting errors.
-
-CI will check python 3.11 and 3.12.
-
-## Dependency Management
-
-`pyproject.toml` lists the python packages needed to run the robot code.
-
-`robotpy sync` will ensure the RIO and your development PC have the proper versions of everyhing in `pyproject.toml` installed
-
-`requirements_dev.txt` lists everything needed just for software development. The things in here are not needed to run the code, and therefor should _not_ get installed on a roborio.
-
-Install the development dependencies with `pip install -r requirements_dev.txt`.
