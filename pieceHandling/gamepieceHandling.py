@@ -18,9 +18,9 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 class GamePieceHandling(metaclass=Singleton):
     def __init__(self):
         # Booleans
-        self.shooterOn = False
-        self.intakeOn = False
-        self.ejectOn = False
+        self.shooterOnCmd = False
+        self.intakeOnCmd = False
+        self.ejectOnCmd = False
 
         # Shooter Motors
         self.shooterMotorLeft = WrapperedSparkMax(
@@ -48,9 +48,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterkFCal = Calibration("ShooterkF", 0.00255, "V/RPM")
         self.shooterkPCal = Calibration("ShooterkP", 0)
         self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
-
-        self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
-        self.shooterMotorRight.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
+        self._updateCals()
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
@@ -68,47 +66,84 @@ class GamePieceHandling(metaclass=Singleton):
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
-    def activeShooter(self):
-        desVel = RPM2RadPerSec(self.shooterVel)
-        self.shooterMotorLeft.setVelCmd(desVel,desVel*self.shooterkFCal.get())
-        self.shooterMotorRight.setVelCmd(desVel,desVel*self.shooterkFCal.get())
+    def updateShooter(self, shouldRun):
+        if(shouldRun):
+            desVel = RPM2RadPerSec(self.shooterVel.get())
+            self.shooterMotorLeft.setVelCmd(desVel,desVel*self.shooterkFCal.get())
+            self.shooterMotorRight.setVelCmd(desVel,desVel*self.shooterkFCal.get())
+        else:
+            self.shooterMotorLeft.setVoltage(0.0)
+            self.shooterMotorRight.setVoltage(0.0)
 
-    def activeIntake(self):
-        self.intakeMotorUpper.setVoltage(self.intakeVoltageCal.get())
-        self.intakeMotorLower.setVoltage(self.intakeVoltageCal.get())
 
-    def activeFloorRoller(self):
-        self.floorRoolerMotor1.setVoltage(self.intakeVoltageCal.get())
-        self.floorRoolerMotor2.setVoltage(self.intakeVoltageCal.get())
+    def updateIntake(self, shouldRun):
+        voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
+        self.intakeMotorUpper.setVoltage(voltage)
+        self.intakeMotorLower.setVoltage(voltage)
+
+    def updateFloorRoller(self, shouldRun):
+        voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
+        self.floorRoolerMotor1.setVoltage(voltage)
+        self.floorRoolerMotor2.setVoltage(voltage)
+
+    def _updateCals(self):
+            self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
+            self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
         # Update PID Gains if needed
-        if self.shooterkPCal.isChanged() or self.shooterkFCal.isChanged():
-            self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
-            self.shooterMotorRight.setPID(self.shooterkPCal.get(),0,self.shooterkFCal.get())
+        if self.shooterkPCal.isChanged():
+            self._updateCals()
 
         # TOF Sensor Update
         gamepieceDistSensorMeas = m2in(self.tofSensor.getRange() / 1000.0)
         self.disconTOFFault.set(self.tofSensor.getFirmwareVersion() == 0)
 
-        if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
-            self.hasGamePiece = True
-        elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
+        if(self.disconTOFFault.isActive):
+            # Gamepiece Sensor Faulted - assume we don't have a gamepiece
             self.hasGamePiece = False
         else:
-            pass
+            # Gampiece sensor ok - normal operation
+            if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
+                self.hasGamePiece = True
+            elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
+                self.hasGamePiece = False
+            else:
+                # Hystersis - hold state
+                pass
 
         # Gamepiece Handling
-        if self.intakeOn and not self.hasGamePiece:
-            self.activeIntake()
-            self.activeFloorRoller()
-        elif self.shooterOn:
-            self.activeShooter()
-            curShooterVel = max(self.shooterMotorLeft.getMotorVelocityRadPerSec(),self.shooterMotorRight.getMotorVelocityRadPerSec())
-            if abs(RPM2RadPerSec(self.shooterVel) - curShooterVel) < 0.05:
-                self.activeIntake()
+        if self.intakeOnCmd:
+            # Intake desired - run if we don't yet have a gamepiece
+            if self.hasGamePiece:
+                self.updateIntake(False)
+                self.updateFloorRoller(False)
+            else:
+                self.updateIntake(True)
+                self.updateFloorRoller(True)
 
+            # And don't shoot
+            self.updateShooter(False)
+            
+        elif self.shooterOnCmd:
+            # Shooting Commanded
+            self.updateShooter(True)
+            self.updateFloorRoller(False)
+            curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
+            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(30.0):
+                # We're at the right shooter speed, go ahead and inject the gamepiece
+                self.updateIntake(True)
+            else:
+                # Wait for spoolup
+                self.updateIntake(False)
+        else:
+            # Nothing commanded
+            self.updateShooter(False)
+            self.updateFloorRoller(False)
+            self.updateIntake(False)
+
+    # Take in command from the outside world
     def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
-        self.shooterOn = SingerShooterBoolean
-        self.intakeOn = SingerIntakeBoolean
-        self.ejectOn = SingerEjectBoolean
+        self.shooterOnCmd = SingerShooterBoolean
+        self.intakeOnCmd = SingerIntakeBoolean
+        self.ejectOnCmd = SingerEjectBoolean
