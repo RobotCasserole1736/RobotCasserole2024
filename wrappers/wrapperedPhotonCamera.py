@@ -5,14 +5,17 @@ from utils.fieldTagLayout import FieldTagLayout
 from utils.faults import Fault
 from wpimath.geometry import Pose2d
 
-
+# Describes one on-field pose estimate from the a camera at a specific time.
 class CameraPoseObservation:
     def __init__(self, time, estFieldPose, trustworthiness=1.0):
         self.time = time
         self.estFieldPose = estFieldPose
         self.trustworthiness = trustworthiness  # TODO - not used yet
 
-
+# Wrappers photonvision to:
+# 1 - resolve issues with target ambiguity (two possible poses for each observation)
+# 2 - Convert pose estimates to the field
+# 3 - Handle recording latency of when the image was actually seen
 class WrapperedPhotonCamera:
     def __init__(self, camName, robotToCam):
         #setVersionCheckEnabled(False)

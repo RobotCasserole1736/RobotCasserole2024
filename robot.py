@@ -22,6 +22,7 @@ from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
+from utils.powerMonitor import PowerMonitor
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -60,6 +61,8 @@ class MyRobot(wpilib.TimedRobot):
         self.dashboard = Dashboard()
 
         self.rioMonitor = RIOMonitor()
+        self.pwrMon = PowerMonitor()
+
 
         # Normal robot code updates every 20ms, but not everything needs to be that fast.
         # Register slower-update periodic functions
@@ -79,6 +82,8 @@ class MyRobot(wpilib.TimedRobot):
         self.gph.update()
 
         self.carriageControl.update()
+
+        self.pwrMon.update()
 
         self.stt.end()
 
