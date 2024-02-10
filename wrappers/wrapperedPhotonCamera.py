@@ -40,9 +40,11 @@ class WrapperedPhotonCamera:
         # Note: Results simply report "I processed a frame". There may be 0 or more targets seen in a frame
         res = self.cam.getLatestResult()
 
-        ## HACK - getting the result timestamp is broken in photonlib 2.4.2. 
-        # We use this approximation in the mean time.
-        obsTime = wpilib.Timer.getFPGATimestamp() - 0.150
+        # MiniHack - results also have a more accurate "getTimestamp()", but this is
+        # broken in photonvision 2.4.2. Hack with the non-broken latency calcualtion
+        latency = res.getLatencyMillis()
+        obsTime = wpilib.Timer.getFPGATimestamp() - latency
+        
 
         # Update our disconnected fault since we have something from the camera
         self.disconFault.setNoFault()
