@@ -41,7 +41,7 @@
         {
             "label": "delay",
             "type": "shell",
-            "command": "sleep 3",
+            "command": "sleep 10",
             "presentation": {
                 "reveal": "silent",
                 "panel": "dedicated",

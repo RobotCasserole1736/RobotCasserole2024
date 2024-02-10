@@ -3,6 +3,7 @@ from wpimath.units import feetToMeters
 from photonlibpy.photonCamera import PhotonCamera, setVersionCheckEnabled #VisionLEDMode
 from utils.fieldTagLayout import FieldTagLayout
 from utils.faults import Fault
+from wpimath.geometry import Pose2d
 
 
 class CameraPoseObservation:
@@ -14,7 +15,7 @@ class CameraPoseObservation:
 
 class WrapperedPhotonCamera:
     def __init__(self, camName, robotToCam):
-        setVersionCheckEnabled(False)
+        #setVersionCheckEnabled(False)
 
         self.cam = PhotonCamera(camName)
 
@@ -23,18 +24,25 @@ class WrapperedPhotonCamera:
         self.poseEstimates = []
         self.robotToCam = robotToCam
 
-    def update(self, prevEstPose):
+    def update(self, prevEstPose:Pose2d):
+
+        self.poseEstimates = []
+
+        if(not self.cam.isConnected()):
+            # Faulted - no estimates, just return.
+            self.disconFault.setFaulted()
+            return
 
         # Grab whatever the camera last reported for observations in a camera frame
         # Note: Results simply report "I processed a frame". There may be 0 or more targets seen in a frame
         res = self.cam.getLatestResult()
-        obsTime = res.getTimestamp()
 
-        # Update our disconnected fault if we haven't seen anything from the camera
-        self.disconFault.set(
-            (wpilib.Timer.getFPGATimestamp() - obsTime) > self.timeoutSec
-        )
-        self.poseEstimates = []
+        ## HACK - getting the result timestamp is broken in photonlib 2.4.2. 
+        # We use this approximation in the mean time.
+        obsTime = wpilib.Timer.getFPGATimestamp() - 0.150
+
+        # Update our disconnected fault since we have something from the camera
+        self.disconFault.setNoFault()
 
         # Process each target.
         # Each target has multiple solutions for where you could have been at on the field
@@ -52,7 +60,7 @@ class WrapperedPhotonCamera:
                 tagFieldPose = FieldTagLayout().lookup(tgtID)
                 if tagFieldPose is not None:
                     # Only handle known tags
-                    poseCandidates = []
+                    poseCandidates:list[Pose2d] = []
                     poseCandidates.append(
                         self._toFieldPose(tagFieldPose, target.getBestCameraToTarget())
                     )
@@ -63,7 +71,7 @@ class WrapperedPhotonCamera:
                     )
 
                     # Filter candidates in this frame to only the valid ones
-                    filteredCandidates = []
+                    filteredCandidates:list[Pose2d] = []
                     for candidate in poseCandidates:
                         onField = self._poseIsOnField(candidate)
                         # Add other filter conditions here
@@ -71,10 +79,10 @@ class WrapperedPhotonCamera:
                             filteredCandidates.append(candidate)
 
                     # Pick the candidate closest to the last estimate
-                    bestCandidate = None
+                    bestCandidate:(Pose2d|None) = None
                     bestCandidateDist = 99999999.0
                     for candidate in filteredCandidates:
-                        delta = (candidate - prevEstPose).getTranslation().getNorm()
+                        delta = (candidate - prevEstPose).translation().norm()
                         if delta < bestCandidateDist:
                             # This candidate is better, use it
                             bestCandidate = candidate
@@ -94,10 +102,10 @@ class WrapperedPhotonCamera:
         return camPose.transformBy(self.robotToCam.inverse()).toPose2d()
 
     # Returns true of a pose is on the field, false if it's outside of the field perimieter
-    def _poseIsOnField(self, pose):
-        trans = pose.getTranslation()
-        x = trans.getX()
-        y = trans.getY()
+    def _poseIsOnField(self, pose: Pose2d):
+        trans = pose.translation()
+        x = trans.X()
+        y = trans.Y()
         inY = 0.0 <= y <= feetToMeters(27.0)
         inX = 0.0 <= x <= feetToMeters(54.0)
         return inX and inY
