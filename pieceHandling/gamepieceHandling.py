@@ -10,11 +10,12 @@
 from playingwithfusion import TimeOfFlight
 from utils.calibration import Calibration
 from utils import constants, faults
+from utils.singleton import Singleton
 from utils.units import RPM2RadPerSec, m2in
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 
-class GamePieceHandling:
+class GamePieceHandling(metaclass=Singleton):
     def __init__(self):
         # Booleans
         self.shooterOn = False

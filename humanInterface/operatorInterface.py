@@ -6,11 +6,12 @@ from singerMovement.singerConstants import (MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_
                                             MAX_MANUAL_ROT_ACCEL_DEGPS2, MAX_MAN_ACCEL_MPS2)
 #from singerMovement.carriageControl import CarriageControl
 from utils.faults import Fault
+from utils.singleton import Singleton
 from utils.signalLogging import log
 #from utils.units import in2m
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 
-class OperatorInterface:
+class OperatorInterface(metaclass=Singleton):
     def __init__(self):
         # initialize xbox controller, important values
         # is the position commands going to be a enum later? I think they should be.

@@ -5,6 +5,7 @@ from dashboardWidgets.swerveState import SwerveState
 from dashboardWidgets.icon import Icon
 from dashboardWidgets.text import Text
 from utils.faults import FaultWrangler
+from humanInterface.operatorInterface import OperatorInterface
 from utils.signalLogging import log
 from webserver.webserver import Webserver
 
@@ -45,3 +46,5 @@ class Dashboard:
             Icon.kON if wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kBlue 
             else Icon.kOFF)
         log("faultIconState", Icon.kBLINK_FAST if FaultWrangler().hasActiveFaults() else Icon.kOFF)
+
+        log("GamepieceIconState", Icon.kON if OperatorInterface().getSingerIntakeCmd() else Icon.kOFF)
