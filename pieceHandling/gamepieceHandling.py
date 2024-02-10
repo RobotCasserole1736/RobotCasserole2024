@@ -12,6 +12,7 @@ from utils.calibration import Calibration
 from utils import constants, faults
 from utils.units import RPM2RadPerSec, m2in
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
+from humanInterface.ledControl import LEDControl
 
 
 class GamePieceHandling:
@@ -65,6 +66,9 @@ class GamePieceHandling:
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
+        # LED Controll
+        self.ledCtrl = LEDControl()
+
     def updateShooter(self, shouldRun):
         if(shouldRun):
             desVel = RPM2RadPerSec(self.shooterVel.get())
@@ -73,7 +77,6 @@ class GamePieceHandling:
         else:
             self.shooterMotorLeft.setVoltage(0.0)
             self.shooterMotorRight.setVoltage(0.0)
-
 
     def updateIntake(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
@@ -105,8 +108,10 @@ class GamePieceHandling:
             # Gampiece sensor ok - normal operation
             if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
                 self.hasGamePiece = True
+                self.ledCtrl.setNoteInIntake(True)
             elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
                 self.hasGamePiece = False
+                self.ledCtrl.setNoteInIntake(False)
             else:
                 # Hystersis - hold state
                 pass
