@@ -33,6 +33,3 @@ Software for Robot Casserole's 2024 Crescendo 🎸🎵 Competition Season
 ## 5. Yo what's up.  It would be pretty cool if you took a look at this sick fractal yo.
   ![FractyTime](ReadMeImages/Mandelbrot_zoom.gif) 
 
-
-![logo](ReadMeImages/our%20logo%20whoo.png)
-
