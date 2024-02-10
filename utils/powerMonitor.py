@@ -61,12 +61,11 @@ class PowerMonitor:
 
     def __init__(self):
         self.powerDist = wpilib.PowerDistribution()
-        #self.roboContr = wpilib.RobotController()
     
     def update(self):
-        log("Battery current draw",self.powerDist.getTotalCurrent())
-        log("RIO Voltage",wpilib.RobotController.getBatteryVoltage())
-        log("Battery voltage", wpilib.RobotController.getInputVoltage())
+        log("Battery current draw",self.powerDist.getTotalCurrent(), "A")
+        log("RIO Voltage",wpilib.RobotController.getBatteryVoltage(), "V")
+        log("Battery voltage", wpilib.RobotController.getInputVoltage(), "V")
 
 
 
