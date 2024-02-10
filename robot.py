@@ -96,8 +96,6 @@ class MyRobot(wpilib.TimedRobot):
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
-        self.ledCtrl.setSpeakerAutoAlignActive(True)
-
     def autonomousPeriodic(self):
         SignalWrangler().markLoopStart()
 
