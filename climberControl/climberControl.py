@@ -1,5 +1,6 @@
 from wpilib import Relay
 from wpimath.filter import Debouncer
+from utils import constants
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.calibration import Calibration
 
@@ -9,9 +10,9 @@ from utils.calibration import Calibration
 
 
 class ClimberControl:
-    def __init__(self, canID):
+    def __init__(self):
         self.ratchet = Relay(0, Relay.Direction(0))
-        self.winch = WrapperedSparkMax(canID, "_winch")
+        self.winch = WrapperedSparkMax(constants.CLIMBER_MOTOR_CANID, "_winch")
         self.ratchetDebouncerTime = Calibration("RachetDebounce", 0.040, "Seconds")
         self.ratchetDebouncer = Debouncer(
             self.ratchetDebouncerTime.get(), Debouncer.DebounceType(2)
