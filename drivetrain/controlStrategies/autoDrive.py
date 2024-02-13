@@ -9,7 +9,8 @@ from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from singerMovement.carriageControl import CarriageControl
 from utils.allianceTransformUtils import transformX
 from utils.calibration import Calibration
-from utils.constants import SPEAKER_TARGET_HEIGHT_M, SPEAKER_LOC_X_M, SPEAKER_LOC_Y_M
+from utils.constants import SPEAKER_TARGET_HEIGHT_M, \
+    AMP_LOC_X_M, AMP_LOC_Y_M, SPEAKER_LOC_X_M, SPEAKER_LOC_Y_M
 from utils.signalLogging import log
 from utils.singleton import Singleton
 from humanInterface.ledControl import LEDControl
@@ -34,7 +35,8 @@ class AutoDrive(metaclass=Singleton):
         self.speakerY = SPEAKER_LOC_Y_M
 
         # Set Amp coordinates
-        self.ampX = transformX()
+        self.ampX = transformX(AMP_LOC_X_M)
+        self.ampY = AMP_LOC_Y_M
 
         self.ledCtrl = LEDControl()
 
