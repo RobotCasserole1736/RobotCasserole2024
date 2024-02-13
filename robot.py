@@ -121,7 +121,8 @@ class MyRobot(wpilib.TimedRobot):
         self.dInt.update()
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
-        AutoDrive().setCmd(self.oInt.getAutoAlignCmd())
+        AutoDrive().setSpeakerAutoAlignCmd(self.oInt.getSpeakerAutoAlignCmd())
+        AutoDrive().setAmpAutoAlignCmd(self.oInt.getCarriageAmpPosCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
@@ -133,7 +134,7 @@ class MyRobot(wpilib.TimedRobot):
             self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
         elif(self.oInt.getCarriageTrapPosCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.TRAP)
-        elif(self.oInt.getAutoAlignCmd()):
+        elif(self.oInt.getSpeakerAutoAlignCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)

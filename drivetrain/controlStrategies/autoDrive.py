@@ -7,16 +7,17 @@ from wpimath.geometry import Pose2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from singerMovement.carriageControl import CarriageControl
-from utils.allianceTransformUtils import transformX #and onRed,
+from utils.allianceTransformUtils import transformX
 from utils.calibration import Calibration
-from utils.constants import SPEAKER_TARGET_HEIGHT_M
+from utils.constants import SPEAKER_TARGET_HEIGHT_M, SPEAKER_LOC_X_M, SPEAKER_LOC_Y_M
 from utils.signalLogging import log
 from utils.singleton import Singleton
 from humanInterface.ledControl import LEDControl
 
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
-        self.active = False
+        self.speakerAlignActive = False
+        self.ampAlignActive = False
         self.returnDriveTrainCommand = DrivetrainCommand()
         self.rotKp = Calibration("Auto Align Rotation Kp",2)
         self.rotKd = Calibration("Auto Align Rotation Kd",3)
@@ -29,29 +30,40 @@ class AutoDrive(metaclass=Singleton):
         self.prevTimeStamp = Timer.getFPGATimestamp()
 
         # Set speaker coordinates
-        self.targetX = transformX(0.22987)
-        self.targetY = 5.4572958333417994
+        self.speakerX = transformX(SPEAKER_LOC_X_M)
+        self.speakerY = SPEAKER_LOC_Y_M
+
+        # Set Amp coordinates
+        self.ampX = transformX()
 
         self.ledCtrl = LEDControl()
 
         self.desiredAngle = 0
 
-    def setCmd(self, shouldAutoAlign: bool):
-        self.active = shouldAutoAlign
+    def setSpeakerAutoAlignCmd(self, shouldAutoAlign: bool):
+        self.speakerAlignActive = shouldAutoAlign
+
+    def setAmpAutoAlignCmd(self, shouldAutoAlign: bool):
+        self.ampAlignActive = shouldAutoAlign
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
-        if self.active:
+        if self.speakerAlignActive:
+            self.ledCtrl.setAmpAutoAlignActive(False)
             self.ledCtrl.setSpeakerAutoAlignActive(True)
             self.getDesiredSingerAngle(curPose)
-            return self.calcDrivetrainCommand(curPose, cmdIn)
+            return self.calcSpeakerDrivetrainCommand(curPose, cmdIn)
+        elif self.ampAlignActive:
+            self.ledCtrl.setSpeakerAutoAlignActive(False)
+            self.ledCtrl.setAmpAutoAlignActive(True)
+            return self.calcAmpDrivetrainCommand(curPose, cmdIn)
         else:
             self.ledCtrl.setSpeakerAutoAlignActive(False)
             return cmdIn
 
     def getDesiredSingerAngle(self, curPose: Pose2d):
         # Find distance to target
-        distX = curPose.X() - transformX(self.targetX)
-        distY = curPose.Y() - self.targetY
+        distX = curPose.X() - transformX(self.speakerX)
+        distY = curPose.Y() - self.speakerY
 
         # Get singer height from carriage control
         singerHeight = 1
@@ -67,11 +79,11 @@ class AutoDrive(metaclass=Singleton):
         CarriageControl().setSignerAutoAlignAngle(self.desiredAngle)
 
     def getRotationAngle(self, curPose: Pose2d) -> Rotation2d:
-        targetLocation = Translation2d(transformX(self.targetX),self.targetY)
+        targetLocation = Translation2d(transformX(self.speakerX),self.speakerY)
         robotToTargetTrans = targetLocation - curPose.translation()
         return Rotation2d(robotToTargetTrans.X(), robotToTargetTrans.Y())
 
-    def calcDrivetrainCommand(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
+    def calcSpeakerDrivetrainCommand(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
         rotError2d = self.getRotationAngle(curPose) - curPose.rotation()
 
         # Check to see if we are making a really small correction
@@ -81,7 +93,7 @@ class AutoDrive(metaclass=Singleton):
         else:
             rotError = rotError2d.radians()
 
-        targetLocation = Translation2d(transformX(self.targetX),self.targetY)
+        targetLocation = Translation2d(transformX(self.speakerX),self.speakerY)
         desAngle = Rotation2d(targetLocation.X(),targetLocation.Y()).radians()
 
         # Calculate derivate of slew-limited angle for feed-forward angular velocity
@@ -95,4 +107,8 @@ class AutoDrive(metaclass=Singleton):
         self.returnDriveTrainCommand.velT = rotError*self.rotKp.get() + velTCmdDer*self.rotKd.get()
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
+        return self.returnDriveTrainCommand
+    
+    def calcAmpDrivetrainCommand(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
+        
         return self.returnDriveTrainCommand
