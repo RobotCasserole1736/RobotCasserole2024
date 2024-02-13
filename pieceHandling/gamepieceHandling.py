@@ -11,7 +11,7 @@ from playingwithfusion import TimeOfFlight
 from utils.calibration import Calibration
 from utils import constants, faults
 from utils.singleton import Singleton
-from utils.units import RPM2RadPerSec, m2in
+from utils.units import RPM2RadPerSec, m2in, radPerSec2RPM
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 
@@ -147,3 +147,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterOnCmd = SingerShooterBoolean
         self.intakeOnCmd = SingerIntakeBoolean
         self.ejectOnCmd = SingerEjectBoolean
+
+    def getShooterMotorSpeed(self):
+        return min(abs(radPerSec2RPM(self.shooterMotorLeft.getMotorVelocityRadPerSec())), \
+        abs(radPerSec2RPM(self.shooterMotorRight.getMotorVelocityRadPerSec())))
