@@ -18,6 +18,7 @@ from utils.calibration import CalibrationWrangler
 from utils.faults import FaultWrangler
 from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
+from utils.robotIdentification import RobotIdentification
 from utils.singleton import destroyAllSingletonInstances
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
@@ -62,6 +63,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
         self.pwrMon = PowerMonitor()
+        self.rId = RobotIdentification()
 
 
         # Normal robot code updates every 20ms, but not everything needs to be that fast.
@@ -112,6 +114,8 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
+        self.rId.configureValue()
+        print(self.rId.getRobotType())
         pass
 
     def teleopPeriodic(self):
