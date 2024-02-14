@@ -116,7 +116,6 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         SignalWrangler().markLoopStart()
-
         self.oInt.update()
         self.dInt.update()
 
@@ -146,6 +145,10 @@ class MyRobot(wpilib.TimedRobot):
             self.oInt.getSingerIntakeCmd(),
             self.oInt.getSingerEjectCmd()
         )
+
+        self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getAutoAlignCmd())
+        self.ledCtrl.setNoteInIntake(self.gph.hasGamePiece)
+        self.ledCtrl.update()
         
         # No trajectory in Teleop
         Trajectory().setCmd(None)
