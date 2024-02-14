@@ -11,7 +11,7 @@ from utils.calibration import Calibration
 class ClimberControl:
     def __init__(self):
         self.ratchet = Relay(0, Relay.Direction(0))
-        self.winch = WrapperedSparkMax(constants.CLIMBER_MOTOR_CANID, "_winch")
+        self.winch = WrapperedSparkMax(constants.CLIMBER_MOTOR_LEFT_CANID, "_winch")
         self.ratchetDebouncerTime = Calibration("RachetDebounce", 0.040, "Seconds")
         self.ratchetDebouncer = Debouncer(
             self.ratchetDebouncerTime.get(), Debouncer.DebounceType(2)

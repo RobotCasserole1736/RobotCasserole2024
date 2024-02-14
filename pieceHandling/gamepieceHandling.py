@@ -39,9 +39,6 @@ class GamePieceHandling(metaclass=Singleton):
         self.floorRoolerMotor1 = WrapperedSparkMax(
             constants.FLOORROLLER_MOTOR1_CANID, "FloorRollerMotor1"
         )
-        self.floorRoolerMotor2 = WrapperedSparkMax(
-            constants.FLOORROLLER_MOTOR2_CANID, "FloorRollerMotor2"
-        )
 
         self.tofFault = faults.Fault("Claw TOF Sensor is Disconnected")
 
@@ -87,7 +84,6 @@ class GamePieceHandling(metaclass=Singleton):
     def updateFloorRoller(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
         self.floorRoolerMotor1.setVoltage(voltage)
-        self.floorRoolerMotor2.setVoltage(voltage)
 
     def _updateCals(self):
             self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)

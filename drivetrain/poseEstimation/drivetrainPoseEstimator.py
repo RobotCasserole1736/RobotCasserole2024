@@ -70,11 +70,13 @@ class DrivetrainPoseEstimator:
         if(self.useAprilTags):
             for cam in self.cams:
                 cam.update(self.curEstPose)
-                for observation in cam.getPoseEstimates():
+                observations = cam.getPoseEstimates()
+                for observation in observations:
                     self.poseEst.addVisionMeasurement(
                         observation.estFieldPose, observation.time
                     )
                     self.camTargetsVisible = True
+                self.telemetry.addVisionObservations(observations)
 
         log("PE Vision Targets Seen", self.camTargetsVisible, "bool")
 

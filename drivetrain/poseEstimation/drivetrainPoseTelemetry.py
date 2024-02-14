@@ -9,6 +9,7 @@ from ntcore import NetworkTableInstance
 from utils.signalLogging import log
 from utils.allianceTransformUtils import transform
 from drivetrain.drivetrainPhysical import ROBOT_TO_LEFT_CAM, ROBOT_TO_RIGHT_CAM
+from wrappers.wrapperedPhotonCamera import CameraPoseObservation
 
 
 class DrivetrainPoseTelemetry:
@@ -34,13 +35,25 @@ class DrivetrainPoseTelemetry:
             .publish()
         )
 
+        self.visionPoses = []
+
     def setDesiredPose(self, desPose):
         self.desPose = desPose
+
+    def addVisionObservations(self, observations:list[CameraPoseObservation]):
+        if(len(observations) > 0):
+            for obs in observations:
+                self.visionPoses.append(obs.estFieldPose())
+
+    def clearVisionObservations(self):
+        self.visionPoses = []
 
     def update(self, estPose):
         self.field.getRobotObject().setPose(estPose)
         self.field.getObject("desPose").setPose(self.desPose)
         self.field.getObject("desTraj").setTrajectory(self.curTraj)
+
+        self.field.getObject("visionObservations").setPoses(self.visionPoses)
 
         self.leftCamPosePublisher.set(Pose3d(estPose).transformBy(ROBOT_TO_LEFT_CAM))
         self.rightCamPosePublisher.set(Pose3d(estPose).transformBy(ROBOT_TO_RIGHT_CAM))
