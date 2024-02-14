@@ -1,7 +1,7 @@
 # RobotCasserole2024
 Software for Robot Casserole's 2024 Crescendo 🎸🎵 Competition Season
 
-![Logo](ReadMeImages/Rusty_Album_Cover.webp)
+![Logo](.docs/ReadMeImages/Rusty_Album_Cover.webp)
 
 ## Contents
 1. Driver View
@@ -14,7 +14,7 @@ Software for Robot Casserole's 2024 Crescendo 🎸🎵 Competition Season
   The Driver View web site is used to help test and tweak our code, and used to help drive team during match. The driver view is a javascript/HTML based viewer of data logs captured from the robot during operation. These data logs are then used to tweak code before, during, and after competition. 
 
 ## 2. Main Source Code
-![Jazzy](ReadMeImages/1_5EI2F_7k5zJKVYg_12g5wA.png)
+![Jazzy](.docs/ReadMeImages/1_5EI2F_7k5zJKVYg_12g5wA.png)
   
   So far we have the majority of functional robot code written in Python.  Here is the Repo if you want to take a gander.
    [here](https://github.com/RobotCasserole1736/RobotCasserole2024/tree/main/RobotCode).
@@ -26,10 +26,10 @@ Software for Robot Casserole's 2024 Crescendo 🎸🎵 Competition Season
 
 ## 4. Controller Mapping
   Here are our two mappings for our driver and operator controllers:
-  ![Driver](ReadMeImages/Driver_Controller.png)
-  ![Operator](ReadMeImages/Operator_Controller.png)
+  ![Driver](.docs/ReadMeImages/Driver_Controller.png)
+  ![Operator](.docs/ReadMeImages/Operator_Controller.png)
 
 
 ## 5. Yo what's up.  It would be pretty cool if you took a look at this sick fractal yo.
-  ![FractyTime](ReadMeImages/Mandelbrot_zoom.gif) 
+  ![FractyTime](.docs/ReadMeImages/Mandelbrot_zoom.gif) 
 
