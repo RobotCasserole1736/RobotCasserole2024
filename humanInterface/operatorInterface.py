@@ -32,7 +32,8 @@ class OperatorInterface:
         self.carriageSpeakerSubwooferPos = False
 
         # if the operator wants the auto align desired
-        self.autoAlignDesired = False
+        self.speakerAutoAlignDesired = False
+        self.ampAutoAlignDesired = False
 
         # singer manual controls
         self.manualSingerUpDown = 0
@@ -71,7 +72,7 @@ class OperatorInterface:
             # Above is basically the right side of the D pad
 
             # if the operator wants the auto align desired
-            self.autoAlignDesired = self.ctrl.getXButton()
+            self.speakerAutoAlignDesired = self.ctrl.getXButton()
 
             # manual singer controls
             self.manualSingerUpDown = applyDeadband(self.ctrl.getLeftY(), 0.15)
@@ -101,13 +102,13 @@ class OperatorInterface:
             self.carriagePodiumPos = False
 
             # if the operator wants the auto align desired
-            self.autoAlignDesired = False
+            self.speakerAutoAlignDesired = False
 
             # manual commands
             self.manualSingerUpDown = 0
             self.manualSingerRot = 0
 
-        #log("OI AutoAlign Cmd", self.autoAlignDesired, "bool")
+        #log("OI AutoAlign Cmd", self.speakerAutoAlignDesired, "bool")
         log("OI Singer Intake Cmd", self.singerIntake, "bool")
         log("OI Singer Shoot Cmd", self.singerShoot, "bool")
         log("OI Singer Eject Cmd", self.singerEject, "bool")
@@ -126,9 +127,9 @@ class OperatorInterface:
 
 
     # and now a bunch of functions to call
-    def getAutoAlignCmd(self):
+    def getSpeakerAutoAlignCmd(self):
         # returns whether auto align is desired or not
-        return self.autoAlignDesired
+        return self.speakerAutoAlignDesired
 
     def singerIsCmdd(self):
         return self.singerIntake or self.singerShoot or self.singerEject
