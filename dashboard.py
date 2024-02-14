@@ -57,7 +57,7 @@ class Dashboard:
 
         log("GamepieceIconState", Icon.kON if OperatorInterface().getSingerIntakeCmd() else Icon.kOFF)
 
-        log("AutoAlignIconState", Icon.kON if OperatorInterface().getAutoAlignCmd() else Icon.kOFF)
+        log("AutoAlignIconState", Icon.kON if OperatorInterface().getSpeakerAutoAlignCmd() else Icon.kOFF)
 
         log("ShooterGaugeSpeed", GamePieceHandling().getShooterMotorSpeed())
 

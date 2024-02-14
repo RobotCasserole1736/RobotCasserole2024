@@ -45,9 +45,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
-        self.climbCtrl = ClimberControl(
-            16
-        )  # TODO: is this the right CAN ID? TODO: this is an inconsistent place to define a CAN ID
+        self.climbCtrl = ClimberControl() 
 
         self.carriageControl = CarriageControl()
         self.gph = GamePieceHandling()
@@ -146,7 +144,7 @@ class MyRobot(wpilib.TimedRobot):
             self.oInt.getSingerEjectCmd()
         )
 
-        self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getAutoAlignCmd())
+        self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())
         self.ledCtrl.setNoteInIntake(self.gph.hasGamePiece)
         self.ledCtrl.update()
         

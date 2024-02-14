@@ -16,7 +16,14 @@ from drivetrain.drivetrainPhysical import (
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
-
+from utils.constants import DT_FL_WHEEL_CANID
+from utils.constants import DT_FL_AZMTH_CANID
+from utils.constants import DT_FR_WHEEL_CANID
+from utils.constants import DT_FR_AZMTH_CANID
+from utils.constants import DT_BL_WHEEL_CANID
+from utils.constants import DT_BL_AZMTH_CANID
+from utils.constants import DT_BR_WHEEL_CANID
+from utils.constants import DT_BR_AZMTH_CANID
 
 class DrivetrainControl(metaclass=Singleton):
     """
@@ -26,16 +33,16 @@ class DrivetrainControl(metaclass=Singleton):
     def __init__(self):
         self.modules = []
         self.modules.append(
-            SwerveModuleControl("FL", 2, 3, 0, FL_ENCODER_MOUNT_OFFSET_RAD, False)
+            SwerveModuleControl("FL", DT_FL_WHEEL_CANID, DT_FL_AZMTH_CANID, 0, FL_ENCODER_MOUNT_OFFSET_RAD, False)
         )
         self.modules.append(
-            SwerveModuleControl("FR", 4, 5, 1, FR_ENCODER_MOUNT_OFFSET_RAD, True)
+            SwerveModuleControl("FR", DT_FR_WHEEL_CANID, DT_FR_AZMTH_CANID, 1, FR_ENCODER_MOUNT_OFFSET_RAD, True)
         )
         self.modules.append(
-            SwerveModuleControl("BL", 6, 7, 2, BL_ENCODER_MOUNT_OFFSET_RAD, False)
+            SwerveModuleControl("BL", DT_BL_WHEEL_CANID, DT_BL_AZMTH_CANID, 2, BL_ENCODER_MOUNT_OFFSET_RAD, False)
         )
         self.modules.append(
-            SwerveModuleControl("BR", 8, 9, 3, BR_ENCODER_MOUNT_OFFSET_RAD, True)
+            SwerveModuleControl("BR", DT_BR_WHEEL_CANID, DT_BR_AZMTH_CANID, 3, BR_ENCODER_MOUNT_OFFSET_RAD, True)
         )
 
         self.desChSpd = ChassisSpeeds()

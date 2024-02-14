@@ -36,11 +36,11 @@ ROBOT_MOI_KGM2 = (
 # See https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
 WHEEL_GEAR_RATIO_L1 = 8.41
 WHEEL_GEAR_RATIO_L2 = 6.75
-WHEEL_GEAR_RATIO_L2 = 6.12
+WHEEL_GEAR_RATIO_L3 = 6.12
 AZMTH_GEAR_RATIO = 12.8
 
 ### CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
-WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L1
+WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L2 # As of 2/13 - non-pretty bot has L2
 
 # carpet/roughtop interface fudge factor
 # This accounts for the fact that roughtop tread

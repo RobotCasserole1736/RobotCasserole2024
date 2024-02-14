@@ -109,7 +109,7 @@ class OperatorInterface(metaclass=Singleton):
             self.manualSingerUpDown = 0
             self.manualSingerRot = 0
 
-        #log("OI AutoAlign Cmd", self.speakerAutoAlignDesired, "bool")
+        log("OI AutoAlign Cmd", self.speakerAutoAlignDesired, "bool")
         log("OI Singer Intake Cmd", self.singerIntake, "bool")
         log("OI Singer Shoot Cmd", self.singerShoot, "bool")
         log("OI Singer Eject Cmd", self.singerEject, "bool")
