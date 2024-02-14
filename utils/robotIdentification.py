@@ -19,8 +19,10 @@ class RobotIdentification(metaclass=Singleton):
             self.robotType = RobotTypes.TestBoard
         else:
             #If the Robo Rio's serial number is not equal to any of our known serial numbers, assume we are the main robot
-            self.robotType = "Main"
+            self.robotType = RobotTypes.Main
         log("RoboRio Serial Number", self.roboControl.getSerialNumber())
+        print(self.roboControl.getSerialNumber())
+        print(self.robotType)
         
     def configureValue(self, mainValue, practiceValue,testBoardValue = None):
         #Returns the correct value according to which robot we are. Only 1 testBoardValue please :)
