@@ -25,10 +25,13 @@ class RobotIdentification(metaclass=Singleton):
             #If the Robo Rio's serial number is not equal to any of our known serial numbers, assume we are the main robot
             self.robotType = RobotTypes.Main
         #log("RoboRio Serial Number", self.roboControl.getSerialNumber(), "num")
-        log("RoboRioSerialNumber", self.robotType)
+        #log("RoboRioSerialNumber", self.robotType)
         
             
     def getRobotType(self):
         return self.robotType 
+    
+    def getRobotSerialNumber(self):
+        return self.roboControl.getSerialNumber()
 
 

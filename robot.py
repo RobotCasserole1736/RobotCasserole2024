@@ -114,12 +114,13 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        self.rId.configureValue()
-        print(self.rId.getRobotType())
         pass
 
     def teleopPeriodic(self):
         SignalWrangler().markLoopStart()
+
+        self.rId.configureValue()
+        print(self.rId.getRobotSerialNumber())
 
         self.oInt.update()
         self.dInt.update()
