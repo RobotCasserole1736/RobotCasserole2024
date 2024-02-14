@@ -217,4 +217,11 @@ class CarriageControl(metaclass=Singleton):
 
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
-        
+
+        if(self.autoAlignSingerRotCmd > .698132):
+            self.autoAlignSingerRotCmd  = .698132
+
+        if(self.autoAlignSingerRotCmd <  -0.174533):
+            self.autoAlignSingerRotCmd  =  -0.174533
+
+      
