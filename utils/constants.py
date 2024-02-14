@@ -32,11 +32,11 @@ SHOOTER_MOTOR_RIGHT_CANID = 12
 # Unused = 13
 # Unused = 14
 INTAKE_MOTOR_UPPER_CANID = 15
-# Unused = 16
+GAMEPIECE_HANDLING_TOF_CANID = 16
 # Unused = 17
 # Unused = 18
-ELEVATOR_MOTOR_CANID = 19
-SINGER_MOTOR_CANID = 20
+ELEVATOR_HEIGHT_MOTOR_CANID = 19
+SINGER_ANGLE_MOTOR_CANID = 20
 FLOORROLLER_MOTOR1_CANID = 21 # dont know yet
 FLOORROLLER_MOTOR2_CANID = 22 # dont know yet
 SHOOTER_MOTOR_LEFT_CANID = 23
@@ -66,7 +66,7 @@ WINCH_MAX_ACCEL = 1
 # Unused = 6
 # Unused = 7
 # Unused = 8
-# Unused = 9
+LED_CTRL_PWM = 9
 
 
 #######################################################################################

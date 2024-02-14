@@ -8,7 +8,6 @@ from utils.calibration import Calibration
 # the relay thing(?) should basically be a solenoid that automatically 
 # braces/locks/something so we stay up when the time is done
 
-
 class ClimberControl:
     def __init__(self):
         self.ratchet = Relay(0, Relay.Direction(0))

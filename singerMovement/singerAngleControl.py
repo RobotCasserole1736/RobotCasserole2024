@@ -2,6 +2,7 @@ from singerMovement.singerConstants import (MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SIN
                                             SINGER_GEARBOX_RATIO)
 from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
+from utils.constants import SINGER_ANGLE_MOTOR_CANID
 from utils.units import deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
@@ -12,7 +13,7 @@ from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncod
 class SingerAngleControl():
     def __init__(self):
         # Singer Rotation Control
-        self.motor = WrapperedSparkMax(SINGER_ANGLE_CANID, "SingerRotMotor", brakeMode=True, currentLimitA=20.0)
+        self.motor = WrapperedSparkMax(SINGER_ANGLE_MOTOR_CANID, "SingerRotMotor", brakeMode=True, currentLimitA=20.0)
         self.maxV = Calibration(name="Singer Max Rot Vel", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()

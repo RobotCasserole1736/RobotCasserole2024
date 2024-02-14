@@ -11,7 +11,6 @@ from drivetrain.controlStrategies.autoDrive import AutoDrive
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
-from utils.constants import WINCH_MAX_ACCEL
 
 class DriverInterface:
     """Class to gather input from the driver of the robot"""
@@ -27,7 +26,6 @@ class DriverInterface:
         self.gyroResetCmd = False
         self.connectedFault = Fault(f"Driver XBox Controller ({ctrlIdx}) Unplugged")
 
-        self.velWinchSlewRateLimiter = SlewRateLimiter(rateLimit=WINCH_MAX_ACCEL)
         self.velXSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
         self.velYSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
         self.velTSlewRateLimiter = SlewRateLimiter(

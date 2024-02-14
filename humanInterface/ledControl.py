@@ -1,4 +1,5 @@
 from wpilib import PWMMotorController
+from utils.constants import LED_CTRL_PWM
 from utils.singleton import Singleton
 
 class LEDControl(metaclass=Singleton):
@@ -9,7 +10,7 @@ class LEDControl(metaclass=Singleton):
         self.noteInIntake = False
         self._noteInIntakePrev = False
         self._noteInIntakeCounter = 0
-        self.ctrl = PWMMotorController("LEDCtrl", 9)
+        self.ctrl = PWMMotorController("LEDCtrl", LED_CTRL_PWM)
         self.sampleTime = 0.1
 
     def update(self):
