@@ -40,7 +40,7 @@ WHEEL_GEAR_RATIO_L3 = 6.12
 AZMTH_GEAR_RATIO = 12.8
 
 ### CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
-WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L2 # As of 2/13 - non-pretty bot has L2
+WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3 # As of 2/13 - non-pretty bot has L2
 
 # carpet/roughtop interface fudge factor
 # This accounts for the fact that roughtop tread
@@ -96,10 +96,15 @@ MAX_ROTATE_ACCEL_RAD_PER_SEC_2 = (
 # 3 - Using a square, twist the modules by hand until they are aligned with the robot's chassis
 # 4 - Read out the encoder readings for each module, put them here
 # 5 - Redeploy code, verify that the  encoder readings are correct as each module is manually rotated
-FL_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(-37.86)
-FR_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(136.3)
-BL_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(59.97)
-BR_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(-64.44)
+FL_ENCODER_MOUNT_OFFSET_RAD = 2.53
+#2.53 currently for practice bot drivebase thing
+FR_ENCODER_MOUNT_OFFSET_RAD = 2.37
+#2.37 currently for practice bot drivebase thing
+BL_ENCODER_MOUNT_OFFSET_RAD = .93
+#.93 currently for practice bot drivebase thing
+BR_ENCODER_MOUNT_OFFSET_RAD = -1.14
+#-1.14 currently for practice bot drivebase thing
+
 
 
 # Module Indices (for ease of array manipulation)
