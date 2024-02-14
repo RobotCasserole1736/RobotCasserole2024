@@ -39,6 +39,8 @@ class DrivetrainPoseEstimator:
 
         self._simPose = Pose2d()
 
+        self.useAprilTags = True
+
     def setKnownPose(self, knownPose):
         """Reset the robot's estimated pose to some specific position. This is useful if we know with certanty
         we are at some specific spot (Ex: start of autonomous)
@@ -64,13 +66,15 @@ class DrivetrainPoseEstimator:
 
         # Add any vision observations to the pose estimate
         self.camTargetsVisible = False
-        for cam in self.cams:
-            cam.update(self.curEstPose)
-            for observation in cam.getPoseEstimates():
-                self.poseEst.addVisionMeasurement(
-                    observation.estFieldPose, observation.time
-                )
-                self.camTargetsVisible = True
+
+        if(self.useAprilTags):
+            for cam in self.cams:
+                cam.update(self.curEstPose)
+                for observation in cam.getPoseEstimates():
+                    self.poseEst.addVisionMeasurement(
+                        observation.estFieldPose, observation.time
+                    )
+                    self.camTargetsVisible = True
 
         log("PE Vision Targets Seen", self.camTargetsVisible, "bool")
 
@@ -105,6 +109,9 @@ class DrivetrainPoseEstimator:
             Pose2d: The most recent estimate of where the robot is at
         """
         return self.curEstPose
+    
+    def setUseAprilTags(self, use):
+        self.useAprilTags = use
 
     # Local helper to wrap the real hardware angle into a Rotation2d
     def _getGyroAngle(self):
