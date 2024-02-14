@@ -50,8 +50,7 @@ SHOOTER_MOTOR_LEFT_CANID = 23
 # Unused = 31
 
 
-WINCH_MAX_SPEED = 1
-WINCH_MAX_ACCEL = 1
+
 
 #######################################################################################
 ## PWM Bank
