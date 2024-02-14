@@ -26,17 +26,17 @@ DT_BL_WHEEL_CANID = 6
 DT_BL_AZMTH_CANID = 7
 DT_BR_WHEEL_CANID = 8
 DT_BR_AZMTH_CANID = 9
-INTAKE_MOTOR_LOWER_CANID2 = 10
+INTAKE_MOTOR_LOWER_CANID = 10
 CLIMBER_MOTOR_CANID = 11
 SHOOTER_MOTOR_RIGHT_CANID = 12
 # Unused = 13
 # Unused = 14
-INTAKE_MOTOR_UPPER_CANID1 = 15
+INTAKE_MOTOR_UPPER_CANID = 15
 # Unused = 16
 # Unused = 17
 # Unused = 18
-# Unused = 19
-# Unused = 20
+ELEVATOR_MOTOR_CANID = 19
+SINGER_MOTOR_CANID = 20
 FLOORROLLER_MOTOR1_CANID = 21 # dont know yet
 FLOORROLLER_MOTOR2_CANID = 22 # dont know yet
 SHOOTER_MOTOR_LEFT_CANID = 23
@@ -52,3 +52,34 @@ SHOOTER_MOTOR_LEFT_CANID = 23
 
 WINCH_MAX_SPEED = 1
 WINCH_MAX_ACCEL = 1
+
+#######################################################################################
+## PWM Bank
+#######################################################################################
+
+# Unused = 0
+# Unused = 1
+# Unused = 2
+# Unused = 3
+# Unused = 4
+# Unused = 5
+# Unused = 6
+# Unused = 7
+# Unused = 8
+# Unused = 9
+
+
+#######################################################################################
+## DIO Bank
+#######################################################################################
+
+# Unused = 0
+# Unused = 1
+# Unused = 2
+# Unused = 3
+# Unused = 4
+# Unused = 5
+# Unused = 6
+# Unused = 7
+# Unused = 8
+# Unused = 9

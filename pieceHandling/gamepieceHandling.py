@@ -32,8 +32,8 @@ class GamePieceHandling(metaclass=Singleton):
         )
 
         # Intake Motors
-        self.intakeMotorUpper = WrapperedSparkMax(constants.INTAKE_MOTOR_UPPER_CANID1, "IntakeMotorUpper")
-        self.intakeMotorLower = WrapperedSparkMax(constants.INTAKE_MOTOR_LOWER_CANID2, "IntakeMotorLower")
+        self.intakeMotorUpper = WrapperedSparkMax(constants.INTAKE_MOTOR_UPPER_CANID, "IntakeMotorUpper")
+        self.intakeMotorLower = WrapperedSparkMax(constants.INTAKE_MOTOR_LOWER_CANID, "IntakeMotorLower")
 
         # Floor Roller Motors
         self.floorRoolerMotor1 = WrapperedSparkMax(
