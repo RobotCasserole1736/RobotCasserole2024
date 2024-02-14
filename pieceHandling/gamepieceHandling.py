@@ -6,15 +6,17 @@
 
 # Resources: https://robotpy.readthedocs.io/projects/pwfusion/en/latest/playingwithfusion/TimeOfFlight.html
 
-# Imports
+# Import
 from playingwithfusion import TimeOfFlight
 from utils.calibration import Calibration
-from utils import constants, faults
+from utils import faults
 from utils.singleton import Singleton
 from utils.units import RPM2RadPerSec, m2in, radPerSec2RPM
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from humanInterface.ledControl import LEDControl
-
+from utils.constants import SHOOTER_MOTOR_RIGHT_CANID, SHOOTER_MOTOR_LEFT_CANID, \
+    INTAKE_MOTOR_UPPER_CANID, INTAKE_MOTOR_LOWER_CANID, FLOORROLLER_MOTOR1_CANID, \
+    FLOORROLLER_MOTOR2_CANID
 
 class GamePieceHandling(metaclass=Singleton):
     def __init__(self):
@@ -25,29 +27,28 @@ class GamePieceHandling(metaclass=Singleton):
 
         # Shooter Motors
         self.shooterMotorLeft = WrapperedSparkMax(
-            constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
+            SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft",
         )
         self.shooterMotorRight = WrapperedSparkMax(
-            constants.SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight"
+            SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight",
         )
-
         # Intake Motors
-        self.intakeMotorUpper = WrapperedSparkMax(constants.INTAKE_MOTOR_UPPER_CANID, "IntakeMotorUpper")
-        self.intakeMotorLower = WrapperedSparkMax(constants.INTAKE_MOTOR_LOWER_CANID, "IntakeMotorLower")
+        self.intakeMotorUpper = WrapperedSparkMax(INTAKE_MOTOR_UPPER_CANID, "IntakeMotorUpper")
+        self.intakeMotorLower = WrapperedSparkMax(INTAKE_MOTOR_LOWER_CANID, "IntakeMotorLower")
 
         # Floor Roller Motors
         self.floorRoolerMotor1 = WrapperedSparkMax(
-            constants.FLOORROLLER_MOTOR1_CANID, "FloorRollerMotor1"
+            FLOORROLLER_MOTOR1_CANID, "FloorRollerMotor1"
         )
         self.floorRoolerMotor2 = WrapperedSparkMax(
-            constants.FLOORROLLER_MOTOR2_CANID, "FloorRollerMotor2"
+            FLOORROLLER_MOTOR2_CANID, "FloorRollerMotor2"
         )
 
         self.tofFault = faults.Fault("Claw TOF Sensor is Disconnected")
 
         # Shooter Calibrations (PID Controller)
         self.shooterkFCal = Calibration("ShooterkF", 0.00255, "V/RPM")
-        self.shooterkPCal = Calibration("ShooterkP", 0)
+        self.shooterkPCal = Calibration("ShooterkP", 1)
         self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
         self._updateCals()
 
@@ -67,7 +68,6 @@ class GamePieceHandling(metaclass=Singleton):
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
-        # LED Controll
         self.ledCtrl = LEDControl()
 
     def updateShooter(self, shouldRun):
@@ -78,6 +78,7 @@ class GamePieceHandling(metaclass=Singleton):
         else:
             self.shooterMotorLeft.setVoltage(0.0)
             self.shooterMotorRight.setVoltage(0.0)
+
 
     def updateIntake(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
