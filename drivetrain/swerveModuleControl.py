@@ -14,6 +14,8 @@ from dashboardWidgets.swerveState import getAzmthDesTopicName, getAzmthActTopicN
 from dashboardWidgets.swerveState import getSpeedDesTopicName, getSpeedActTopicName
 from utils.signalLogging import log
 from utils.units import rad2Deg
+from utils.faults import Fault
+from utils.robotIdentification import RobotIdentification
 from drivetrain.drivetrainPhysical import dtMotorRotToLinear
 from drivetrain.drivetrainPhysical import dtLinearToMotorRot
 from drivetrain.drivetrainPhysical import MAX_FWD_REV_SPEED_MPS
@@ -72,6 +74,9 @@ class SwerveModuleControl:
 
         self.moduleName = moduleName
 
+        self.serialFault = Fault(f"Serial Number Unknown")
+
+
     def _updateTelemetry(self):
         """
         Helper function to put all relevant data to logs and dashboards for this module
@@ -96,6 +101,11 @@ class SwerveModuleControl:
             (self.actualState.speed) / MAX_FWD_REV_SPEED_MPS,
             "frac",
         )
+
+        if RobotIdentification.getSerialFaulted:
+            self.serialFault.setFaulted()
+        else:
+            self.serialFault.setNoFault()
 
     def getActualPosition(self):
         """
