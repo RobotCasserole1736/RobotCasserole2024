@@ -32,6 +32,7 @@ class SwerveModuleControl:
         azmthEncoderPortIdx,
         azmthOffset,
         invertWheel,
+        invertAzmth
     ):
         """Instantiate one swerve drive module
 
@@ -42,6 +43,7 @@ class SwerveModuleControl:
             azmthEncoderPortIdx (int): RIO Port for the azimuth absolute encoder for this module
             azmthOffset (float): Mounting offset of the azimuth encoder in Radians.
             invertWheel (bool): Inverts the drive direction of the wheel - needed since left/right sides are mirrored
+            invertWheel (bool): Inverts the steering direction of the wheel - needed if motor is mounted upside
         """
         self.wheelMotor = WrapperedSparkMax(
             wheelMotorCanID, moduleName + "_wheel", False
@@ -54,7 +56,7 @@ class SwerveModuleControl:
         )
 
         self.wheelMotor.setInverted(invertWheel)
-        self.azmthMotor.setInverted(True)
+        self.azmthMotor.setInverted(invertAzmth)
 
         self.wheelMotorFF = SimpleMotorFeedforwardMeters(0, 0, 0)
 
