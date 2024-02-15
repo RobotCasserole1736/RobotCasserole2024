@@ -26,9 +26,14 @@ class AutoDrive(metaclass=Singleton):
             rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2
         )
 
-        # Previous Rotation Speed and time for calculating derivative
+        # Previous Desired Angle and time for calculating derivative
         self.prevDesAngle = 0
         self.prevTimeStamp = Timer.getFPGATimestamp()
+
+        # Previous Translation coordinates for more derivatives
+        
+        # Current Desired Angle
+        self.desiredAngle = 0
 
         # Set speaker coordinates
         self.speakerX = transformX(SPEAKER_LOC_X_M)
@@ -39,8 +44,6 @@ class AutoDrive(metaclass=Singleton):
         self.ampY = AMP_LOC_Y_M
 
         self.ledCtrl = LEDControl()
-
-        self.desiredAngle = 0
 
     def setSpeakerAutoAlignCmd(self, shouldAutoAlign: bool):
         self.speakerAlignActive = shouldAutoAlign
@@ -110,7 +113,33 @@ class AutoDrive(metaclass=Singleton):
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
         return self.returnDriveTrainCommand
-    
+
     def calcAmpDrivetrainCommand(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
+        targetLocation = Translation2d(transformX(self.ampX),self.ampY)
+        transError = targetLocation - curPose.translation()
+        rotErrorRad = (math.pi/2) - Rotation2d(curPose.X(),curPose.Y()).radians()
         
+        # Zero out error if it is small
+        if abs(rotErrorRad) < 0.05:
+            rotErrorRad = 0
+        xError = 0 if abs(transError.X()) < 0.05 else targetLocation.X()
+        yError = 0 if abs(transError.Y()) < 0.05 else targetLocation.Y()
+        
+        # Calculate Desired Angle for rotation derivative error
+        desAngle = Rotation2d(targetLocation.X(),targetLocation.Y()).radians()
+
+        # Calculate derivate of slew-limited angle for feed-forward angular velocity
+        desAngleLimited = self.rotSlewRateLimiter.calculate(desAngle)
+        velTCmdDer = (desAngleLimited - self.prevDesAngle)/(Timer.getFPGATimestamp() 
+                                                            - self.prevTimeStamp)
+        
+        # Update previous values for next loop
+        self.prevDesAngle = desAngleLimited
+        self.prevTimeStamp = Timer.getFPGATimestamp()
+
+
+
+        self.returnDriveTrainCommand.velT = rotErrorRad*self.rotKp.get() + velTCmdDer*self.rotKd.get()
+        self.returnDriveTrainCommand.velX = xError*2 + 
+
         return self.returnDriveTrainCommand
