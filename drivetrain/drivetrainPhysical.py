@@ -105,21 +105,16 @@ MAX_ROTATE_ACCEL_RAD_PER_SEC_2 = (
 # 5 - Redeploy code, verify that the  encoder readings are correct as each module is manually rotated
 
 
-if RobotIdentification.getRobotType == RobotTypes.Main:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 2.53
-    FR_ENCODER_MOUNT_OFFSET_RAD = 2.37
-    BL_ENCODER_MOUNT_OFFSET_RAD = .93
-    BR_ENCODER_MOUNT_OFFSET_RAD = -1.14
-elif RobotIdentification.getRobotType == RobotTypes.Practice:
+if RobotIdentification.getRobotType == RobotTypes.Practice:
     FL_ENCODER_MOUNT_OFFSET_RAD = 0
     FR_ENCODER_MOUNT_OFFSET_RAD = 0
     BL_ENCODER_MOUNT_OFFSET_RAD = 0
     BR_ENCODER_MOUNT_OFFSET_RAD = 0
 else:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 0
-    FR_ENCODER_MOUNT_OFFSET_RAD = 0
-    BL_ENCODER_MOUNT_OFFSET_RAD = 0
-    BR_ENCODER_MOUNT_OFFSET_RAD = 0
+    FL_ENCODER_MOUNT_OFFSET_RAD = 2.53
+    FR_ENCODER_MOUNT_OFFSET_RAD = 2.37
+    BL_ENCODER_MOUNT_OFFSET_RAD = .93
+    BR_ENCODER_MOUNT_OFFSET_RAD = -1.14
 
 
 # Module Indices (for ease of array manipulation)
