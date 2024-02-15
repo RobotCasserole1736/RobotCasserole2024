@@ -24,6 +24,7 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
+#from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -38,6 +39,9 @@ class MyRobot(wpilib.TimedRobot):
         self.crashLogger = CrashLogger()
         wpilib.LiveWindow.disableAllTelemetry()
         self.webserver = Webserver()
+
+        self.rId = RobotIdentification()
+        self.rId.configureValue()
 
         self.driveTrain = DrivetrainControl()
 
@@ -63,8 +67,6 @@ class MyRobot(wpilib.TimedRobot):
 
         self.rioMonitor = RIOMonitor()
         self.pwrMon = PowerMonitor()
-        self.rId = RobotIdentification()
-
 
         # Normal robot code updates every 20ms, but not everything needs to be that fast.
         # Register slower-update periodic functions
@@ -117,10 +119,8 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
-        SignalWrangler().markLoopStart()
 
-        self.rId.configureValue()
-        print(self.rId.getRobotSerialNumber())
+        SignalWrangler().markLoopStart()
 
         self.oInt.update()
         self.dInt.update()

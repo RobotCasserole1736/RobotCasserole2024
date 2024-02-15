@@ -6,6 +6,7 @@ from wpimath.kinematics import SwerveDrive4Kinematics
 from utils.units import lbsToKg
 from utils.units import deg2Rad
 from utils.units import in2m
+from utils.robotIdentification import RobotIdentification, RobotTypes
 
 """
 Defines the physical dimensions and characteristics of the drivetrain
@@ -36,11 +37,17 @@ ROBOT_MOI_KGM2 = (
 # See https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
 WHEEL_GEAR_RATIO_L1 = 8.41
 WHEEL_GEAR_RATIO_L2 = 6.75
-WHEEL_GEAR_RATIO_L2 = 6.12
+WHEEL_GEAR_RATIO_L3 = 6.12
 AZMTH_GEAR_RATIO = 12.8
 
 ### CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
-WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L1
+if RobotIdentification.getRobotType == RobotTypes.Main:
+    WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3
+    print("L3")
+elif RobotIdentification.getRobotType == RobotTypes.Practice:
+    WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L2
+else:
+    WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3
 
 # carpet/roughtop interface fudge factor
 # This accounts for the fact that roughtop tread
@@ -96,10 +103,23 @@ MAX_ROTATE_ACCEL_RAD_PER_SEC_2 = (
 # 3 - Using a square, twist the modules by hand until they are aligned with the robot's chassis
 # 4 - Read out the encoder readings for each module, put them here
 # 5 - Redeploy code, verify that the  encoder readings are correct as each module is manually rotated
-FL_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(-37.86)
-FR_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(136.3)
-BL_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(59.97)
-BR_ENCODER_MOUNT_OFFSET_RAD = deg2Rad(-64.44)
+
+
+if RobotIdentification.getRobotType == RobotTypes.Main:
+    FL_ENCODER_MOUNT_OFFSET_RAD = 2.53
+    FR_ENCODER_MOUNT_OFFSET_RAD = 2.37
+    BL_ENCODER_MOUNT_OFFSET_RAD = .93
+    BR_ENCODER_MOUNT_OFFSET_RAD = -1.14
+elif RobotIdentification.getRobotType == RobotTypes.Practice:
+    FL_ENCODER_MOUNT_OFFSET_RAD = 0
+    FR_ENCODER_MOUNT_OFFSET_RAD = 0
+    BL_ENCODER_MOUNT_OFFSET_RAD = 0
+    BR_ENCODER_MOUNT_OFFSET_RAD = 0
+else:
+    FL_ENCODER_MOUNT_OFFSET_RAD = 0
+    FR_ENCODER_MOUNT_OFFSET_RAD = 0
+    BL_ENCODER_MOUNT_OFFSET_RAD = 0
+    BR_ENCODER_MOUNT_OFFSET_RAD = 0
 
 
 # Module Indices (for ease of array manipulation)
