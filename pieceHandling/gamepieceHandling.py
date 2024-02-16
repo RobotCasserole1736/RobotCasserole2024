@@ -44,7 +44,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         # Shooter Calibrations (PID Controller)
         self.shooterkFCal = Calibration("ShooterkF", 0.00255, "V/RPM")
-        self.shooterkPCal = Calibration("ShooterkP", 0)
+        self.shooterkPCal = Calibration("ShooterkP", 1)
         self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
         self._updateCals()
 
@@ -58,8 +58,8 @@ class GamePieceHandling(metaclass=Singleton):
         self.hasGamePiece = False
 
         # Calibrations for Gamepiece being absent and present
-        self.gamePiecePresentCal = Calibration("NotePresentThresh", 7, "in")
-        self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 11, "in")
+        self.gamePiecePresentCal = Calibration("NotePresentThresh", 6, "in")
+        self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
 
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
@@ -83,7 +83,7 @@ class GamePieceHandling(metaclass=Singleton):
 
     def updateFloorRoller(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
-        self.floorRoolerMotor1.setVoltage(voltage)
+        self.floorRoolerMotor1.setVoltage(-voltage)
 
     def _updateCals(self):
             self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
@@ -131,7 +131,7 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateShooter(True)
             self.updateFloorRoller(False)
             curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
-            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(30.0):
+            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(80.0):
                 # We're at the right shooter speed, go ahead and inject the gamepiece
                 self.updateIntake(True)
             else:

@@ -35,12 +35,12 @@ ROBOT_MOI_KGM2 = (
 
 # SDS MK4i Swerve Module Ratios
 # See https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
-WHEEL_GEAR_RATIO_L1 = 8.41
+# WHEEL_GEAR_RATIO_L1 = 8.41
 WHEEL_GEAR_RATIO_L2 = 6.75
 WHEEL_GEAR_RATIO_L3 = 6.12
 AZMTH_GEAR_RATIO = 12.8
 
-### CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
+## CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
 if RobotIdentification.getRobotType == RobotTypes.Main:
     WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3
     print("L3")
@@ -111,10 +111,10 @@ if RobotIdentification.getRobotType == RobotTypes.Practice:
     BL_ENCODER_MOUNT_OFFSET_RAD = 0
     BR_ENCODER_MOUNT_OFFSET_RAD = 0
 else:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 2.53
-    FR_ENCODER_MOUNT_OFFSET_RAD = 2.37
-    BL_ENCODER_MOUNT_OFFSET_RAD = .93
-    BR_ENCODER_MOUNT_OFFSET_RAD = -1.14
+    FL_ENCODER_MOUNT_OFFSET_RAD = -2.98
+    FR_ENCODER_MOUNT_OFFSET_RAD = 3.13 - (0.70 + 1.57)
+    BL_ENCODER_MOUNT_OFFSET_RAD = -2.98 - 1.57
+    BR_ENCODER_MOUNT_OFFSET_RAD = -0.31 - 1.57
 
 
 # Module Indices (for ease of array manipulation)
