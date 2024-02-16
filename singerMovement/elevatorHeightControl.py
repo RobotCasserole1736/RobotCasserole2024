@@ -15,7 +15,7 @@ from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID
 class ElevatorHeightControl():
     def __init__(self):
         # Elevator up/down control
-        self.motor = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=True,)
+        self.motor = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=True)
         self.maxV = Calibration(name="Elevator Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
         self.profiler = ProfiledAxis()
@@ -28,6 +28,10 @@ class ElevatorHeightControl():
 
         self.kV = Calibration(name="Elevator kV", default=0.0, units="V/rps")
         self.kS = Calibration(name="Elevator kS", default=0.0, units="V")
+        self.kG = Calibration(name="Elevator kG", default=0.0, units="V")
+        self.kP = Calibration(name="Elevator kP", default=0.0, units="V/rad error")
+
+        self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
         self.stopped = True
 
@@ -49,17 +53,15 @@ class ElevatorHeightControl():
         self.curUnprofiledPosCmd = 0.0
 
 
-    def _motorRevToHeight(self, motorRev):
-        return motorRev * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) - self.relEncOffsetM
+    def _motorRadToHeight(self, motorRad):
+        return motorRad * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M) - self.relEncOffsetM
             
-    def _heightToMotorRev(self, elevLin):
-        return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M * 2.0 * math.pi) 
+    def _heightToMotorRad(self, elevLin):
+        return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M) 
                 * ELEVATOR_GEARBOX_GEAR_RATIO )
     
     def getHeightM(self):
-        motorRot = self.motor.getMotorPositionRad()
-        elevPos = self._motorRevToHeight(motorRot)
-        return elevPos
+        return self._motorRadToHeight(self.motor.getMotorPositionRad())
     
     # Return the height of the elevator as measured by the absolute sensor in meters
     def _getAbsHeight(self):
@@ -96,6 +98,10 @@ class ElevatorHeightControl():
     def update(self):
         actualPos = self.getHeightM()
 
+        # Update motor closed-loop calibration
+        if(self.kP.isChanged()):
+            self.motor.setPID(self.kP.get(), 0.0, 0.0)
+
         if(self.stopped):
             self.motor.setVoltage(0.0)
             self.profiledPos = actualPos
@@ -104,10 +110,10 @@ class ElevatorHeightControl():
 
             self.profiledPos = curState.position
 
-            motorPosCmd = self._heightToMotorRev(curState.position)
-            motorVelCmd = self._heightToMotorRev(curState.velocity)
+            motorPosCmd = self._heightToMotorRad(curState.position)
+            motorVelCmd = self._heightToMotorRad(curState.velocity)
 
-            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd)
+            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get()
 
             self.motor.setPosCmd(motorPosCmd, vFF)
 

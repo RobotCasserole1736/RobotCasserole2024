@@ -72,11 +72,11 @@ LED_CTRL_PWM = 9
 ## DIO Bank
 #######################################################################################
 
-# Unused = 0
-# Unused = 1
-# Unused = 2
-# Unused = 3
-# Unused = 4
+DT_BR_AZMTH_ENC_PORT = 0
+DT_FL_AZMTH_ENC_PORT = 1
+DT_BL_AZMTH_ENC_PORT = 2
+DT_FR_AZMTH_ENC_PORT = 3
+SINGER_ANGLE_ABS_POS_ENC = 4
 # Unused = 5
 # Unused = 6
 # Unused = 7
