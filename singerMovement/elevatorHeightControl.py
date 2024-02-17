@@ -31,7 +31,11 @@ class ElevatorHeightControl():
         self.kG = Calibration(name="Elevator kG", default=0.0, units="V")
         self.kP = Calibration(name="Elevator kP", default=0.0, units="V/rad error")
 
+        self.motor.setPID(self.kV.get(), 0.0, 0.0)
+        self.motor.setPID(self.kS.get(), 0.0, 0.0)
+        self.motor.setPID(self.kG.get(), 0.0, 0.0)
         self.motor.setPID(self.kP.get(), 0.0, 0.0)
+
 
         self.stopped = True
 
@@ -90,8 +94,7 @@ class ElevatorHeightControl():
         self.stopped = True
         self.curUnprofiledPosCmd = self.getHeightM()
         self.profiler.disable()
-
-
+    
     def getProfiledDesPos(self):
         return self.profiledPos
 
@@ -99,6 +102,12 @@ class ElevatorHeightControl():
         actualPos = self.getHeightM()
 
         # Update motor closed-loop calibration
+        if(self.kV.isChanged()):
+            self.motor.setPID(self.kV.get(), 0.0, 0.0)
+        if(self.kS.isChanged()):
+            self.motor.setPID(self.kS.get(), 0.0, 0.0)
+        if(self.kG.isChanged()):
+            self.motor.setPID(self.kG.get(), 0.0, 0.0)
         if(self.kP.isChanged()):
             self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
