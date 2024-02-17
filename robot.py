@@ -173,6 +173,7 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
+        wpilib.LiveWindow.setEnabled(False)
         self.carriageControl.onEnable(True) # init the function generator
 
 
