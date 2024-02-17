@@ -46,10 +46,7 @@ class SingerAngleControl():
         self.profiledPos = 0.0
         self.curUnprofiledPosCmd = 0.0
 
-        self.motor.setPID(self.kV.get(), 0.0, 0.0)
-        self.motor.setPID(self.kS.get(), 0.0, 0.0)
-        self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        self.motor.setPID(self.kV.get(), 0.0, 0.0)
+        self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
     # Return the rotation of the signer as measured by the absolute sensor in radians
     def _getAbsRot(self):
@@ -103,14 +100,8 @@ class SingerAngleControl():
         actualPos = self.getAngle()
 
         # Update motor closed-loop calibration
-        if(self.kV.isChanged()):
-            self.motor.setPID(self.kV.get(), 0.0, 0.0)
-        if(self.kS.isChanged()):
-            self.motor.setPID(self.kS.get(), 0.0, 0.0)
-        if(self.kG.isChanged()):
-            self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        if(self.kV.isChanged()):
-            self.motor.setPID(self.kV.get(), 0.0, 0.0)
+        if(self.kP.isChanged()):
+            self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
         if(self.stopped):
             self.motor.setVoltage(0.0)
