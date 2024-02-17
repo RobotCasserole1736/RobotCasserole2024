@@ -1,5 +1,7 @@
 #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
 from enum import IntEnum
+
+from wpilib import Timer, TimedRobot
 from singerMovement.carriageTelemetry import CarriageTelemetry
 from singerMovement.elevatorHeightControl import ElevatorHeightControl
 from singerMovement.singerAngleControl import SingerAngleControl
@@ -42,6 +44,19 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.75 )
         self.elevatorHeightTrap = Calibration(name="Elev Height Trap", units="m", default=0.65 )
         self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.5 )
+
+        # Physical travel limits
+        self.singerRotSoftLimitMax= Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 65.0 )
+        self.singerRotSoftLimitMin= Calibration(name="Singer Rot Soft Limit Min", units="deg", default=-20.0 )
+
+        # Calibration Function Generator
+        self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=0.0)
+        self.elevatorFuncGenAmp = Calibration("Elevator Test Function Generator Amp", units="m", default=0.0)
+        self.singerFuncGenStart = 0.0
+        self.elevFuncGenStart = 0.0
+        self.profileStartTime = 0.0
+        self.funcGenIsAtStart = True
+
 
         # Minimum height that we have to go to before we can freely rotate the singer
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
@@ -103,19 +118,74 @@ class CarriageControl(metaclass=Singleton):
         else:
             return 0.0
         
+    def onEnable(self, useFuncGen = False):
+        if(useFuncGen):
+            self._funcGenStart()
+    
     def manSingerCmd(self,cmdIn):
         self.singerCtrl.manualCtrl(cmdIn)
 
-    def update(self):
+    def update(self, useFuncGen = False):
 
         #######################################################
         # Read sensor inputs
 
         self.curElevHeight = self.elevCtrl.getHeightM()
         self.curSingerRot = self.singerCtrl.getAngle()
- 
+
+        # Run control strategy
+        if(useFuncGen):
+            self._funcGenUpdate()
+        else:
+            self._stateMachineUpdate()
+
+
         #######################################################
-        # Run the state machine
+        # Run Motors
+        if self.DISABLE_SINGER_MOVEMENT == False:
+            self.elevCtrl.update()
+            self.singerCtrl.update()
+
+        log("Carriage State", self.curState, "state")
+        log("Carriage Cmd", self.curPosCmd, "state")
+        self.telem.set(
+            self.singerCtrl.getProfiledDesPos(),
+            self.curSingerRot,
+            self.elevCtrl.getProfiledDesPos(),
+            self.curElevHeight
+        )
+
+    # Reset the function generator 
+    def _funcGenStart(self):
+        self.singerFuncGenStart = self.curSingerRot 
+        self.elevatorFuncGenStart = self.curElevHeight
+        self.profileStartTime = Timer.getFPGATimestamp()
+
+    # Update logic to do a periodic function genertor
+    def _funcGenUpdate(self):
+
+        if(Timer.getFPGATimestamp() > (self.profileStartTime + 5.0)):
+             # Every five seconds, profile to the opposite position
+             self.funcGenIsAtStart = not self.funcGenIsAtStart
+             self.profileStartTime = Timer.getFPGATimestamp()
+
+
+        elevOffset = self.elevatorFuncGenAmp.get()
+        singerAngleOffset = deg2Rad(self.singerFuncGenAmp.get())
+
+        if(self.funcGenIsAtStart):
+            desPosElevator = self.elevatorFuncGenStart
+            desPosSinger = self.singerFuncGenStart
+        else:
+            desPosElevator = self.elevatorFuncGenStart + elevOffset
+            desPosSinger = self.singerFuncGenStart + singerAngleOffset
+
+        self.elevCtrl.setDesPos(desPosElevator)
+        self.singerCtrl.setDesPos(desPosSinger)
+
+    # Update logic for the main state machine that makes sure we don't crash into ourselves
+    # While going between arbitrary positions
+    def _stateMachineUpdate(self):
 
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
@@ -198,33 +268,19 @@ class CarriageControl(metaclass=Singleton):
         self.curState = nextState
 
         self.prevPosCmd = self.curPosCmd
-
-        #######################################################
-        # Run Motors
-        if self.DISABLE_SINGER_MOVEMENT == False:
-            self.elevCtrl.update()
-            self.singerCtrl.update()
-
-        log("Carriage State", self.curState, "state")
-        log("Carriage Cmd", self.curPosCmd, "state")
-        self.telem.set(
-            self.singerCtrl.getProfiledDesPos(),
-            self.curSingerRot,
-            self.elevCtrl.getProfiledDesPos(),
-            self.curElevHeight
-        )
         
     # Public API inputs
     def setSignerAutoAlignAngle(self, desiredAngle:float):
+
+        if(self.autoAlignSingerRotCmd > self.singerRotSoftLimitMax.get()):
+            self.autoAlignSingerRotCmd = self.singerRotSoftLimitMax.get()
+
+        if(self.autoAlignSingerRotCmd < self.singerRotSoftLimitMin.get()):
+            self.autoAlignSingerRotCmd = self.singerRotSoftLimitMin.get()
+
         self.autoAlignSingerRotCmd = desiredAngle
 
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
-
-        if(self.autoAlignSingerRotCmd > .698132):
-            self.autoAlignSingerRotCmd  = .698132
-
-        if(self.autoAlignSingerRotCmd <  -0.174533):
-            self.autoAlignSingerRotCmd  =  -0.174533
 
       
