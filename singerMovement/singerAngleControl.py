@@ -106,7 +106,7 @@ class SingerAngleControl():
             self.motor.setPID(self.kS.get(), 0.0, 0.0)
         if(self.kG.isChanged()):
             self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        if(self.kV.isChanged()):
+        if(self.kP.isChanged()):
             self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
         if(self.stopped):
