@@ -177,9 +177,10 @@ class MyRobot(wpilib.TimedRobot):
         self.carriageControl.onEnable(True) # init the function generator
 
 
-    def testUpdate(self):
-        # Nothing here - main robot periodic takes care of everything
-        pass
+    def testPeriodic(self):
+        SignalWrangler().markLoopStart()
+        # Nothing else to do, main update does all the heavy lifting
+
 
     #########################################################
     ## Cleanup
