@@ -21,7 +21,7 @@ class SingerAngleControl():
 
         self.kV = Calibration(name="Singer kV", default=0.0, units="V/rps")
         self.kS = Calibration(name="Singer kS", default=0.0, units="V")
-        self.kG = Calibration(name="Singer kG", default=0.0, units="V/cos(deg)")
+        self.kG = Calibration(name="Singer kG", default=0.0001, units="V/cos(deg)")
         self.kP = Calibration(name="Singer kP", default=0.0, units="V/RadErr")
 
 
