@@ -46,8 +46,10 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.5 )
 
         # Physical travel limits
-        self.singerRotSoftLimitMax= Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 65.0 )
-        self.singerRotSoftLimitMin= Calibration(name="Singer Rot Soft Limit Min", units="deg", default=-20.0 )
+        self.singerRotSoftLimitMax = Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 65.0 )
+        self.singerRotSoftLimitMin = Calibration(name="Singer Rot Soft Limit Min", units="deg", default=-20.0 )
+        self.elevatorHeightSoftLimitMax = Calibration(name="Elevator Height Soft Limit Max", units="m", default= 0.8 )
+        self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= -0.01)
 
         # Calibration Function Generator
         self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=0.0)
@@ -169,16 +171,24 @@ class CarriageControl(metaclass=Singleton):
              self.funcGenIsAtStart = not self.funcGenIsAtStart
              self.profileStartTime = Timer.getFPGATimestamp()
 
-
+        # Get the offsets
         elevOffset = self.elevatorFuncGenAmp.get()
         singerAngleOffset = deg2Rad(self.singerFuncGenAmp.get())
 
+        # Apply the offsets
         if(self.funcGenIsAtStart):
             desPosElevator = self.elevatorFuncGenStart
             desPosSinger = self.singerFuncGenStart
         else:
             desPosElevator = self.elevatorFuncGenStart + elevOffset
             desPosSinger = self.singerFuncGenStart + singerAngleOffset
+
+
+        # Apply limits to keep from over-extending
+        desPosElevator = max(desPosElevator, self.elevatorHeightSoftLimitMin.get())
+        desPosElevator = min(desPosElevator, self.elevatorHeightSoftLimitMax.get())
+        desPosSinger = max(desPosSinger, self.singerRotSoftLimitMin.get())
+        desPosSinger = min(desPosSinger, self.singerRotSoftLimitMax.get())
 
         self.elevCtrl.setDesPos(desPosElevator)
         self.singerCtrl.setDesPos(desPosSinger)
