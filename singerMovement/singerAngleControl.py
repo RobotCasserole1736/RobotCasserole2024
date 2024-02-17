@@ -49,7 +49,7 @@ class SingerAngleControl():
         self.motor.setPID(self.kV.get(), 0.0, 0.0)
         self.motor.setPID(self.kS.get(), 0.0, 0.0)
         self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        self.motor.setPID(self.kV.get(), 0.0, 0.0)
+        self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
     # Return the rotation of the signer as measured by the absolute sensor in radians
     def _getAbsRot(self):
