@@ -166,12 +166,16 @@ class CarriageControl(metaclass=Singleton):
              self.funcGenIsAtStart = not self.funcGenIsAtStart
              self.profileStartTime = Timer.getFPGATimestamp()
 
+
+        elevOffset = self.elevatorFuncGenAmp.get()
+        singerAngleOffset = deg2Rad(self.singerFuncGenAmp.get())
+
         if(self.funcGenIsAtStart):
             desPosElevator = self.elevatorFuncGenStart
             desPosSinger = self.singerFuncGenStart
         else:
-            desPosElevator = self.elevatorFuncGenStart + self.elevatorFuncGenAmp.get()
-            desPosSinger = self.singerFuncGenStart + deg2Rad(self.singerFuncGenAmp.get())
+            desPosElevator = self.elevatorFuncGenStart + elevOffset
+            desPosSinger = self.singerFuncGenStart + singerAngleOffset
 
         self.elevCtrl.setDesPos(desPosElevator)
         self.singerCtrl.setDesPos(desPosSinger)
