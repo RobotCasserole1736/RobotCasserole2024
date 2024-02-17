@@ -80,6 +80,12 @@ class GamePieceHandling(metaclass=Singleton):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
         self.intakeMotorUpper.setVoltage(voltage)
         self.intakeMotorLower.setVoltage(voltage)
+    
+    def updateEject(self, shouldRun):
+        voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
+        self.intakeMotorUpper.setVoltage(-voltage)
+        self.intakeMotorLower.setVoltage(-voltage)
+        self.floorRoolerMotor1.setVoltage(voltage)
 
     def updateFloorRoller(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
@@ -137,11 +143,16 @@ class GamePieceHandling(metaclass=Singleton):
             else:
                 # Wait for spoolup
                 self.updateIntake(False)
+        
+        elif self.ejectOnCmd:
+            self.updateEject(True)
+
         else:
             # Nothing commanded
             self.updateShooter(False)
             self.updateFloorRoller(False)
             self.updateIntake(False)
+            self.updateEject(False)
 
     # Take in command from the outside world
     def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
