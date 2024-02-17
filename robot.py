@@ -87,7 +87,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.gph.update()
 
-        self.carriageControl.update()
+        self.carriageControl.update(useFuncGen=self.isTestEnabled())
 
         self.stt.end()
 
@@ -173,9 +173,11 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
-        pass
+        self.carriageControl.onEnable(True) # init the function generator
+
 
     def testUpdate(self):
+        # Nothing here - main robot periodic takes care of everything
         pass
 
     #########################################################

@@ -117,8 +117,12 @@ class CarriageControl(metaclass=Singleton):
             return self.curSingerRot # No motion commanded
         else:
             return 0.0
+        
+    def onEnable(self, useFuncGen = False):
+        if(useFuncGen):
+            self._funcGenStart()
 
-    def update(self):
+    def update(self, useFuncGen = False):
 
         #######################################################
         # Read sensor inputs
@@ -126,8 +130,11 @@ class CarriageControl(metaclass=Singleton):
         self.curElevHeight = self.elevCtrl.getHeightM()
         self.curSingerRot = self.singerCtrl.getAngle()
 
-        # TODO - in test mode, call the function generator instead
-        self._stateMachineUpdate()
+        # Run control strategy
+        if(useFuncGen):
+            self._funcGenUpdate()
+        else:
+            self._stateMachineUpdate()
 
 
         #######################################################
@@ -146,7 +153,6 @@ class CarriageControl(metaclass=Singleton):
         )
 
     # Reset the function generator 
-    # TODO - this needs to be called once right at the start of test mode
     def _funcGenStart(self):
         self.singerFuncGenStart = self.curSingerRot 
         self.elevatorFuncGenStart = self.curElevHeight
@@ -158,13 +164,14 @@ class CarriageControl(metaclass=Singleton):
         if(Timer.getFPGATimestamp() > (self.profileStartTime + 5.0)):
              # Every five seconds, profile to the opposite position
              self.funcGenIsAtStart = not self.funcGenIsAtStart
+             self.profileStartTime = Timer.getFPGATimestamp()
 
         if(self.funcGenIsAtStart):
             desPosElevator = self.elevatorFuncGenStart
             desPosSinger = self.singerFuncGenStart
         else:
             desPosElevator = self.elevatorFuncGenStart + self.elevatorFuncGenAmp.get()
-            desPosSinger = self.singerFuncGenStart + self.singerFuncGenAmp.get()
+            desPosSinger = self.singerFuncGenStart + deg2Rad(self.singerFuncGenAmp.get())
 
         self.elevCtrl.setDesPos(desPosElevator)
         self.singerCtrl.setDesPos(desPosSinger)
