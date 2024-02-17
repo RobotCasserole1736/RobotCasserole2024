@@ -2,9 +2,10 @@ from singerMovement.singerConstants import (MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SIN
                                             SINGER_GEARBOX_RATIO)
 from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
-from utils.constants import SINGER_ANGLE_MOTOR_CANID
+from utils.constants import SINGER_ANGLE_MOTOR_CANID, SINGER_ANGLE_ABS_POS_ENC
 from utils.units import deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
+from math import cos
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 
@@ -20,10 +21,12 @@ class SingerAngleControl():
 
         self.kV = Calibration(name="Singer kV", default=0.0, units="V/rps")
         self.kS = Calibration(name="Singer kS", default=0.0, units="V")
+        self.kG = Calibration(name="Singer kG", default=0.0, units="V/cos(deg)")
+        self.kP = Calibration(name="Singer kP", default=0.0, units="V/RadErr")
 
 
         #Absolute position sensors
-        self.singerRotAbsSen = WrapperedThroughBoreHexEncoder(name="SingerRotAbsPosSen", port=4)
+        self.singerRotAbsSen = WrapperedThroughBoreHexEncoder(name="SingerRotAbsPosSen", port=SINGER_ANGLE_ABS_POS_ENC)
 
         # Absolute Sensor mount offsets
         # After mounting the sensor, these should be tweaked one time
@@ -43,6 +46,9 @@ class SingerAngleControl():
         self.profiledPos = 0.0
         self.curUnprofiledPosCmd = 0.0
 
+        self.motor.setPID(self.kP.get(), 0.0, 0.0)
+
+
     # Return the rotation of the signer as measured by the absolute sensor in radians
     def _getAbsRot(self):
         return self.singerRotAbsSen.getAngleRad() - deg2Rad(self.absEncOffsetDeg)
@@ -58,15 +64,15 @@ class SingerAngleControl():
         # New Offset = real angle - current rel sensor offset ??
         self.relEncOffsetRad = self._getAbsRot() - self.getAngle()
 
-    def _motorRevToAngle(self, motorRev):
+    def _motorRadToAngle(self, motorRev):
         return motorRev * 1/SINGER_GEARBOX_RATIO - self.relEncOffsetRad
             
-    def _angleToMotorRev(self, elevLin):
-        return (elevLin + self.relEncOffsetRad) * SINGER_GEARBOX_RATIO
+    def _angleToMotorRad(self, singerAngleRad):
+        return (singerAngleRad + self.relEncOffsetRad) * SINGER_GEARBOX_RATIO
     
     def getAngle(self):
         motorRot = self.motor.getMotorPositionRad()
-        singerAngle = self._motorRevToAngle(motorRot)
+        singerAngle = self._motorRadToAngle(motorRot)
         return singerAngle
     
     def atTarget(self):
@@ -90,6 +96,11 @@ class SingerAngleControl():
 
     def update(self):
         actualPos = self.getAngle()
+
+        # Update motor closed-loop calibration
+        if(self.kP.isChanged()):
+            self.motor.setPID(self.kP.get(), 0.0, 0.0)
+
         
         if(self.stopped):
             self.motor.setVoltage(0.0)
@@ -99,10 +110,10 @@ class SingerAngleControl():
 
             self.profiledPos = curState.position
 
-            motorPosCmd = self._angleToMotorRev(curState.position)
-            motorVelCmd = self._angleToMotorRev(curState.velocity)
+            motorPosCmd = self._angleToMotorRad(curState.position)
+            motorVelCmd = self._angleToMotorRad(curState.velocity)
 
-            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd)
+            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get() * cos(actualPos)
 
             self.motor.setPosCmd(motorPosCmd, vFF)
 

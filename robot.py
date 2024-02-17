@@ -75,6 +75,9 @@ class MyRobot(wpilib.TimedRobot):
         self.addPeriodic(CalibrationWrangler().update, 0.5, 0.0)
         self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
 
+        # One-time init of carriage position from the absolute sensors
+        self.carriageControl.initFromAbsoluteSensors()
+
     def robotPeriodic(self):
         self.stt.start()
 
