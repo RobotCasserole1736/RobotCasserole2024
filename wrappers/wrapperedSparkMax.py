@@ -111,7 +111,7 @@ class WrapperedSparkMax:
         """
         velCmdRPM = radPerSec2RPM(velCmd)
 
-        log(self.name + "_desVel", velCmd, "RPM")
+        log(self.name + "_desVel", velCmdRPM, "RPM")
         log(self.name + "_cmdVoltage", arbFF, "V")
 
         if self.configSuccess:
