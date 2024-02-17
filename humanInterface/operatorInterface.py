@@ -188,8 +188,8 @@ class OperatorInterface(metaclass=Singleton):
         return self.manualSingerUpDown != 0 or self.manualSingerRot != 0
 
     # this will be joystick command for degrees
-    def manSingerRotCmd(self):
-        return self.manualSingerRot
+    def getManSingerRotCmd(self):
+        return self.manualSingerRot*12
 
     # this will be joystick command for going up/down
     def manSingerUpDown(self):

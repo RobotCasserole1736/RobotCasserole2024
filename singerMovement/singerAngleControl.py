@@ -14,7 +14,7 @@ from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncod
 class SingerAngleControl():
     def __init__(self):
         # Singer Rotation Control
-        self.motor = WrapperedSparkMax(SINGER_ANGLE_MOTOR_CANID, "SingerRotMotor", brakeMode=True, currentLimitA=20.0)
+        self.motor = WrapperedSparkMax(SINGER_ANGLE_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
         self.maxV = Calibration(name="Singer Max Rot Vel", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
@@ -32,7 +32,7 @@ class SingerAngleControl():
         # After mounting the sensor, these should be tweaked one time
         # in order to adjust whatever the sensor reads into the reference frame
         # of the mechanism
-        self.absEncOffsetDeg = 0.0
+        self.absEncOffsetDeg = -61.11
 
         # Relative Encoder Offsets
         # Releative encoders always start at 0 at power-on
@@ -49,7 +49,7 @@ class SingerAngleControl():
         self.motor.setPID(self.kV.get(), 0.0, 0.0)
         self.motor.setPID(self.kS.get(), 0.0, 0.0)
         self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        self.motor.setPID(self.kP.get(), 0.0, 0.0)
+        self.motor.setPID(self.kV.get(), 0.0, 0.0)
 
     # Return the rotation of the signer as measured by the absolute sensor in radians
     def _getAbsRot(self):
@@ -59,7 +59,7 @@ class SingerAngleControl():
     # so that the relative sensors match reality.
     # It should be called.... infrequently. Likely once shortly after robot init.
     def initFromAbsoluteSensor(self):
-        # Reset offsets to zero, so the relative sensor get functions return
+        # Reset relative offset to zero, so the relative sensor get functions return
         # just whatever offset the relative sensor currently has.
         self.relEncOffsetRad = 0.0
 
@@ -95,6 +95,9 @@ class SingerAngleControl():
 
     def getProfiledDesPos(self):
         return self.profiledPos
+    
+    def manualCtrl(self,cmdIn):
+        self.motor.setVoltage(cmdIn)
 
     def update(self):
         actualPos = self.getAngle()
@@ -106,8 +109,8 @@ class SingerAngleControl():
             self.motor.setPID(self.kS.get(), 0.0, 0.0)
         if(self.kG.isChanged()):
             self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        if(self.kP.isChanged()):
-            self.motor.setPID(self.kP.get(), 0.0, 0.0)
+        if(self.kV.isChanged()):
+            self.motor.setPID(self.kV.get(), 0.0, 0.0)
 
         if(self.stopped):
             self.motor.setVoltage(0.0)

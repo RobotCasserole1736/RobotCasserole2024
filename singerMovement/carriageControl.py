@@ -102,6 +102,9 @@ class CarriageControl(metaclass=Singleton):
             return self.curSingerRot # No motion commanded
         else:
             return 0.0
+        
+    def manSingerCmd(self,cmdIn):
+        self.singerCtrl.manualCtrl(cmdIn)
 
     def update(self):
 
