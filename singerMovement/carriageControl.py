@@ -163,8 +163,8 @@ class CarriageControl(metaclass=Singleton):
             desPosElevator = self.elevatorFuncGenStart
             desPosSinger = self.singerFuncGenStart
         else:
-            desPosElevator = self.elevatorFuncGenStart
-            desPosSinger = self.singerFuncGenStart
+            desPosElevator = self.elevatorFuncGenStart + self.elevatorFuncGenAmp.get()
+            desPosSinger = self.singerFuncGenStart + self.singerFuncGenAmp.get()
 
         self.elevCtrl.setDesPos(desPosElevator)
         self.singerCtrl.setDesPos(desPosSinger)
