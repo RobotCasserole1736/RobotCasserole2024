@@ -141,8 +141,6 @@ class MyRobot(wpilib.TimedRobot):
             self.carriageControl.setPositionCmd(CarriageControlCmd.TRAP)
         elif(self.oInt.getSpeakerAutoAlignCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
-        elif(self.oInt.getManSingerRotCmd() is not 0):
-            self.carriageControl.manSingerCmd(self.oInt.getManSingerRotCmd())
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
 
@@ -177,7 +175,6 @@ class MyRobot(wpilib.TimedRobot):
     def testInit(self):
         wpilib.LiveWindow.setEnabled(False)
         self.carriageControl.onEnable(True) # init the function generator
-
 
     def testPeriodic(self):
         SignalWrangler().markLoopStart()
