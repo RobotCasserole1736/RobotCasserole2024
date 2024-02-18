@@ -19,9 +19,9 @@ class SingerAngleControl():
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
 
-        self.kV = Calibration(name="Singer kV", default=0.004, units="V/rps")
-        self.kS = Calibration(name="Singer kS", default=0.05, units="V")
-        self.kG = Calibration(name="Singer kG", default=2, units="V/cos(deg)")
+        self.kV = Calibration(name="Singer kV", default=0.0, units="V/rps")
+        self.kS = Calibration(name="Singer kS", default=0.0, units="V")
+        self.kG = Calibration(name="Singer kG", default=0.1, units="V/cos(deg)")
         self.kP = Calibration(name="Singer kP", default=0.0, units="V/RadErr")
 
         #Absolute position sensors
@@ -114,7 +114,7 @@ class SingerAngleControl():
             motorPosCmd = self._angleToMotorRad(curState.position)
             motorVelCmd = self._angleToMotorRad(curState.velocity)
 
-            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get() * -cos(actualPos)
+            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get() * cos(actualPos)
 
             self.motor.setPosCmd(motorPosCmd, vFF)
 
