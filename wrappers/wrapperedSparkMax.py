@@ -85,7 +85,7 @@ class WrapperedSparkMax:
         self.simActPos = posCmd
         posCmdRev = rad2Rev(posCmd)
 
-        log(self.name + "_desPos", posCmd, "Rev")
+        log(self.name + "_desPos", posCmd, "Rad")
         log(self.name + "_cmdVoltage", arbFF, "V")
 
         if self.configSuccess:
