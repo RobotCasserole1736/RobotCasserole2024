@@ -20,8 +20,8 @@ class SingerAngleControl():
         self.profiler = ProfiledAxis()
 
         self.kV = Calibration(name="Singer kV", default=0.0, units="V/rps")
-        self.kS = Calibration(name="Singer kS", default=0.0, units="V")
-        self.kG = Calibration(name="Singer kG", default=0.1, units="V/cos(deg)")
+        self.kS = Calibration(name="Singer kS", default=0.2, units="V")
+        self.kG = Calibration(name="Singer kG", default=0.0, units="V/cos(deg)")
         self.kP = Calibration(name="Singer kP", default=0.0, units="V/RadErr")
 
         #Absolute position sensors
@@ -96,7 +96,6 @@ class SingerAngleControl():
         self.motor.setVoltage(cmdIn)
 
     def update(self):
-        self.singerRotAbsSen.update()
         actualPos = self.getAngle()
 
         # Update motor closed-loop calibration
