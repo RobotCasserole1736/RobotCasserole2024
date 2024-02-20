@@ -19,10 +19,10 @@ class SingerAngleControl():
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
 
-        self.kV = Calibration(name="Singer kV", default=0.007, units="V/rps")
+        self.kV = Calibration(name="Singer kV", default=0.015, units="V/rps")
         self.kS = Calibration(name="Singer kS", default=0.2, units="V")
-        self.kG = Calibration(name="Singer kG", default=0.0, units="V/cos(deg)")
-        self.kP = Calibration(name="Singer kP", default=0.0, units="V/RadErr")
+        self.kG = Calibration(name="Singer kG", default=0.2, units="V/cos(deg)")
+        self.kP = Calibration(name="Singer kP", default=0.2, units="V/RadErr")
 
         #Absolute position sensors
         self.singerRotAbsSen = WrapperedThroughBoreHexEncoder(name="SingerRotAbsPosSen", port=SINGER_ANGLE_ABS_POS_ENC)
