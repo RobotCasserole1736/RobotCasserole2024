@@ -26,6 +26,7 @@ class CarriageControlCmd(IntEnum):
     AUTO_ALIGN = 2
     AMP = 3
     TRAP = 4
+    SUB_SHOT = 5
 
 # Class to control the Carriage (elevator height + singer angle)
 # Handles sequencing the two axes to prevent crashing the robot into itself
@@ -36,9 +37,10 @@ class CarriageControl(metaclass=Singleton):
         self.singerCtrl = SingerAngleControl()
 
         # Fixed Position Cal's
-        self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=60.0 )
+        self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=70.0 )
         self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-40.0 )
         self.singerRotTrap = Calibration(name="Singer Rot Trap", units="deg", default=-20.0 )
+        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default =60.0)
 
         self.elevatorHeightIntake = Calibration(name="Elev Height Intake", units="m", default=0.0 )
         self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.75 )
@@ -46,7 +48,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.5 )
 
         # Physical travel limits
-        self.singerRotSoftLimitMax = Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 65.0 )
+        self.singerRotSoftLimitMax = Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 70.0 )
         self.singerRotSoftLimitMin = Calibration(name="Singer Rot Soft Limit Min", units="deg", default=-20.0 )
         self.elevatorHeightSoftLimitMax = Calibration(name="Elevator Height Soft Limit Max", units="m", default= 0.8 )
         self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= -0.01)
@@ -58,7 +60,6 @@ class CarriageControl(metaclass=Singleton):
         self.elevFuncGenStart = 0.0
         self.profileStartTime = 0.0
         self.funcGenIsAtStart = True
-
 
         # Minimum height that we have to go to before we can freely rotate the singer
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
@@ -93,7 +94,8 @@ class CarriageControl(metaclass=Singleton):
     def _getUnprofiledElevHeightCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
             return self.curElevHeight
-        elif(self.curPosCmd == CarriageControlCmd.INTAKE):
+        elif(self.curPosCmd == CarriageControlCmd.INTAKE
+             or self.curPosCmd == CarriageControlCmd.SUB_SHOT):
             return self.elevatorHeightIntake.get()
         elif(self.curPosCmd == CarriageControlCmd.AMP):
             return self.elevatorHeightAmp.get()
@@ -115,6 +117,8 @@ class CarriageControl(metaclass=Singleton):
             return deg2Rad(self.singerRotAmp.get())
         elif(self.curPosCmd == CarriageControlCmd.TRAP):
             return deg2Rad(self.singerRotTrap.get())
+        elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
+            return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
             return self.curSingerRot # No motion commanded
         else:
@@ -131,7 +135,6 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Read sensor inputs
-
         self.curElevHeight = self.elevCtrl.getHeightM()
         self.curSingerRot = self.singerCtrl.getAngle()
 
@@ -196,14 +199,13 @@ class CarriageControl(metaclass=Singleton):
     # Update logic for the main state machine that makes sure we don't crash into ourselves
     # While going between arbitrary positions
     def _stateMachineUpdate(self):
-
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
             self.elevCtrl.setStopped()
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
-                self.singerCtrl.setStopped()
+                self.singerCtrl.setDesPos(self.curSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
             self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get())
             self.singerCtrl.setStopped()

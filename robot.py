@@ -141,6 +141,8 @@ class MyRobot(wpilib.TimedRobot):
             self.carriageControl.setPositionCmd(CarriageControlCmd.TRAP)
         elif(self.oInt.getSpeakerAutoAlignCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
+        elif(self.oInt.getCarriageSpeakerSubwooferPosCmd()):
+             self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
 
