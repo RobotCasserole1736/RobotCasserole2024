@@ -16,6 +16,7 @@ class RobotIdentification(metaclass=Singleton):
         self.robotTypeNumber = 0    
         
     def configureValue(self):
+        
 
         self.SERIAL_FAULT = False
 
