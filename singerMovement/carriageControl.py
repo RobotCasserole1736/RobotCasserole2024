@@ -40,7 +40,7 @@ class CarriageControl(metaclass=Singleton):
         self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=70.0 )
         self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-40.0 )
         self.singerRotTrap = Calibration(name="Singer Rot Trap", units="deg", default=-20.0 )
-        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default =60.0)
+        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=55.0)
 
         self.elevatorHeightIntake = Calibration(name="Elev Height Intake", units="m", default=0.0 )
         self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.75 )
@@ -64,9 +64,9 @@ class CarriageControl(metaclass=Singleton):
         # Minimum height that we have to go to before we can freely rotate the singer
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
-        self.curElevHeight = 0.0
+        self.curElevHeight = 0.5
         self.curSingerRot = 0.0
-        self.desElevHeight = 0.0
+        self.desElevHeight = 0.5
         self.desSingerRot = 0.0
         self.profiledElevHeight = 0.0
         self.profiledSingerRot = 0.0
@@ -135,7 +135,7 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Read sensor inputs
-        self.curElevHeight = self.elevCtrl.getHeightM()
+        self.curElevHeight = 0.5 #self.elevCtrl.getHeightM()
         self.curSingerRot = self.singerCtrl.getAngle()
 
         # Run control strategy
@@ -143,7 +143,6 @@ class CarriageControl(metaclass=Singleton):
             self._funcGenUpdate()
         else:
             self._stateMachineUpdate()
-
 
         #######################################################
         # Run Motors
@@ -233,7 +232,7 @@ class CarriageControl(metaclass=Singleton):
                     self.curSingerRot - self._getUnprofiledSingerRotCmd()
                 )
                 goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
-                currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
+                currentlyBelowSafe = False #self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
                 if(currentlyBelowSafe and goingBelowSafe and angleErr > deg2Rad(3.0)):
                     # We need to rotate, we're currently below the safe height,
                     # and we're going to end up below it when we're done.
