@@ -16,14 +16,13 @@ class RobotIdentification(metaclass=Singleton):
         self.robotTypeNumber = 0    
         
     def configureValue(self):
-        
 
         self.SERIAL_FAULT = False
 
-        if self.roboControl.getSerialNumber() == "03134D41": #the L3
+        if self.roboControl.getSerialNumber() == "03134d41": #the L3
             self.robotType = RobotTypes.Main 
             self.robotTypeNumber = 1
-        elif self.roboControl.getSerialNumber() == "03064E3F":  #the L2
+        elif self.roboControl.getSerialNumber() == "03064e3f":  #the L2
             self.robotType = RobotTypes.Practice
             self.robotTypeNumber = 2
         elif self.roboControl.getSerialNumber() == "0316b37c":  #Test to see if the RoboRio serial number is our testboard's serial number.
