@@ -121,6 +121,8 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
 
+        print(self.rId.getRobotType())
+
         SignalWrangler().markLoopStart()
         self.oInt.update()
         self.dInt.update()

@@ -12,7 +12,7 @@ class RobotIdentification(metaclass=Singleton):
     def __init__(self):
         self.roboControl = wpilib.RobotController
         self.robotType = RobotTypes.Main
-        self.SERIAL_FAULT = True    
+        self.SERIAL_FAULT = False    
         self.robotTypeNumber = 0    
         
     def configureValue(self):

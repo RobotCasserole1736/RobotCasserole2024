@@ -153,6 +153,7 @@ class CarriageControl(metaclass=Singleton):
 
         log("Carriage State", self.curState, "state")
         log("Carriage Cmd", self.curPosCmd, "state")
+        
         self.telem.set(
             self.singerCtrl.getProfiledDesPos(),
             self.curSingerRot,
