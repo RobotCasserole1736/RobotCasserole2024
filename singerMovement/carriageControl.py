@@ -68,8 +68,8 @@ class CarriageControl(metaclass=Singleton):
         self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.desElevHeight = 0.5
         self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
-        self.profiledElevHeight = 0.0
-        self.profiledSingerRot = 0.0
+        self.profiledElevHeight = self.desElevHeight
+        self.profiledSingerRot = self.curSingerRot
 
         self.curPosCmd = CarriageControlCmd.HOLD
         self.prevPosCmd = CarriageControlCmd.HOLD
@@ -114,7 +114,7 @@ class CarriageControl(metaclass=Singleton):
     # The unprofiled elevator height in radians
     def _getUnprofiledSingerRotCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
-            return deg2Rad(self.curSingerRot)
+            return self.curSingerRot ## This is in rads
         elif(self.curPosCmd == CarriageControlCmd.INTAKE):
             return deg2Rad(self.singerRotIntake.get())
         elif(self.curPosCmd == CarriageControlCmd.AMP):
@@ -125,9 +125,9 @@ class CarriageControl(metaclass=Singleton):
             self.desSingerRot = deg2Rad(self.singerRotSub.get())
             return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
-            return self.curSingerRot # No motion commanded
+            return self.curSingerRot # No motion commanded (already in rads)
         else:
-            return 0.0
+            return 0.0 ## this could be really dangerous depending where we are!
         
     def onEnable(self, useFuncGen = False):
         if(useFuncGen):
@@ -210,20 +210,20 @@ class CarriageControl(metaclass=Singleton):
             else:
                 self.singerCtrl.setDesPos(self.desSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get())
+            self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get()) ## m
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
             self.elevCtrl.setStopped()
-            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd())
+            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd()) ## rads
         elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
-            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd())
+            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd()) ## m
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
-            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd())
+            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd()) ## m
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
             self.elevCtrl.setStopped()
-            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd())
+            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd()) ## rads
 
         # Evalute next state and transition behavior
         nextState = self.curState # Default - stay in the same state
