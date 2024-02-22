@@ -65,9 +65,9 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
         self.curElevHeight = 0.5
-        self.curSingerRot = self.singerCtrl.absEncOffsetDeg
+        self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.desElevHeight = 0.5
-        self.desSingerRot = self.singerCtrl.absEncOffsetDeg
+        self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.profiledElevHeight = 0.0
         self.profiledSingerRot = 0.0
 
