@@ -1,4 +1,3 @@
-import math
 
 from playingwithfusion import TimeOfFlight
 from singerMovement.singerConstants import (ELEVATOR_GEARBOX_GEAR_RATIO, ELEVATOR_SPOOL_RADIUS_M, 
@@ -7,8 +6,8 @@ from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
 from utils.units import sign
 from utils.signalLogging import log
-from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID
+from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
 # and motion profiling

@@ -1,6 +1,5 @@
+#import sys
 import wpilib
-
-import sys
 from utils.signalLogging import log
 
 #class wpilib.RobotController
@@ -66,8 +65,3 @@ class PowerMonitor:
         log("Battery current draw",self.powerDist.getTotalCurrent(), "A")
         log("RIO Voltage",wpilib.RobotController.getBatteryVoltage(), "V")
         log("Battery voltage", wpilib.RobotController.getInputVoltage(), "V")
-
-
-
-        
-

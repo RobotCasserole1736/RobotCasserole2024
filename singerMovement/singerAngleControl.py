@@ -1,3 +1,4 @@
+from math import sin
 from singerMovement.singerConstants import (MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, 
                                             SINGER_GEARBOX_RATIO)
 from singerMovement.profiledAxis import ProfiledAxis
@@ -5,7 +6,6 @@ from utils.calibration import Calibration
 from utils.constants import SINGER_ANGLE_MOTOR_CANID, SINGER_ANGLE_ABS_POS_ENC
 from utils.units import deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
-from math import cos, sin
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 
