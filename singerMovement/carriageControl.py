@@ -116,10 +116,13 @@ class CarriageControl(metaclass=Singleton):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
             return self.curSingerRot ## This is in rads
         elif(self.curPosCmd == CarriageControlCmd.INTAKE):
+            self.desSingerRot = deg2Rad(self.singerRotIntake.get())
             return deg2Rad(self.singerRotIntake.get())
         elif(self.curPosCmd == CarriageControlCmd.AMP):
+            self.desSingerRot = deg2Rad(self.singerRotAmp.get())
             return deg2Rad(self.singerRotAmp.get())
         elif(self.curPosCmd == CarriageControlCmd.TRAP):
+            self.desSingerRot = deg2Rad(self.singerRotTrap.get())
             return deg2Rad(self.singerRotTrap.get())
         elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
             self.desSingerRot = deg2Rad(self.singerRotSub.get())
