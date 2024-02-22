@@ -65,7 +65,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
         self.curElevHeight = 0.5
-        self.curSingerRot = 0.0
+        self.curSingerRot = self.singerCtrl.absEncOffsetDeg
         self.desElevHeight = 0.5
         self.desSingerRot = 0.0
         self.profiledElevHeight = 0.0
@@ -99,6 +99,7 @@ class CarriageControl(metaclass=Singleton):
             return self.curElevHeight
         elif(self.curPosCmd == CarriageControlCmd.INTAKE
              or self.curPosCmd == CarriageControlCmd.SUB_SHOT):
+            self.desElevHeight = self.elevatorHeightIntake.get()
             return self.elevatorHeightIntake.get()
         elif(self.curPosCmd == CarriageControlCmd.AMP):
             return self.elevatorHeightAmp.get()
@@ -121,6 +122,7 @@ class CarriageControl(metaclass=Singleton):
         elif(self.curPosCmd == CarriageControlCmd.TRAP):
             return deg2Rad(self.singerRotTrap.get())
         elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
+            self.desSingerRot = self.singerRotSub
             return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
             return self.curSingerRot # No motion commanded
@@ -135,7 +137,6 @@ class CarriageControl(metaclass=Singleton):
         self.singerCtrl.manualCtrl(cmdIn)
 
     def update(self, useFuncGen = False):
-
         #######################################################
         # Read sensor inputs
         self.curElevHeight = 0.5 #self.elevCtrl.getHeightM()
@@ -207,7 +208,7 @@ class CarriageControl(metaclass=Singleton):
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
-                self.singerCtrl.setDesPos(self.curSingerRot)
+                self.singerCtrl.setDesPos(self.desSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
             self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get())
             self.singerCtrl.setStopped()
@@ -296,5 +297,3 @@ class CarriageControl(metaclass=Singleton):
 
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
-
-      

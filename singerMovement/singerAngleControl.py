@@ -42,8 +42,8 @@ class SingerAngleControl():
         self.relEncOffsetRad = 0.0
 
         self.stopped = True
-        self.profiledPos = 0.0
-        self.curUnprofiledPosCmd = 0.0
+        self.profiledPos = self.absEncOffsetDeg
+        self.curUnprofiledPosCmd = self.absEncOffsetDeg
 
         self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
