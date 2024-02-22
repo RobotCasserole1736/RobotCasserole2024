@@ -31,7 +31,7 @@ class SingerAngleControl():
         # After mounting the sensor, these should be tweaked one time
         # in order to adjust whatever the sensor reads into the reference frame
         # of the mechanism
-        self.absEncOffsetDeg = 0.0
+        self.absEncOffsetDeg = 73.44
 
         # Relative Encoder Offsets
         # Releative encoders always start at 0 at power-on

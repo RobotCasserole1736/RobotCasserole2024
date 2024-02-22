@@ -84,6 +84,9 @@ class CarriageControl(metaclass=Singleton):
         self.curState = _CarriageStates.HOLD_ALL
 
         self.telem = CarriageTelemetry()
+
+        self.singerCtrl.setStopped()
+        self.elevCtrl.setStopped()
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
