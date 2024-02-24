@@ -120,11 +120,16 @@ class MyRobot(wpilib.TimedRobot):
     ## Teleop-Specific init and update
     def teleopInit(self):
         cs.enableLogging()
-        camera = cs.UsbCamera("usbcam", 0)
-        camera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-        cs.CameraServer().startAutomaticCapture(camera)
-        mjpegServer = cs.MjpegServer("httpserver", 8081)
-        mjpegServer.setSource(camera)
+        leftCamera = cs.UsbCamera("leftcam", 0)
+        leftCamera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+        rightCamera = cs.UsbCamera("rightcam", 1)
+        rightCamera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+        cs.CameraServer().startAutomaticCapture(leftCamera)
+        cs.CameraServer().startAutomaticCapture(rightCamera)
+        mjpegServer1 = cs.MjpegServer("httpserver", 8081)
+        mjpegServer2 = cs.MjpegServer("httpserver", 8082)
+        mjpegServer1.setSource(leftCamera)
+        mjpegServer2.setSource(rightCamera)
     
         
 
