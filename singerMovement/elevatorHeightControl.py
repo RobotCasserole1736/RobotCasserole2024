@@ -63,6 +63,9 @@ class ElevatorHeightControl():
         return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M) 
                 * ELEVATOR_GEARBOX_GEAR_RATIO )
     
+    def _heightVeltoMotorVel(self, elevLinVel):
+        return (elevLinVel * 1/(ELEVATOR_SPOOL_RADIUS_M) * ELEVATOR_GEARBOX_GEAR_RATIO )
+    
     def getHeightM(self):
         return self._motorRadToHeight(self.motor.getMotorPositionRad())
     
@@ -113,7 +116,7 @@ class ElevatorHeightControl():
             self.profiledPos = curState.position
 
             motorPosCmd = self._heightToMotorRad(curState.position)
-            motorVelCmd = self._heightToMotorRad(curState.velocity)
+            motorVelCmd = self._heightVeltoMotorVel(curState.velocity)
 
             vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get()
 
