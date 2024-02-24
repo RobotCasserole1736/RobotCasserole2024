@@ -79,7 +79,8 @@ class SingerAngleControl():
         return singerAngle
     
     def atTarget(self):
-        return self.profiler.isFinished()
+        #return self.profiler.isFinished()
+        return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngle())) <= 6
 
     def setDesPos(self, desPos):
         self.stopped = False
@@ -122,7 +123,9 @@ class SingerAngleControl():
 
             self.motor.setPosCmd(motorPosCmd, vFF)
 
+
         log("Singer Pos Des", rad2Deg(self.curUnprofiledPosCmd),"deg")
         log("Singer Pos Profiled", rad2Deg(self.profiledPos) ,"deg")
         log("Singer Pos Act", rad2Deg(actualPos) ,"deg")
         log("Singer Motor Vel Cmd", self.motorVelCmd)
+        log("Singer at Target?", self.atTarget(), "bool")

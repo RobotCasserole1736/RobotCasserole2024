@@ -8,7 +8,7 @@ from singerMovement.singerAngleControl import SingerAngleControl
 from singerMovement.singerConstants import SINGER_ABS_ENC_OFF_DEG
 from utils.singleton import Singleton
 from utils.calibration import Calibration
-from utils.units import deg2Rad
+from utils.units import deg2Rad, rad2Deg
 from utils.signalLogging import log
 
 # Private enum describing all states in the carriage control state machine
@@ -211,7 +211,7 @@ class CarriageControl(metaclass=Singleton):
             else:
                 self.singerCtrl.setDesPos(self.curSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            if(abs(self.curSingerRot - self.desSingerRot) <= 25):
+            if(abs(self.curSingerRot - self.desSingerRot) <= rad2Deg(25)):
                 self.singerCtrl.setDesPos(self.desSingerRot)
             else:
                 self.desElevHeight = self.elevatorMinSafeHeight.get() ## m

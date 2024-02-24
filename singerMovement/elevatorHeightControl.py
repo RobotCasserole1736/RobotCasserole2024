@@ -83,8 +83,8 @@ class ElevatorHeightControl():
         self.relEncOffsetM = self._getAbsHeight() - self.getHeightM()
     
     def atTarget(self):
-        return self.profiler.isFinished()
-    
+        return abs(self.curUnprofiledPosCmd - self.getHeightM()) <= .04
+
     def setDesPos(self, desPos):
         self.stopped = False
         self.curUnprofiledPosCmd = desPos
@@ -123,3 +123,4 @@ class ElevatorHeightControl():
         log("Elevator Pos Des", self.curUnprofiledPosCmd,"m")
         log("Elevator Pos Profiled", self.profiledPos ,"m")
         log("Elevator Pos Act", actualPos ,"m")
+        log("Elevator at Target?", self.atTarget(), "bool")
