@@ -211,8 +211,11 @@ class CarriageControl(metaclass=Singleton):
             else:
                 self.singerCtrl.setDesPos(self.desSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            self.desElevHeight = self.elevatorMinSafeHeight.get() ## m
-            self.singerCtrl.setStopped()
+            if(abs(self.curSingerRot - self.desSingerRot) <= 25):
+                self.singerCtrl.setDesPos(self.desSingerRot)
+            else:
+                self.desElevHeight = self.elevatorMinSafeHeight.get() ## m
+                self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
             self.desSingerRot = self._getUnprofiledSingerRotCmd() ## rads
         elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
