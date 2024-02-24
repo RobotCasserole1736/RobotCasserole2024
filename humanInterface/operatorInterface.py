@@ -51,7 +51,8 @@ class OperatorInterface(metaclass=Singleton):
     def update(self):
 
         # update the values from the xbox controller. Updates every 20(?)ms
-        # Make sure there's logic for if a controller is connected and nothing happens if it doesn't update the values from the xbox controller. Updates every 20(?)ms
+        """Make sure there's logic for if a controller is connected and nothing happens if 
+        it doesn't update the values from the xbox controller. Updates every 20(?)ms"""
     
         if self.ctrl.isConnected():
             # Singer commands

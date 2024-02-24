@@ -1,7 +1,5 @@
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.geometry import Pose2d, Rotation2d
-from utils.singleton import Singleton
-from utils.allianceTransformUtils import onRed
 from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
 from drivetrain.swerveModuleControl import SwerveModuleControl
 from drivetrain.swerveModuleGainSet import SwerveModuleGainSet
@@ -16,18 +14,20 @@ from drivetrain.drivetrainPhysical import (
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainCommand import DrivetrainCommand
-from utils.constants import DT_FL_WHEEL_CANID
-from utils.constants import DT_FL_AZMTH_CANID
-from utils.constants import DT_FR_WHEEL_CANID
-from utils.constants import DT_FR_AZMTH_CANID
-from utils.constants import DT_BL_WHEEL_CANID
-from utils.constants import DT_BL_AZMTH_CANID
-from utils.constants import DT_BR_WHEEL_CANID
-from utils.constants import DT_BR_AZMTH_CANID
-from utils.constants import DT_FL_AZMTH_ENC_PORT
-from utils.constants import DT_FR_AZMTH_ENC_PORT
-from utils.constants import DT_BL_AZMTH_ENC_PORT
-from utils.constants import DT_BR_AZMTH_ENC_PORT
+from utils.singleton import Singleton
+from utils.allianceTransformUtils import onRed
+from utils.constants import (DT_FL_WHEEL_CANID, 
+                             DT_FL_AZMTH_CANID, 
+                             DT_FR_WHEEL_CANID, 
+                             DT_FR_AZMTH_CANID, 
+                             DT_BL_WHEEL_CANID, 
+                             DT_BL_AZMTH_CANID,
+                             DT_BR_WHEEL_CANID,
+                             DT_BR_AZMTH_CANID,
+                             DT_FL_AZMTH_ENC_PORT,
+                             DT_FR_AZMTH_ENC_PORT,
+                             DT_BL_AZMTH_ENC_PORT,
+                             DT_BR_AZMTH_ENC_PORT)
 
 class DrivetrainControl(metaclass=Singleton):
     """
@@ -37,16 +37,20 @@ class DrivetrainControl(metaclass=Singleton):
     def __init__(self):
         self.modules = []
         self.modules.append(
-            SwerveModuleControl("FL", DT_FL_WHEEL_CANID, DT_FL_AZMTH_CANID, DT_FL_AZMTH_ENC_PORT, FL_ENCODER_MOUNT_OFFSET_RAD, True, True)
+            SwerveModuleControl("FL", DT_FL_WHEEL_CANID, DT_FL_AZMTH_CANID, DT_FL_AZMTH_ENC_PORT, 
+                                FL_ENCODER_MOUNT_OFFSET_RAD, True, True)
         )
         self.modules.append(
-            SwerveModuleControl("FR", DT_FR_WHEEL_CANID, DT_FR_AZMTH_CANID, DT_FR_AZMTH_ENC_PORT, FR_ENCODER_MOUNT_OFFSET_RAD, True, False)
+            SwerveModuleControl("FR", DT_FR_WHEEL_CANID, DT_FR_AZMTH_CANID, DT_FR_AZMTH_ENC_PORT, 
+                                FR_ENCODER_MOUNT_OFFSET_RAD, True, False)
         )
         self.modules.append(
-            SwerveModuleControl("BL", DT_BL_WHEEL_CANID, DT_BL_AZMTH_CANID, DT_BL_AZMTH_ENC_PORT, BL_ENCODER_MOUNT_OFFSET_RAD, False, True)
+            SwerveModuleControl("BL", DT_BL_WHEEL_CANID, DT_BL_AZMTH_CANID, DT_BL_AZMTH_ENC_PORT, 
+                                BL_ENCODER_MOUNT_OFFSET_RAD, False, True)
         )
         self.modules.append(
-            SwerveModuleControl("BR", DT_BR_WHEEL_CANID, DT_BR_AZMTH_CANID, DT_BR_AZMTH_ENC_PORT, BR_ENCODER_MOUNT_OFFSET_RAD, True, True)
+            SwerveModuleControl("BR", DT_BR_WHEEL_CANID, DT_BR_AZMTH_CANID, DT_BR_AZMTH_ENC_PORT, 
+                                BR_ENCODER_MOUNT_OFFSET_RAD, True, True)
         )
 
         self.desChSpd = ChassisSpeeds()

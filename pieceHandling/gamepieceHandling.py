@@ -92,8 +92,8 @@ class GamePieceHandling(metaclass=Singleton):
         self.floorRoolerMotor1.setVoltage(-voltage)
 
     def _updateCals(self):
-            self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
-            self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
+        self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
+        self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
         # Update PID Gains if needed
@@ -136,7 +136,8 @@ class GamePieceHandling(metaclass=Singleton):
             # Shooting Commanded
             self.updateShooter(True)
             self.updateFloorRoller(False)
-            curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
+            curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
+                                abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
             if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(50.0):
                 # We're at the right shooter speed, go ahead and inject the gamepiece
                 self.updateIntake(True)
@@ -155,10 +156,10 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateEject(False)
 
     # Take in command from the outside world
-    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
-        self.shooterOnCmd = SingerShooterBoolean
-        self.intakeOnCmd = SingerIntakeBoolean
-        self.ejectOnCmd = SingerEjectBoolean
+    def setInput(self, singerShooterBoolean, singerIntakeBoolean, singerEjectBoolean):
+        self.shooterOnCmd = singerShooterBoolean
+        self.intakeOnCmd = singerIntakeBoolean
+        self.ejectOnCmd = singerEjectBoolean
 
     def getShooterMotorSpeed(self):
         return min(abs(radPerSec2RPM(self.shooterMotorLeft.getMotorVelocityRadPerSec())), \

@@ -21,10 +21,10 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.robotIdentification import RobotIdentification
 from utils.singleton import destroyAllSingletonInstances
+from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
-from utils.powerMonitor import PowerMonitor
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
@@ -144,7 +144,7 @@ class MyRobot(wpilib.TimedRobot):
         elif(self.oInt.getSpeakerAutoAlignCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
         elif(self.oInt.getCarriageSpeakerSubwooferPosCmd()):
-             self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
 
