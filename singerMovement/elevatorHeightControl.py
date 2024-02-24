@@ -41,7 +41,7 @@ class ElevatorHeightControl():
         # After mounting the sensor, these should be tweaked one time
         # in order to adjust whatever the sensor reads into the reference frame
         # of the mechanism
-        self.absOffsetM = 0.0
+        self.absOffsetM = 0.256
 
         # Relative Encoder Offsets
         # Releative encoders always start at 0 at power-on
@@ -57,17 +57,17 @@ class ElevatorHeightControl():
 
     def _motorRadToHeight(self, motorRad):
         return motorRad * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M) - self.relEncOffsetM
-            
+
     def _heightToMotorRad(self, elevLin):
         return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M) 
                 * ELEVATOR_GEARBOX_GEAR_RATIO )
-    
+
     def _heightVeltoMotorVel(self, elevLinVel):
         return (elevLinVel * 1/(ELEVATOR_SPOOL_RADIUS_M) * ELEVATOR_GEARBOX_GEAR_RATIO )
-    
+
     def getHeightM(self):
         return self._motorRadToHeight(self.motor.getMotorPositionRad())
-    
+
     # Return the height of the elevator as measured by the absolute sensor in meters
     def _getAbsHeight(self):
         return self.heightAbsSen.getRange() / 1000.0 - self.absOffsetM
@@ -124,3 +124,4 @@ class ElevatorHeightControl():
         log("Elevator Pos Des", self.curUnprofiledPosCmd,"m")
         log("Elevator Pos Profiled", self.profiledPos ,"m")
         log("Elevator Pos Act", actualPos ,"m")
+        log("Elevator Height", self.heightAbsSen.getRange(),"m")
