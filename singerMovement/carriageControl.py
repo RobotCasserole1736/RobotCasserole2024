@@ -5,7 +5,7 @@ from wpilib import Timer, TimedRobot
 from singerMovement.carriageTelemetry import CarriageTelemetry
 from singerMovement.elevatorHeightControl import ElevatorHeightControl
 from singerMovement.singerAngleControl import SingerAngleControl
-from singerConstants import SINGER_ABS_ENC_OFF_DEG
+from singerMovement.singerConstants import SINGER_ABS_ENC_OFF_DEG
 from utils.singleton import Singleton
 from utils.calibration import Calibration
 from utils.units import deg2Rad
