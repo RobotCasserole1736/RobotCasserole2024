@@ -24,6 +24,7 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
+from singerMovement.singerAngleControl import SingerAngleControl
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
@@ -39,9 +40,6 @@ class MyRobot(wpilib.TimedRobot):
         self.crashLogger = CrashLogger()
         wpilib.LiveWindow.disableAllTelemetry()
         self.webserver = Webserver()
-
-        self.rId = RobotIdentification()
-        self.rId.configureValue()
 
         self.driveTrain = DrivetrainControl()
 
@@ -163,7 +161,6 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
         self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
-
 
     #########################################################
     ## Disabled-Specific init and update

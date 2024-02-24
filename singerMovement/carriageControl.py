@@ -97,7 +97,7 @@ class CarriageControl(metaclass=Singleton):
     # The unprofiled elevator height in meters
     def _getUnprofiledElevHeightCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
-            return self.curElevHeight
+            return self.desElevHeight
         elif(self.curPosCmd == CarriageControlCmd.INTAKE
              or self.curPosCmd == CarriageControlCmd.SUB_SHOT):
             return self.elevatorHeightIntake.get()
@@ -205,11 +205,11 @@ class CarriageControl(metaclass=Singleton):
     def _stateMachineUpdate(self):
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
-            self.elevCtrl.setStopped()
+            self.elevCtrl.setDesPos(self.curElevHeight)
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
-                self.singerCtrl.setDesPos(self.desSingerRot)
+                self.singerCtrl.setDesPos(self.curSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
             if(abs(self.curSingerRot - self.desSingerRot) <= 25):
                 self.singerCtrl.setDesPos(self.desSingerRot)

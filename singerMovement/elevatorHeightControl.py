@@ -20,8 +20,6 @@ class ElevatorHeightControl():
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
         self.profiler = ProfiledAxis()
 
-        self.curUnprofiledPosCmd = 0
-
         self.heightAbsSen = TimeOfFlight(ELEVATOR_TOF_CANID)
         self.heightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.heightAbsSen.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
@@ -93,9 +91,9 @@ class ElevatorHeightControl():
         self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getHeightM())
 
     def setStopped(self):
-        self.stopped = True
+        #self.stopped = True
         self.curUnprofiledPosCmd = self.getHeightM()
-        self.profiler.disable()
+        #self.profiler.disable()
     
     def getProfiledDesPos(self):
         return self.profiledPos

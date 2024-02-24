@@ -87,9 +87,9 @@ class SingerAngleControl():
         self._setProfile(self.curUnprofiledPosCmd)
 
     def setStopped(self):
-        self.stopped = True
+        #self.stopped = True
         self.curUnprofiledPosCmd = self.getAngle()
-        self.profiler.disable()
+        #self.profiler.disable()
 
     def _setProfile(self, desPos):
         self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngle())
