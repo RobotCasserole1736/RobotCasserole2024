@@ -12,9 +12,9 @@ from utils.calibration import Calibration
 from utils import constants, faults
 from utils.singleton import Singleton
 from utils.units import RPM2RadPerSec, m2in, radPerSec2RPM
+from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from humanInterface.ledControl import LEDControl
-
 
 class GamePieceHandling(metaclass=Singleton):
     def __init__(self):
@@ -22,6 +22,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterOnCmd = False
         self.intakeOnCmd = False
         self.ejectOnCmd = False
+        self.intakeRunning = False
 
         # Shooter Motors
         self.shooterMotorLeft = WrapperedSparkMax(
@@ -50,6 +51,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
+        self.feedBackSlowCal = Calibration("FeedBackSlowVoltage", 0.5, "V")
 
         # Time of Flight sensor
         self.tofSensor = TimeOfFlight(constants.GAMEPIECE_HANDLING_TOF_CANID)
@@ -60,6 +62,7 @@ class GamePieceHandling(metaclass=Singleton):
         # Calibrations for Gamepiece being absent and present
         self.gamePiecePresentCal = Calibration("NotePresentThresh", 6, "in")
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
+        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 5, "in")
 
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
@@ -75,6 +78,11 @@ class GamePieceHandling(metaclass=Singleton):
         else:
             self.shooterMotorLeft.setVoltage(0.0)
             self.shooterMotorRight.setVoltage(0.0)
+
+    def feedBackSlow(self, shouldRun):
+        voltage = self.feedBackSlowCal.get() if shouldRun else 0.0
+        self.intakeMotorLower.setVoltage(voltage)
+        self.intakeMotorUpper.setVoltage(voltage)
 
     def updateIntake(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
@@ -92,8 +100,8 @@ class GamePieceHandling(metaclass=Singleton):
         self.floorRoolerMotor1.setVoltage(-voltage)
 
     def _updateCals(self):
-            self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
-            self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
+        self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
+        self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
         # Update PID Gains if needed
@@ -125,6 +133,10 @@ class GamePieceHandling(metaclass=Singleton):
             if self.hasGamePiece:
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
+                if gamepieceDistSensorMeas > self.gamePieceInPlaceCal.get():
+                    self.feedBackSlow(True)
+                else:
+                    self.feedBackSlow(False)
             else:
                 self.updateIntake(True)
                 self.updateFloorRoller(True)
@@ -136,8 +148,9 @@ class GamePieceHandling(metaclass=Singleton):
             # Shooting Commanded
             self.updateShooter(True)
             self.updateFloorRoller(False)
+            self.feedBackSlow(False)
             curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
-            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(50.0):
+            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(100.0):
                 # We're at the right shooter speed, go ahead and inject the gamepiece
                 self.updateIntake(True)
             else:
@@ -153,6 +166,8 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateFloorRoller(False)
             self.updateIntake(False)
             self.updateEject(False)
+        
+        log("Has Game Piece", self.hasGamePiece)
 
     # Take in command from the outside world
     def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
