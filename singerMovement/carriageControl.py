@@ -230,12 +230,12 @@ class CarriageControl(metaclass=Singleton):
             nextState = _CarriageStates.HOLD_ALL
         else:
             if(self.curPosCmd != self.prevPosCmd):
-                # New position comand is here, let's see how to handle it
+                # New position command is here, let's see how to handle it
                 angleErr = abs(
                     self.curSingerRot - self._getUnprofiledSingerRotCmd()
                 )
                 goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
-                currentlyBelowSafe = False #self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
+                currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
                 if(currentlyBelowSafe and goingBelowSafe and angleErr > deg2Rad(3.0)):
                     # We need to rotate, we're currently below the safe height,
                     # and we're going to end up below it when we're done.
