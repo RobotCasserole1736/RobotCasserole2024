@@ -100,7 +100,6 @@ class CarriageControl(metaclass=Singleton):
             return self.curElevHeight
         elif(self.curPosCmd == CarriageControlCmd.INTAKE
              or self.curPosCmd == CarriageControlCmd.SUB_SHOT):
-            self.desElevHeight = self.elevatorHeightIntake.get()
             return self.elevatorHeightIntake.get()
         elif(self.curPosCmd == CarriageControlCmd.AMP):
             return self.elevatorHeightAmp.get()
@@ -115,18 +114,14 @@ class CarriageControl(metaclass=Singleton):
     # The unprofiled elevator height in radians
     def _getUnprofiledSingerRotCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
-            return self.desSingerRot ## This is in rads
+            return self.curSingerRot ## This is in rads
         elif(self.curPosCmd == CarriageControlCmd.INTAKE):
-            self.desSingerRot = deg2Rad(self.singerRotIntake.get())
             return deg2Rad(self.singerRotIntake.get())
         elif(self.curPosCmd == CarriageControlCmd.AMP):
-            self.desSingerRot = deg2Rad(self.singerRotAmp.get())
             return deg2Rad(self.singerRotAmp.get())
         elif(self.curPosCmd == CarriageControlCmd.TRAP):
-            self.desSingerRot = deg2Rad(self.singerRotTrap.get())
             return deg2Rad(self.singerRotTrap.get())
         elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
-            self.desSingerRot = deg2Rad(self.singerRotSub.get())
             return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
             return self.curSingerRot # No motion commanded (already in rads)
@@ -151,6 +146,8 @@ class CarriageControl(metaclass=Singleton):
             self._funcGenUpdate()
         else:
             self._stateMachineUpdate()
+            self.elevCtrl.setDesPos(self.desElevHeight)
+            self.singerCtrl.setDesPos(self.desSingerRot)
 
         #######################################################
         # Run Motors
@@ -214,20 +211,18 @@ class CarriageControl(metaclass=Singleton):
             else:
                 self.singerCtrl.setDesPos(self.desSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get()) ## m
+            self.desElevHeight = self.elevatorMinSafeHeight.get() ## m
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
-            self.elevCtrl.setStopped()
-            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd()) ## rads
+            self.desSingerRot = self._getUnprofiledSingerRotCmd() ## rads
         elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
-            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd()) ## m
+            self.desElevHeight = self._getUnprofiledElevHeightCmd() ## m
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
-            self.elevCtrl.setDesPos(self._getUnprofiledElevHeightCmd()) ## m
+            self.desElevHeight = self._getUnprofiledElevHeightCmd() ## m
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
-            self.elevCtrl.setStopped()
-            self.singerCtrl.setDesPos(self._getUnprofiledSingerRotCmd()) ## rads
+            self.desSingerRot = self._getUnprofiledSingerRotCmd() ## rads
 
         # Evalute next state and transition behavior
         nextState = self.curState # Default - stay in the same state
@@ -285,9 +280,8 @@ class CarriageControl(metaclass=Singleton):
 
         # Finally, actually transition states
         self.curState = nextState
-
         self.prevPosCmd = self.curPosCmd
-        
+
     # Public API inputs
     def setSignerAutoAlignAngle(self, desiredAngle:float):
 
@@ -301,3 +295,4 @@ class CarriageControl(metaclass=Singleton):
 
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
+        
