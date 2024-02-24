@@ -226,6 +226,9 @@ class CarriageControl(metaclass=Singleton):
             self.singerCtrl.setStopped()
         elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
             self.desSingerRot = self._getUnprofiledSingerRotCmd() ## rads
+        
+        self.elevCtrl.setDesPos(self.desElevHeight)
+        self.singerCtrl.setDesPos(self.desSingerRot)
 
         # Evalute next state and transition behavior
         nextState = self.curState # Default - stay in the same state
