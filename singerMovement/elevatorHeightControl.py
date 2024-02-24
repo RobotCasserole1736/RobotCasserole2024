@@ -14,9 +14,11 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 class ElevatorHeightControl():
     def __init__(self):
         # Elevator up/down control
-        self.motorRight = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=False)
-        self.motorLeft = WrapperedSparkMax(ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, "ElevatorMotor", brakeMode=False)
-        # self.motor.setInverted(True)
+        self.motorRight = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotorRight", brakeMode=False)
+        self.motorLeft = WrapperedSparkMax(ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, "ElevatorMotorLeft", brakeMode=False)
+
+        # Right motor needs to be inverted so that positive vel/pos is going up
+        self.motorRight.setInverted(True)
         self.maxV = Calibration(name="Elevator Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
         self.profiler = ProfiledAxis()
@@ -53,24 +55,26 @@ class ElevatorHeightControl():
         # These variables store an offset which is calculated from the absolute sensors
         # to make sure the relative sensors inside the encoders accurately reflect
         # the actual position of the mechanism
-        self.relEncOffsetM = 0.0
+        self.relEncRightOffsetM = 0.0
+        self.relEncLeftOffsetM = 0.0
 
         self.profiledPos = 0.0
         self.curUnprofiledPosCmd = 0.0
 
 
-    def _motorRadToHeight(self, motorRad):
-        return motorRad * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M) - self.relEncOffsetM
+    def _motorRadToHeight(self, motorRad, relOffsetM):
+        return motorRad * 1/ELEVATOR_GEARBOX_GEAR_RATIO * (ELEVATOR_SPOOL_RADIUS_M) - relOffsetM
 
-    def _heightToMotorRad(self, elevLin):
-        return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M) 
+    def _heightToMotorRad(self, elevLin, relOffsetM):
+        return ((elevLin + relOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M) 
                 * ELEVATOR_GEARBOX_GEAR_RATIO )
 
     def _heightVeltoMotorVel(self, elevLinVel):
         return (elevLinVel * 1/(ELEVATOR_SPOOL_RADIUS_M) * ELEVATOR_GEARBOX_GEAR_RATIO )
 
     def getHeightM(self):
-        return self._motorRadToHeight(self.motorRight.getMotorPositionRad())
+        return max(self._motorRadToHeight(self.motorRight.getMotorPositionRad(), self.relEncRightOffsetM),
+                   self._motorRadToHeight(self.motorRight.getMotorPositionRad(), self.relEncLeftOffsetM))
 
     # Return the height of the elevator as measured by the absolute sensor in meters
     def _getAbsHeight(self):
@@ -82,11 +86,13 @@ class ElevatorHeightControl():
     def initFromAbsoluteSensor(self):
         # Reset offsets to zero, so the relative sensor get functions return
         # just whatever offset the relative sensor currently has.
-        self.relEncOffsetM = 0.0
+        self.relEncRightOffsetM = 0.0
+        self.relEncLeftOffsetM = 0.0
 
         # New Offset = real angle - current rel sensor offset ??
-        self.relEncOffsetM = self._getAbsHeight() - self.getHeightM()
-    
+        self.relEncRightOffsetM = self._getAbsHeight() - self.getHeightM()
+        self.relEncLeftOffsetM = self._getAbsHeight() - self.getHeightM()
+
     def atTarget(self):
         return self.profiler.isFinished()
     
@@ -95,7 +101,7 @@ class ElevatorHeightControl():
         self.curUnprofiledPosCmd = desPos
         self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getHeightM())
 
-    def setStopped(self):
+    def setStopped(self, relOffsetM):
         self.stopped = True
         self.curUnprofiledPosCmd = self.getHeightM()
         self.profiler.disable()
@@ -113,18 +119,21 @@ class ElevatorHeightControl():
 
         if(self.stopped):
             self.motorLeft.setVoltage(0.0)
+            self.motorRight.setVoltage(0.0)
             self.profiledPos = actualPos
         else:
             curState = self.profiler.getCurState()
 
             self.profiledPos = curState.position
 
-            motorPosCmd = self._heightToMotorRad(curState.position)
+            motorRightPosCmd = self._heightToMotorRad(curState.position, self.relEncRightOffsetM)
+            motorLeftPosCmd = self._heightToMotorRad(curState.position, self.relEncLeftOffsetM)
             self.motorVelCmd = self._heightVeltoMotorVel(curState.velocity)
 
             vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) + self.kG.get()
 
-            self.motorRight.setPosCmd(motorPosCmd, vFF)
+            self.motorRight.setPosCmd(motorRightPosCmd, vFF)
+            self.motorRight.setPosCmd(motorLeftPosCmd, vFF)
 
         log("Elevator Pos Des", self.curUnprofiledPosCmd,"m")
         log("Elevator Pos Profiled", self.profiledPos ,"m")

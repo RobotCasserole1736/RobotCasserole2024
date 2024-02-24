@@ -89,7 +89,8 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorFuncGenStart = self.curElevHeight
 
         self.singerCtrl.setStopped()
-        self.elevCtrl.setStopped()
+        self.elevCtrl.setStopped(self.elevCtrl.relEncRightOffsetM)
+        self.elevCtrl.setStopped(self.elevCtrl.relEncRightOffsetM)
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
@@ -208,7 +209,8 @@ class CarriageControl(metaclass=Singleton):
     def _stateMachineUpdate(self):
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
-            self.elevCtrl.setStopped()
+            self.elevCtrl.setStopped(self.elevCtrl.relEncRightOffsetM)
+            self.elevCtrl.setStopped(self.elevCtrl.relEncRightOffsetM)
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
@@ -238,7 +240,7 @@ class CarriageControl(metaclass=Singleton):
                     self.curSingerRot - self._getUnprofiledSingerRotCmd()
                 )
                 goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
-                currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
+                currentlyBelowSafe = False #self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
                 if(currentlyBelowSafe and goingBelowSafe and angleErr > deg2Rad(3.0)):
                     # We need to rotate, we're currently below the safe height,
                     # and we're going to end up below it when we're done.
