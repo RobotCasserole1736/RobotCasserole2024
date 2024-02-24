@@ -5,6 +5,7 @@ from wpilib import Timer, TimedRobot
 from singerMovement.carriageTelemetry import CarriageTelemetry
 from singerMovement.elevatorHeightControl import ElevatorHeightControl
 from singerMovement.singerAngleControl import SingerAngleControl
+from singerConstants import SINGER_ABS_ENC_OFF_DEG
 from utils.singleton import Singleton
 from utils.calibration import Calibration
 from utils.units import deg2Rad
@@ -37,7 +38,7 @@ class CarriageControl(metaclass=Singleton):
         self.singerCtrl = SingerAngleControl()
 
         # Fixed Position Cal's
-        self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=70.0 )
+        self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=SINGER_ABS_ENC_OFF_DEG)
         self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-40.0 )
         self.singerRotTrap = Calibration(name="Singer Rot Trap", units="deg", default=-20.0 )
         self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=55.0)
@@ -211,6 +212,7 @@ class CarriageControl(metaclass=Singleton):
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
+                # self.singerCtrl.setStopped()
                 self.singerCtrl.setDesPos(self.desSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
             self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get()) ## m
