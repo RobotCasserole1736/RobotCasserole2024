@@ -24,6 +24,7 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
+import cscore as cs
 from cscore import CameraServer
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
@@ -118,7 +119,14 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        pass
+        cs.enableLogging()
+        camera = cs.UsbCamera("usbcam", 0)
+        camera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+        cs.CameraServer().startAutomaticCapture(camera)
+        mjpegServer = cs.MjpegServer("httpserver", 8081)
+        mjpegServer.setSource(camera)
+    
+        
 
     def teleopPeriodic(self):
 
@@ -163,9 +171,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
 
-        # Driver Camera
-        CameraServer().startAutomaticCapture()
-        CameraServer().getVideo
+
+
 
 
     #########################################################
