@@ -5,11 +5,11 @@ from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 
 class ShootDriveOut(Mode):
     def __init__(self):
-        Mode.__init__(self, f"Drive Out")
+        Mode.__init__(self, f"Shoot Drive Out")
         self.SequentialCommandGroup = SequentialCommandGroup()
         self.pathCmd = DrivePathCommand("DriveOut")
         self.shoot = SpeakerShootCommand()
-        self.commandList = [self.pathCmd, self.shoot]
+        self.commandList = [self.shoot, self.pathCmd]
     
     def getCmdGroup(self):
         # Return shoot, then path command
