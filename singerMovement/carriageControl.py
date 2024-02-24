@@ -65,9 +65,9 @@ class CarriageControl(metaclass=Singleton):
         # Minimum height that we have to go to before we can freely rotate the singer
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
-        self.curElevHeight = 0.5
+        self.curElevHeight = 0.0
         self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
-        self.desElevHeight = 0.5
+        self.desElevHeight = 0.0
         self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.profiledElevHeight = self.desElevHeight
         self.profiledSingerRot = self.curSingerRot
@@ -89,7 +89,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorFuncGenStart = self.curElevHeight
 
         self.singerCtrl.setStopped()
-        self.elevCtrl.setStopped()
+        # self.elevCtrl.setStopped()
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
@@ -208,7 +208,7 @@ class CarriageControl(metaclass=Singleton):
     def _stateMachineUpdate(self):
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
-            self.elevCtrl.setStopped()
+            # self.elevCtrl.setStopped()
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
