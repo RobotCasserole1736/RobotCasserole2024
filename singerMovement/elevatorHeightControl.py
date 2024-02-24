@@ -6,7 +6,7 @@ from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
 from utils.units import sign
 from utils.signalLogging import log
-from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID
+from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, ELEVATOR_TOF_CANID
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
@@ -21,7 +21,7 @@ class ElevatorHeightControl():
 
         self.curUnprofiledPosCmd = 0
 
-        self.heightAbsSen = TimeOfFlight(13)
+        self.heightAbsSen = TimeOfFlight(ELEVATOR_TOF_CANID)
         self.heightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.heightAbsSen.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
 
@@ -34,7 +34,6 @@ class ElevatorHeightControl():
         self.motor.setPID(self.kS.get(), 0.0, 0.0)
         self.motor.setPID(self.kG.get(), 0.0, 0.0)
         self.motor.setPID(self.kP.get(), 0.0, 0.0)
-
 
         self.stopped = True
 
@@ -62,6 +61,9 @@ class ElevatorHeightControl():
     def _heightToMotorRad(self, elevLin):
         return ((elevLin + self.relEncOffsetM) * 1/(ELEVATOR_SPOOL_RADIUS_M) 
                 * ELEVATOR_GEARBOX_GEAR_RATIO )
+    
+    def _heightVeltoMotorVel(self, elevLinVel):
+        return (elevLinVel * 1/(ELEVATOR_SPOOL_RADIUS_M) * ELEVATOR_GEARBOX_GEAR_RATIO )
     
     def getHeightM(self):
         return self._motorRadToHeight(self.motor.getMotorPositionRad())
@@ -101,12 +103,6 @@ class ElevatorHeightControl():
         actualPos = self.getHeightM()
 
         # Update motor closed-loop calibration
-        if(self.kV.isChanged()):
-            self.motor.setPID(self.kV.get(), 0.0, 0.0)
-        if(self.kS.isChanged()):
-            self.motor.setPID(self.kS.get(), 0.0, 0.0)
-        if(self.kG.isChanged()):
-            self.motor.setPID(self.kG.get(), 0.0, 0.0)
         if(self.kP.isChanged()):
             self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
@@ -119,7 +115,7 @@ class ElevatorHeightControl():
             self.profiledPos = curState.position
 
             motorPosCmd = self._heightToMotorRad(curState.position)
-            motorVelCmd = self._heightToMotorRad(curState.velocity)
+            motorVelCmd = self._heightVeltoMotorVel(curState.velocity)
 
             vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get()
 
