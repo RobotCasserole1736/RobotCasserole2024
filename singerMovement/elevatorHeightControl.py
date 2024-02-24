@@ -6,7 +6,7 @@ from singerMovement.profiledAxis import ProfiledAxis
 from utils.calibration import Calibration
 from utils.units import sign
 from utils.signalLogging import log
-from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, ELEVATOR_TOF_CANID
+from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, ELEVATOR_TOF_CANID
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
@@ -14,12 +14,16 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 class ElevatorHeightControl():
     def __init__(self):
         # Elevator up/down control
-        self.motor = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=True)
+        self.motorRight = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=False)
+        self.motorLeft = WrapperedSparkMax(ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, "ElevatorMotor", brakeMode=False)
+        # self.motor.setInverted(True)
         self.maxV = Calibration(name="Elevator Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
         self.profiler = ProfiledAxis()
 
         self.curUnprofiledPosCmd = 0
+
+        self.motorVelCmd = 0
 
         self.heightAbsSen = TimeOfFlight(ELEVATOR_TOF_CANID)
         self.heightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
@@ -30,10 +34,10 @@ class ElevatorHeightControl():
         self.kG = Calibration(name="Elevator kG", default=0.0, units="V")
         self.kP = Calibration(name="Elevator kP", default=0.0, units="V/rad error")
 
-        self.motor.setPID(self.kV.get(), 0.0, 0.0)
-        self.motor.setPID(self.kS.get(), 0.0, 0.0)
-        self.motor.setPID(self.kG.get(), 0.0, 0.0)
-        self.motor.setPID(self.kP.get(), 0.0, 0.0)
+        self.motorRight.setPID(self.kV.get(), 0.0, 0.0)
+        self.motorRight.setPID(self.kS.get(), 0.0, 0.0)
+        self.motorRight.setPID(self.kG.get(), 0.0, 0.0)
+        self.motorRight.setPID(self.kP.get(), 0.0, 0.0)
 
         self.stopped = True
 
@@ -66,7 +70,7 @@ class ElevatorHeightControl():
         return (elevLinVel * 1/(ELEVATOR_SPOOL_RADIUS_M) * ELEVATOR_GEARBOX_GEAR_RATIO )
 
     def getHeightM(self):
-        return self._motorRadToHeight(self.motor.getMotorPositionRad())
+        return self._motorRadToHeight(self.motorRight.getMotorPositionRad())
 
     # Return the height of the elevator as measured by the absolute sensor in meters
     def _getAbsHeight(self):
@@ -104,10 +108,11 @@ class ElevatorHeightControl():
 
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
-            self.motor.setPID(self.kP.get(), 0.0, 0.0)
+            self.motorRight.setPID(self.kP.get(), 0.0, 0.0)
+            self.motorLeft.setPID(self.kP.get(), 0.0, 0.0)
 
         if(self.stopped):
-            self.motor.setVoltage(0.0)
+            self.motorLeft.setVoltage(0.0)
             self.profiledPos = actualPos
         else:
             curState = self.profiler.getCurState()
@@ -115,13 +120,16 @@ class ElevatorHeightControl():
             self.profiledPos = curState.position
 
             motorPosCmd = self._heightToMotorRad(curState.position)
-            motorVelCmd = self._heightVeltoMotorVel(curState.velocity)
+            self.motorVelCmd = self._heightVeltoMotorVel(curState.velocity)
 
-            vFF = self.kV.get() * motorVelCmd  + self.kS.get() * sign(motorVelCmd) + self.kG.get()
+            vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) + self.kG.get()
 
-            self.motor.setPosCmd(motorPosCmd, vFF)
+            self.motorRight.setPosCmd(motorPosCmd, vFF)
 
         log("Elevator Pos Des", self.curUnprofiledPosCmd,"m")
         log("Elevator Pos Profiled", self.profiledPos ,"m")
         log("Elevator Pos Act", actualPos ,"m")
         log("Elevator Height", self.heightAbsSen.getRange(),"m")
+        log("Elevator Vel Cmd", self.motorVelCmd)
+        log("Elevator Rmotor Rad Pos", self.motorRight.getMotorPositionRad())
+        log("Elevator Lmotor Rad Pos", self.motorLeft.getMotorPositionRad())
