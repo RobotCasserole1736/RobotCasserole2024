@@ -114,7 +114,7 @@ class CarriageControl(metaclass=Singleton):
     # The unprofiled elevator height in radians
     def _getUnprofiledSingerRotCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
-            return self.curSingerRot ## This is in rads
+            return self.desSingerRot ## This is in rads
         elif(self.curPosCmd == CarriageControlCmd.INTAKE):
             return deg2Rad(self.singerRotIntake.get())
         elif(self.curPosCmd == CarriageControlCmd.AMP):
