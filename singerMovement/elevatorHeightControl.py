@@ -18,6 +18,7 @@ class ElevatorHeightControl():
         self.motor = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=True)
         self.motor.setInverted(True)
         self.otherMotor = CANSparkMax(ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, CANSparkLowLevel.MotorType.kBrushless)
+        self.otherMotor.setIdleMode(CANSparkMax.IdleMode.kBrake)
         self.otherMotor.follow(self.motor.ctrl, True)
         self.maxV = Calibration(name="Elevator Max Vel", default=MAX_CARRIAGE_VEL_MPS, units="mps")
         self.maxA = Calibration(name="Elevator Max Accel", default=MAX_CARRIAGE_ACCEL_MPS2, units="mps2")
@@ -40,13 +41,13 @@ class ElevatorHeightControl():
         self.motor.setPID(self.kG.get(), 0.0, 0.0)
         self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
-        self.stopped = False
+        self.stopped = True
 
         # Absolute Sensor mount offsets
         # After mounting the sensor, these should be tweaked one time
         # in order to adjust whatever the sensor reads into the reference frame
         # of the mechanism
-        self.absOffsetM = 0.256
+        self.absOffsetM = 0.0
 
         # Relative Encoder Offsets
         # Releative encoders always start at 0 at power-on

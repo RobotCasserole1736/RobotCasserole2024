@@ -89,7 +89,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorFuncGenStart = self.curElevHeight
 
         self.singerCtrl.setStopped()
-        # self.elevCtrl.setStopped()
+        self.elevCtrl.setStopped()
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
@@ -208,7 +208,7 @@ class CarriageControl(metaclass=Singleton):
     def _stateMachineUpdate(self):
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
-            # self.elevCtrl.setStopped()
+            self.elevCtrl.setStopped()
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
