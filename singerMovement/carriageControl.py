@@ -143,7 +143,7 @@ class CarriageControl(metaclass=Singleton):
     def update(self, useFuncGen = False):
         #######################################################
         # Read sensor inputs
-        self.curElevHeight = 0.5 #self.elevCtrl.getHeightM()
+        self.curElevHeight = self.elevCtrl.getHeightM()
         self.curSingerRot = self.singerCtrl.getAngle()
 
         # Run control strategy
@@ -212,7 +212,6 @@ class CarriageControl(metaclass=Singleton):
             if(self.useAutoAlignAngleInHold):
                 self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
             else:
-                # self.singerCtrl.setStopped()
                 self.singerCtrl.setDesPos(self.desSingerRot)
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
             self.elevCtrl.setDesPos(self.elevatorMinSafeHeight.get()) ## m

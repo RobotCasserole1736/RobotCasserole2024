@@ -8,7 +8,7 @@ from utils.calibration import Calibration
 from utils.units import sign
 from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID
+from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, ELEVATOR_TOF_CANID
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
 # and motion profiling
@@ -22,7 +22,7 @@ class ElevatorHeightControl():
 
         self.curUnprofiledPosCmd = 0
 
-        self.heightAbsSen = TimeOfFlight(13)
+        self.heightAbsSen = TimeOfFlight(ELEVATOR_TOF_CANID)
         self.heightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.heightAbsSen.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
 
@@ -35,7 +35,6 @@ class ElevatorHeightControl():
         self.motor.setPID(self.kS.get(), 0.0, 0.0)
         self.motor.setPID(self.kG.get(), 0.0, 0.0)
         self.motor.setPID(self.kP.get(), 0.0, 0.0)
-
 
         self.stopped = True
 
