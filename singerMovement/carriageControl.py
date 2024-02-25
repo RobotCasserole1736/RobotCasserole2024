@@ -13,12 +13,15 @@ from utils.signalLogging import log
 
 # Private enum describing all states in the carriage control state machine
 class _CarriageStates(IntEnum):
+    LATCH_AT_CURRENT = -1
     HOLD_ALL = 0
-    RUN_TO_SAFE_HEIGHT = 1
-    ROT_AT_SAFE_HEIGHT = 2
-    DESCEND_BELOW_SAFE_HEIGHT = 3
-    RUN_TO_HEIGHT = 4
-    ROTATE_TO_ANGLE = 5
+    RECALC_TARGETS = 1
+    RUN_TO_SAFE_HEIGHT = 2
+    ROT_AT_SAFE_HEIGHT = 3
+    ROT_ABOVE_SAFE_HEIGHT = 4
+    DESCEND_BELOW_SAFE_HEIGHT = 5
+    RUN_TO_HEIGHT = 6
+    ROTATE_TO_ANGLE = 7
 
 # All possible positions the carriage can be commanded into
 class CarriageControlCmd(IntEnum):
@@ -66,23 +69,21 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
         self.curElevHeight = 0.5
-        self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
+        self.curSingerAngle = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.desElevHeight = 0.5
-        self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
+        self.desSingerAngle = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.profiledElevHeight = self.desElevHeight
-        self.profiledSingerRot = self.curSingerRot
+        self.profiledSingerRot = self.curSingerAngle
 
-        self.curPosCmd = CarriageControlCmd.HOLD
-        self.prevPosCmd = CarriageControlCmd.HOLD
+        # State machine "from-init" actions
+        self._stateMachineInit()
 
+        # Default inputs from the outside world
         self.autoAlignSingerRotCmd = 0.0
-        self.useAutoAlignAngleInHold = False
+        self.curPosCmd = CarriageControlCmd.HOLD
 
         #Code to disable all elevator & singer movement
         self.DISABLE_SINGER_MOVEMENT = False
-
-        # State Machine
-        self.curState = _CarriageStates.HOLD_ALL
 
         self.telem = CarriageTelemetry()
 
@@ -92,6 +93,10 @@ class CarriageControl(metaclass=Singleton):
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
         self.singerCtrl.initFromAbsoluteSensor()
+
+    def _stateMachineInit(self):
+        self.curState = _CarriageStates.LATCH_AT_CURRENT
+
 
     # Use the current position command to calculate
     # The unprofiled elevator height in meters
@@ -114,7 +119,7 @@ class CarriageControl(metaclass=Singleton):
     # The unprofiled elevator height in radians
     def _getUnprofiledSingerRotCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
-            return self.desSingerRot ## This is in rads
+            return self.desSingerAngle ## This is in rads
         elif(self.curPosCmd == CarriageControlCmd.INTAKE):
             return deg2Rad(self.singerRotIntake.get())
         elif(self.curPosCmd == CarriageControlCmd.AMP):
@@ -124,30 +129,37 @@ class CarriageControl(metaclass=Singleton):
         elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
             return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
-            return self.curSingerRot # No motion commanded (already in rads)
+            return self.curSingerAngle # No motion commanded (already in rads)
         else:
             return 0.0 ## this could be really dangerous depending where we are!
         
+    # Should get called in robot code on init to reset internal logic
     def onEnable(self, useFuncGen = False):
         if(useFuncGen):
-            self._funcGenStart()
+            self._funcGenInit()
+        else:
+            self._stateMachineInit()
     
     def manSingerCmd(self,cmdIn):
         self.singerCtrl.manualCtrl(cmdIn)
 
+    # Does a one-time read of all sensors that are needed
+    # for carriage control logic
+    def _readSensors(self):
+        self.curElevHeight = self.elevCtrl.getHeightM()
+        self.curSingerAngle = self.singerCtrl.getAngleRad()
+
+    # Should be called in robot code once every 20ms
     def update(self, useFuncGen = False):
         #######################################################
         # Read sensor inputs
-        self.curElevHeight = self.elevCtrl.getHeightM()
-        self.curSingerRot = self.singerCtrl.getAngle()
+        self._readSensors()
 
         # Run control strategy
         if(useFuncGen):
             self._funcGenUpdate()
         else:
             self._stateMachineUpdate()
-            self.elevCtrl.setDesPos(self.desElevHeight)
-            self.singerCtrl.setDesPos(self.desSingerRot)
 
         #######################################################
         # Run Motors
@@ -159,14 +171,14 @@ class CarriageControl(metaclass=Singleton):
         log("Carriage Cmd", self.curPosCmd, "state")
         self.telem.set(
             self.singerCtrl.getProfiledDesPos(),
-            self.curSingerRot,
+            self.curSingerAngle,
             self.elevCtrl.getProfiledDesPos(),
             self.curElevHeight
         )
 
     # Reset the function generator 
-    def _funcGenStart(self):
-        self.singerFuncGenStart = self.curSingerRot 
+    def _funcGenInit(self):
+        self.singerFuncGenStart = self.curSingerAngle 
         self.elevatorFuncGenStart = self.curElevHeight
         self.profileStartTime = Timer.getFPGATimestamp()
 
@@ -203,93 +215,163 @@ class CarriageControl(metaclass=Singleton):
     # Update logic for the main state machine that makes sure we don't crash into ourselves
     # While going between arbitrary positions
     def _stateMachineUpdate(self):
-        # Evaluate in-state behavior
-        if(self.curState == _CarriageStates.HOLD_ALL):
-            self.desElevHeight = self.curElevHeight
-            if(self.useAutoAlignAngleInHold):
-                self.desSingerRot = self.autoAlignSingerRotCmd
-            else:
-                self.desSingerRot = self.curSingerRot
-        elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-            if(abs(self.curSingerRot - self.desSingerRot) <= rad2Deg(25)):
-                self.desSingerRot = self.desSingerRot
-                #What do we put here? We want the code to be able to ignore the safe height
-            else:
-                self.desElevHeight = self.elevatorMinSafeHeight.get() ## m
-                self.singerCtrl.setStopped()
-        elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
-            self.desSingerRot = self._getUnprofiledSingerRotCmd() ## rads
-        elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
-            self.desElevHeight = self._getUnprofiledElevHeightCmd() ## m
-            self.singerCtrl.setStopped()
-        elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
-            self.desElevHeight = self._getUnprofiledElevHeightCmd() ## m
-            self.singerCtrl.setStopped()
-        elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
-            self.desSingerRot = self._getUnprofiledSingerRotCmd() ## rads
-        
-        self.elevCtrl.setDesPos(self.desElevHeight)
-        self.singerCtrl.setDesPos(self.desSingerRot)
 
-        # Evalute next state and transition behavior
-        nextState = self.curState # Default - stay in the same state
-        if(self.curPosCmd == CarriageControlCmd.HOLD):
+        ################################################################
+        # Step 1 - Execute in-state behavior
+
+        if(self.curState == _CarriageStates.LATCH_AT_CURRENT):
+            self.elevFinalHeight  = self.curElevHeight
+            self.singerFinalAngle = self.curSingerAngle
+            self.desSingerAngle = self.singerFinalAngle
+            self.desElevHeight = self.elevFinalHeight
+
+        elif(self.curState == _CarriageStates.HOLD_ALL):
+            self.desElevHeight = self.elevFinalHeight
+            shouldAutoAlign = (self.curPosCmd == CarriageControlCmd.AUTO_ALIGN)
+            if(shouldAutoAlign):
+                self.desSingerAngle = self.autoAlignSingerRotCmd
+            else:
+                self.desSingerAngle = self.singerFinalAngle
+
+        elif(self.curState == _CarriageStates.RECALC_TARGETS):
+            self.desElevHeight = self.elevFinalHeight
+            self.desSingerAngle = self.singerFinalAngle
+
+            self.elevStartHeight = self.elevFinalHeight
+            self.singerStartAngle = self.singerFinalAngle
+            self.elevFinalHeight = self._getUnprofiledElevHeightCmd()
+            self.singerFinalAngle = self._getUnprofiledSingerRotCmd()
+
+        elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
+            self.desElevHeight = self.elevatorMinSafeHeight.get()
+            self.desSingerAngle = self.singerStartAngle
+
+        elif(self.curState == _CarriageStates.ROT_ABOVE_SAFE_HEIGHT):
+            self.desElevHeight = self.elevStartHeight
+            self.desSingerAngle = self.singerFinalAngle
+
+        elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
+            self.desElevHeight = self.elevatorMinSafeHeight.get()
+            self.desSingerAngle = self.singerFinalAngle
+
+        elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
+            self.desElevHeight = self.elevFinalHeight
+            self.desSingerAngle = self.singerFinalAngle
+
+        elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
+            self.desElevHeight = self.elevFinalHeight
+            self.desSingerAngle = self.singerStartAngle
+
+        elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
+            self.desElevHeight = self.elevFinalHeight
+            self.desSingerAngle = self.singerFinalAngle
+
+        self.elevCtrl.setDesPos(self.desElevHeight)
+        self.singerCtrl.setDesPos(self.desSingerAngle)
+
+        ################################################################
+        # Step 2 - Evaluate what the next state is
+
+
+        if(self.curState == _CarriageStates.LATCH_AT_CURRENT):
             nextState = _CarriageStates.HOLD_ALL
-        else:
+
+        elif(self.curState == _CarriageStates.HOLD_ALL):
             if(self.curPosCmd != self.prevPosCmd):
-                # New position command is here, let's see how to handle it
-                angleErr = abs(
-                    self.curSingerRot - self._getUnprofiledSingerRotCmd()
-                )
-                goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
+                nextState = _CarriageStates.RECALC_TARGETS
+            else:
+                nextState = _CarriageStates.HOLD_ALL
+
+        elif(self.curState == _CarriageStates.RECALC_TARGETS):
+            # New position command is here, let's see how to handle it
+            angleErr = abs(
+                self.curSingerAngle - self._getUnprofiledSingerRotCmd()
+            )
+            goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
+            rotateMoreThanThresh = angleErr > deg2Rad(25.0)
+
+            if(goingBelowSafe and rotateMoreThanThresh):
                 currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()
-                if(currentlyBelowSafe and goingBelowSafe and angleErr > deg2Rad(3.0)):
+                if(currentlyBelowSafe):
                     # We need to rotate, we're currently below the safe height,
                     # and we're going to end up below it when we're done.
                     # Command a linear translation up to the safe height first
                     nextState = _CarriageStates.RUN_TO_SAFE_HEIGHT
-                elif(goingBelowSafe and angleErr > deg2Rad(3.0)):
+                else:
                     # We're above safe height but going below it
                     # We can rotate now, but have to rotate first before going down
-                    nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
-                else:
-                    # We can do the normal elevator-then-singer sequence.
-                    nextState = _CarriageStates.RUN_TO_HEIGHT
-
-            elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
-                if(self.elevCtrl.atTarget()):
-                    # If we're done moving the elevator, move on.
-                    nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
-
-            elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
-                if(self.singerCtrl.atTarget()):
-                    # If we're done rotating the singer, move on.
-                    nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
-
-            elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
-                if(self.elevCtrl.atTarget()):
-                    # If we'relowering down, we're done
-                    nextState = _CarriageStates.HOLD_ALL
-
-            elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
-                if(self.elevCtrl.atTarget()):
-                    # If we're done moving the elevator, move on.
-                    nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+                    nextState = _CarriageStates.ROT_ABOVE_SAFE_HEIGHT
                     
-            elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
-                if(self.singerCtrl.atTarget()):
-                    # If we're done rotating the singer, we're done
-                    nextState = _CarriageStates.HOLD_ALL
-                        
-            if(nextState == _CarriageStates.HOLD_ALL):
-                # On all transitions into HOLD_ALL, re-evaluate the auto-alignment command
-                self.useAutoAlignAngleInHold = (self.curPosCmd == CarriageControlCmd.AUTO_ALIGN)
+            else:
+                # We can do the normal elevator-then-singer sequence.
+                nextState = _CarriageStates.RUN_TO_HEIGHT
 
-        # Finally, actually transition states
+        elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
+            if(self.elevCtrl.atTarget()):
+                # If we're done moving the elevator, move on.
+                nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+            elif(self.curPosCmd == CarriageControlCmd.HOLD):
+                # User commanded us to stop moving wherever we were at
+                nextState = _CarriageStates.LATCH_AT_CURRENT
+            else:
+                nextState = _CarriageStates.RUN_TO_SAFE_HEIGHT
+
+        elif(self.curState == _CarriageStates.ROT_ABOVE_SAFE_HEIGHT):
+            if(self.singerCtrl.atTarget()):
+                # If we're done moving the Singer, move on.
+                nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
+            elif(self.curPosCmd == CarriageControlCmd.HOLD):
+                # User commanded us to stop moving wherever we were at
+                nextState = _CarriageStates.LATCH_AT_CURRENT
+            else:
+                nextState = _CarriageStates.ROT_ABOVE_SAFE_HEIGHT
+
+        elif(self.curState == _CarriageStates.ROT_AT_SAFE_HEIGHT):
+            if(self.singerCtrl.atTarget()):
+                # If we're done moving the Singer, move on.
+                nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
+            elif(self.curPosCmd == CarriageControlCmd.HOLD):
+                # User commanded us to stop moving wherever we were at
+                nextState = _CarriageStates.LATCH_AT_CURRENT
+            else:
+                nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
+
+        elif(self.curState == _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT):
+            if(self.elevCtrl.atTarget()):
+                # If we're done moving the elevator, move on.
+                nextState = _CarriageStates.HOLD_ALL
+            elif(self.curPosCmd == CarriageControlCmd.HOLD):
+                # User commanded us to stop moving wherever we were at
+                nextState = _CarriageStates.LATCH_AT_CURRENT
+            else:
+                nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
+
+        elif(self.curState == _CarriageStates.RUN_TO_HEIGHT):
+            if(self.elevCtrl.atTarget()):
+                # If we're done moving the elevator, move on.
+                nextState = _CarriageStates.ROTATE_TO_ANGLE
+            elif(self.curPosCmd == CarriageControlCmd.HOLD):
+                # User commanded us to stop moving wherever we were at
+                nextState = _CarriageStates.LATCH_AT_CURRENT
+            else:
+                nextState = _CarriageStates.RUN_TO_HEIGHT
+
+        elif(self.curState == _CarriageStates.ROTATE_TO_ANGLE):
+            if(self.singerCtrl.atTarget()):
+                # If we're done moving the Singer, move on.
+                nextState = _CarriageStates.HOLD_ALL
+            elif(self.curPosCmd == CarriageControlCmd.HOLD):
+                # User commanded us to stop moving wherever we were at
+                nextState = _CarriageStates.LATCH_AT_CURRENT
+            else:
+                nextState = _CarriageStates.ROTATE_TO_ANGLE
+
+        ################################################################
+        # Step 3 - Actually transition to the  next state
         self.curState = nextState
         self.prevPosCmd = self.curPosCmd
 
-    # Public API inputs
+    # Should be called outside this class whenever anything (driver, automonous, etc) wants to set the target angle for singer auto-align for shot
     def setSignerAutoAlignAngle(self, desiredAngle:float):
 
         if(self.autoAlignSingerRotCmd > self.singerRotSoftLimitMax.get()):
@@ -300,6 +382,7 @@ class CarriageControl(metaclass=Singleton):
 
         self.autoAlignSingerRotCmd = desiredAngle
 
+    # Should be called outside this class whenever anything (driver aoutonomous, etc) wants to change the singer position
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
         

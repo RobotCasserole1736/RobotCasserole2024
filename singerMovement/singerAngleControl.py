@@ -62,25 +62,25 @@ class SingerAngleControl():
         self.relEncOffsetRad = 0.0
 
         # New Offset = real angle - current rel sensor offset ??
-        self.relEncOffsetRad = self._getAbsRot() - self.getAngle()
+        self.relEncOffsetRad = self._getAbsRot() - self.getAngleRad()
 
-    def _motorRadToAngle(self, motorRev):
+    def _motorRadToAngleRad(self, motorRev):
         return motorRev * 1/SINGER_GEARBOX_RATIO - self.relEncOffsetRad
             
-    def _angleToMotorRad(self, singerAngleRad):
+    def _angleRadToMotorRad(self, singerAngleRad):
         return (singerAngleRad + self.relEncOffsetRad) * SINGER_GEARBOX_RATIO
     
     def _angleVelToMotorVel(self, singerAngleVel):
         return singerAngleVel * SINGER_GEARBOX_RATIO
     
-    def getAngle(self):
+    def getAngleRad(self):
         motorRot = self.motor.getMotorPositionRad()
-        singerAngle = self._motorRadToAngle(motorRot)
+        singerAngle = self._motorRadToAngleRad(motorRot)
         return singerAngle
     
     def atTarget(self):
         #return self.profiler.isFinished()
-        return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngle())) <= 6
+        return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6
 
     def setDesPos(self, desPos):
         self.stopped = False
@@ -89,11 +89,11 @@ class SingerAngleControl():
 
     def setStopped(self):
         #self.stopped = True
-        self.curUnprofiledPosCmd = self.getAngle()
+        self.curUnprofiledPosCmd = self.getAngleRad()
         #self.profiler.disable()
 
     def _setProfile(self, desPos):
-        self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngle())
+        self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngleRad())
 
     def getProfiledDesPos(self):
         return self.profiledPos
@@ -102,7 +102,7 @@ class SingerAngleControl():
         self.motor.setVoltage(cmdIn)
 
     def update(self):
-        actualPos = self.getAngle()
+        actualPos = self.getAngleRad()
 
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
@@ -116,7 +116,7 @@ class SingerAngleControl():
 
             self.profiledPos = curState.position
 
-            motorPosCmd = self._angleToMotorRad(curState.position)
+            motorPosCmd = self._angleRadToMotorRad(curState.position)
             self.motorVelCmd = self._angleVelToMotorVel(curState.velocity)
 
             vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) - self.kG.get() * sin(actualPos)

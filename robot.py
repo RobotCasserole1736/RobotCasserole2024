@@ -99,6 +99,9 @@ class MyRobot(wpilib.TimedRobot):
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
+        self.carriageControl.onEnable(False) 
+
+
     def autonomousPeriodic(self):
         SignalWrangler().markLoopStart()
 
@@ -115,7 +118,7 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        pass
+        self.carriageControl.onEnable(False) 
 
     def teleopPeriodic(self):
 
