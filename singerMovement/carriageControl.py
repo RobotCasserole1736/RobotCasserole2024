@@ -205,14 +205,15 @@ class CarriageControl(metaclass=Singleton):
     def _stateMachineUpdate(self):
         # Evaluate in-state behavior
         if(self.curState == _CarriageStates.HOLD_ALL):
-            self.elevCtrl.setDesPos(self.curElevHeight)
+            self.desElevHeight = self.curElevHeight
             if(self.useAutoAlignAngleInHold):
-                self.singerCtrl.setDesPos(self.autoAlignSingerRotCmd)
+                self.desSingerRot = self.autoAlignSingerRotCmd
             else:
-                self.singerCtrl.setDesPos(self.curSingerRot)
+                self.desSingerRot = self.curSingerRot
         elif(self.curState == _CarriageStates.RUN_TO_SAFE_HEIGHT):
             if(abs(self.curSingerRot - self.desSingerRot) <= rad2Deg(25)):
-                self.singerCtrl.setDesPos(self.desSingerRot)
+                self.desSingerRot = self.desSingerRot
+                #What do we put here? We want the code to be able to ignore the safe height
             else:
                 self.desElevHeight = self.elevatorMinSafeHeight.get() ## m
                 self.singerCtrl.setStopped()
