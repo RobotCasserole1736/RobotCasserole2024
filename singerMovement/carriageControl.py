@@ -220,25 +220,26 @@ class CarriageControl(metaclass=Singleton):
         # Step 1 - Execute in-state behavior
 
         if(self.curState == _CarriageStates.LATCH_AT_CURRENT):
-            self.elevFinalHeight  = self.curElevHeight
-            self.singerFinalAngle = self.curSingerAngle
+            self.elevFinalHeight  = self.curElevHeight + self.elevCtrl.getStoppingDistanceM()
+            self.singerFinalAngle = self.curSingerAngle + self.singerCtrl.getStoppingDistanceRad()
             self.desSingerAngle = self.singerFinalAngle
             self.desElevHeight = self.elevFinalHeight
 
         elif(self.curState == _CarriageStates.HOLD_ALL):
             self.desElevHeight = self.elevFinalHeight
+
             shouldAutoAlign = (self.curPosCmd == CarriageControlCmd.AUTO_ALIGN)
             if(shouldAutoAlign):
-                self.desSingerAngle = self.autoAlignSingerRotCmd
-            else:
-                self.desSingerAngle = self.singerFinalAngle
+                self.singerFinalAngle = self.autoAlignSingerRotCmd
 
-        elif(self.curState == _CarriageStates.RECALC_TARGETS):
-            self.desElevHeight = self.elevFinalHeight
             self.desSingerAngle = self.singerFinalAngle
 
-            self.elevStartHeight = self.elevFinalHeight
-            self.singerStartAngle = self.singerFinalAngle
+        elif(self.curState == _CarriageStates.RECALC_TARGETS):
+            self.desElevHeight = self.curElevHeight
+            self.desSingerAngle = self.curSingerAngle
+
+            self.elevStartHeight = self.curElevHeight
+            self.singerStartAngle = self.curSingerAngle
             self.elevFinalHeight = self._getUnprofiledElevHeightCmd()
             self.singerFinalAngle = self._getUnprofiledSingerRotCmd()
 
@@ -277,7 +278,7 @@ class CarriageControl(metaclass=Singleton):
             nextState = _CarriageStates.HOLD_ALL
 
         elif(self.curState == _CarriageStates.HOLD_ALL):
-            if(self.curPosCmd != self.prevPosCmd):
+            if(self.curPosCmd != self.prevPosCmd and self.curPosCmd != CarriageControlCmd.HOLD):
                 nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.HOLD_ALL
@@ -313,6 +314,9 @@ class CarriageControl(metaclass=Singleton):
             elif(self.curPosCmd == CarriageControlCmd.HOLD):
                 # User commanded us to stop moving wherever we were at
                 nextState = _CarriageStates.LATCH_AT_CURRENT
+            elif(self.curPosCmd != self.prevPosCmd):
+                # Command changed, need to recalc targets and start over
+                nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.RUN_TO_SAFE_HEIGHT
 
@@ -323,6 +327,9 @@ class CarriageControl(metaclass=Singleton):
             elif(self.curPosCmd == CarriageControlCmd.HOLD):
                 # User commanded us to stop moving wherever we were at
                 nextState = _CarriageStates.LATCH_AT_CURRENT
+            elif(self.curPosCmd != self.prevPosCmd):
+                # Command changed, need to recalc targets and start over
+                nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.ROT_ABOVE_SAFE_HEIGHT
 
@@ -333,6 +340,9 @@ class CarriageControl(metaclass=Singleton):
             elif(self.curPosCmd == CarriageControlCmd.HOLD):
                 # User commanded us to stop moving wherever we were at
                 nextState = _CarriageStates.LATCH_AT_CURRENT
+            elif(self.curPosCmd != self.prevPosCmd):
+                # Command changed, need to recalc targets and start over
+                nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.ROT_AT_SAFE_HEIGHT
 
@@ -343,6 +353,9 @@ class CarriageControl(metaclass=Singleton):
             elif(self.curPosCmd == CarriageControlCmd.HOLD):
                 # User commanded us to stop moving wherever we were at
                 nextState = _CarriageStates.LATCH_AT_CURRENT
+            elif(self.curPosCmd != self.prevPosCmd):
+                # Command changed, need to recalc targets and start over
+                nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.DESCEND_BELOW_SAFE_HEIGHT
 
@@ -353,6 +366,9 @@ class CarriageControl(metaclass=Singleton):
             elif(self.curPosCmd == CarriageControlCmd.HOLD):
                 # User commanded us to stop moving wherever we were at
                 nextState = _CarriageStates.LATCH_AT_CURRENT
+            elif(self.curPosCmd != self.prevPosCmd):
+                # Command changed, need to recalc targets and start over
+                nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.RUN_TO_HEIGHT
 
@@ -363,6 +379,9 @@ class CarriageControl(metaclass=Singleton):
             elif(self.curPosCmd == CarriageControlCmd.HOLD):
                 # User commanded us to stop moving wherever we were at
                 nextState = _CarriageStates.LATCH_AT_CURRENT
+            elif(self.curPosCmd != self.prevPosCmd):
+                # Command changed, need to recalc targets and start over
+                nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.ROTATE_TO_ANGLE
 

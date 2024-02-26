@@ -78,6 +78,19 @@ class SingerAngleControl():
         singerAngle = self._motorRadToAngleRad(motorRot)
         return singerAngle
     
+    # Given the current profiler state, calculate the distance (in radians) needed to stop
+    # Uses displacement under constant acceleration equations
+    # see https://www.ck12.org/book/ck-12-physics-concepts-intermediate/r3/section/2.6/ 
+    # equation 3
+    def getStoppingDistanceRad(self):
+        if(self.profiler.isFinished()):
+            return 0.0
+        else:
+            state = self.profiler.getCurState()
+            return state.velocity**2.0 / (2.0 * deg2Rad(self.maxA.get())) * sign(state.velocity)
+
+    
+    
     def atTarget(self):
         #return self.profiler.isFinished()
         return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6

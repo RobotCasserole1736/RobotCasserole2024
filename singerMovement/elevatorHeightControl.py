@@ -67,6 +67,18 @@ class ElevatorHeightControl():
     def getHeightM(self):
         return self._motorRadToHeight(self.motor.getMotorPositionRad())
     
+    # Given the current profiler state, calculate the distance (in m) needed to stop
+    # Uses displacement under constant acceleration equations
+    # see https://www.ck12.org/book/ck-12-physics-concepts-intermediate/r3/section/2.6/ 
+    # equation 3
+    def getStoppingDistanceM(self):
+        if(self.profiler.isFinished()):
+            return 0.0
+        else:
+            state = self.profiler.getCurState()
+            return state.velocity**2.0 / (2.0 * self.maxA.get()) * sign(state.velocity)
+
+    
     # Return the height of the elevator as measured by the absolute sensor in meters
     def _getAbsHeight(self):
         return self.heightAbsSen.getRange() / 1000.0 - self.absOffsetM
