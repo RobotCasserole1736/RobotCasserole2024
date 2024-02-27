@@ -385,6 +385,9 @@ class CarriageControl(metaclass=Singleton):
             else:
                 nextState = _CarriageStates.ROTATE_TO_ANGLE
 
+        else:
+            nextState = _CarriageStates.HOLD_ALL
+
         ################################################################
         # Step 3 - Actually transition to the  next state
         self.curState = nextState
