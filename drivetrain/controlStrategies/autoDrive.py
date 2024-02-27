@@ -2,8 +2,6 @@ import math
 from wpilib import Timer
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
-from utils.allianceTransformUtils import onRed, transformX
-from wpimath.geometry import Pose2d
 from drivetrain.drivetrainCommand import DrivetrainCommand
 from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from singerMovement.carriageControl import CarriageControl
@@ -18,7 +16,6 @@ from humanInterface.ledControl import LEDControl
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.speakerAlignActive = False
-        self.ampAlignActive = False
         self.returnDriveTrainCommand = DrivetrainCommand()
         self.rotKp = Calibration("Auto Align Rotation Kp",2)
         self.rotKd = Calibration("Auto Align Rotation Kd",3)
@@ -54,10 +51,6 @@ class AutoDrive(metaclass=Singleton):
             self.ledCtrl.setSpeakerAutoAlignActive(True)
             self.getDesiredSingerAngle(curPose)
             return self.calcSpeakerDrivetrainCommand(curPose, cmdIn)
-        elif self.ampAlignActive:
-            self.ledCtrl.setSpeakerAutoAlignActive(False)
-            self.ledCtrl.setAmpAutoAlignActive(True)
-            return self.calcAmpDrivetrainCommand(curPose, cmdIn)
         else:
             self.ledCtrl.setSpeakerAutoAlignActive(False)
             return cmdIn
@@ -109,8 +102,4 @@ class AutoDrive(metaclass=Singleton):
         self.returnDriveTrainCommand.velT = rotError*self.rotKp.get() + velTCmdDer*self.rotKd.get()
         self.returnDriveTrainCommand.velX = cmdIn.velX # Set the X vel to the original X vel
         self.returnDriveTrainCommand.velY = cmdIn.velY # Set the Y vel to the original Y vel
-        return self.returnDriveTrainCommand
-    
-    def calcAmpDrivetrainCommand(self, curPose: Pose2d, cmdIn: DrivetrainCommand) -> DrivetrainCommand:
-        
         return self.returnDriveTrainCommand

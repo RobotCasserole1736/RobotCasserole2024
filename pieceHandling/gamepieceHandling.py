@@ -170,10 +170,10 @@ class GamePieceHandling(metaclass=Singleton):
         log("Has Game Piece", self.hasGamePiece)
 
     # Take in command from the outside world
-    def setInput(self, SingerShooterBoolean, SingerIntakeBoolean, SingerEjectBoolean):
-        self.shooterOnCmd = SingerShooterBoolean
-        self.intakeOnCmd = SingerIntakeBoolean
-        self.ejectOnCmd = SingerEjectBoolean
+    def setInput(self, singerShooterBoolean, singerIntakeBoolean, singerEjectBoolean):
+        self.shooterOnCmd = singerShooterBoolean
+        self.intakeOnCmd = singerIntakeBoolean
+        self.ejectOnCmd = singerEjectBoolean
 
     def getShooterMotorSpeed(self):
         return min(abs(radPerSec2RPM(self.shooterMotorLeft.getMotorVelocityRadPerSec())), \

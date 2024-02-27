@@ -75,6 +75,7 @@ class SwerveModuleControl:
         self.moduleName = moduleName
 
         self.serialFault = Fault(f"Serial Number Unknown")
+        self.rId = RobotIdentification()
 
 
     def _updateTelemetry(self):
@@ -102,7 +103,7 @@ class SwerveModuleControl:
             "frac",
         )
 
-        if RobotIdentification.getSerialFaulted:
+        if self.rId.getSerialFaulted():
             self.serialFault.setFaulted()
         else:
             self.serialFault.setNoFault()
