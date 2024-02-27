@@ -1,9 +1,9 @@
 import wpilib
 from wpimath.units import feetToMeters
-from photonlibpy.photonCamera import PhotonCamera, setVersionCheckEnabled #VisionLEDMode
+from wpimath.geometry import Pose2d
+from photonlibpy.photonCamera import PhotonCamera #VisionLEDMode
 from utils.fieldTagLayout import FieldTagLayout
 from utils.faults import Fault
-from wpimath.geometry import Pose2d
 
 # Describes one on-field pose estimate from the a camera at a specific time.
 class CameraPoseObservation:

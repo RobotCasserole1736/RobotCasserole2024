@@ -65,9 +65,9 @@ class CarriageControl(metaclass=Singleton):
         # Minimum height that we have to go to before we can freely rotate the singer
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
-        self.curElevHeight = 0.5
+        self.curElevHeight = 0.0
         self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
-        self.desElevHeight = 0.5
+        self.desElevHeight = 0.0
         self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.profiledElevHeight = self.desElevHeight
         self.profiledSingerRot = self.curSingerRot
@@ -79,12 +79,14 @@ class CarriageControl(metaclass=Singleton):
         self.useAutoAlignAngleInHold = False
 
         #Code to disable all elevator & singer movement
-        self.DISABLE_SINGER_MOVEMENT = False
+        self.disableSingerMovement = False
 
         # State Machine
         self.curState = _CarriageStates.HOLD_ALL
 
         self.telem = CarriageTelemetry()
+
+        self.elevatorFuncGenStart = self.curElevHeight
 
         self.singerCtrl.setStopped()
         self.elevCtrl.setStopped()
@@ -151,12 +153,13 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Run Motors
-        if self.DISABLE_SINGER_MOVEMENT == False:
+        if not self.disableSingerMovement:
             self.elevCtrl.update()
             self.singerCtrl.update()
 
         log("Carriage State", self.curState, "state")
         log("Carriage Cmd", self.curPosCmd, "state")
+        
         self.telem.set(
             self.singerCtrl.getProfiledDesPos(),
             self.curSingerRot,
@@ -174,9 +177,9 @@ class CarriageControl(metaclass=Singleton):
     def _funcGenUpdate(self):
 
         if(Timer.getFPGATimestamp() > (self.profileStartTime + 5.0)):
-             # Every five seconds, profile to the opposite position
-             self.funcGenIsAtStart = not self.funcGenIsAtStart
-             self.profileStartTime = Timer.getFPGATimestamp()
+            # Every five seconds, profile to the opposite position
+            self.funcGenIsAtStart = not self.funcGenIsAtStart
+            self.profileStartTime = Timer.getFPGATimestamp()
 
         # Get the offsets
         elevOffset = self.elevatorFuncGenAmp.get()
@@ -302,4 +305,3 @@ class CarriageControl(metaclass=Singleton):
 
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn
-        

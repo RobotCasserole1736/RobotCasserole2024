@@ -1,8 +1,8 @@
 from wpilib import Relay
 from wpimath.filter import Debouncer
 from utils import constants
-from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from utils.calibration import Calibration
+from wrappers.wrapperedSparkMax import WrapperedSparkMax
 
 # needs a sparkmax, relay thing
 # the relay thing(?) should basically be a solenoid that automatically 

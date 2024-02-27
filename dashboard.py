@@ -4,11 +4,11 @@ from dashboardWidgets.autoChooser import AutoChooser
 from dashboardWidgets.swerveState import SwerveState
 from dashboardWidgets.icon import Icon
 from dashboardWidgets.text import Text
-from utils.faults import FaultWrangler
-from humanInterface.operatorInterface import OperatorInterface
-from utils.signalLogging import log
-from webserver.webserver import Webserver
 from dashboardWidgets.circularGauge import CircularGauge
+from utils.faults import FaultWrangler
+from utils.signalLogging import log
+from humanInterface.operatorInterface import OperatorInterface
+from webserver.webserver import Webserver
 from pieceHandling.gamepieceHandling import GamePieceHandling
 
 class Dashboard:
@@ -60,4 +60,3 @@ class Dashboard:
         log("AutoAlignIconState", Icon.kON if OperatorInterface().getSpeakerAutoAlignCmd() else Icon.kOFF)
 
         log("ShooterGaugeSpeed", GamePieceHandling().getShooterMotorSpeed())
-

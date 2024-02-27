@@ -17,8 +17,8 @@ MAX_SINGER_ROT_VEL_DEG_PER_SEC = 90.0
 MAX_SINGER_ROT_ACCEL_DEGPS2 = 90.0
 
 #for operator input to elevator control function in operator interface
-ELEVATOR_GEARBOX_GEAR_RATIO = 32.0/1.0
-ELEVATOR_SPOOL_RADIUS_M = 1.5 * .0254
+ELEVATOR_GEARBOX_GEAR_RATIO = 16.0/1.0
+ELEVATOR_SPOOL_RADIUS_M = in2m(0.75)
 SINGER_GEARBOX_RATIO = 125.0/1.0
 
 #how fast we want our motor to be running if we are controlling it manually
