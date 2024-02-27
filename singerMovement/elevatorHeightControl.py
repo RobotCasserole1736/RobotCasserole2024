@@ -47,7 +47,7 @@ class ElevatorHeightControl():
         # After mounting the sensor, these should be tweaked one time
         # in order to adjust whatever the sensor reads into the reference frame
         # of the mechanism
-        self.absOffsetM = 0.0
+        self.absOffsetM = 0.074
 
         # Relative Encoder Offsets
         # Releative encoders always start at 0 at power-on
