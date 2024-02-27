@@ -44,15 +44,15 @@ class CarriageControl(metaclass=Singleton):
         self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=55.0)
 
         self.elevatorHeightIntake = Calibration(name="Elev Height Intake", units="m", default=0.0 )
-        self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.75 )
-        self.elevatorHeightTrap = Calibration(name="Elev Height Trap", units="m", default=0.65 )
-        self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.5 )
+        self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.45 )
+        self.elevatorHeightTrap = Calibration(name="Elev Height Trap", units="m", default=0.35 )
+        self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.4 )
 
         # Physical travel limits
         self.singerRotSoftLimitMax = Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 70.0 )
         self.singerRotSoftLimitMin = Calibration(name="Singer Rot Soft Limit Min", units="deg", default=-20.0 )
-        self.elevatorHeightSoftLimitMax = Calibration(name="Elevator Height Soft Limit Max", units="m", default= 0.8 )
-        self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= -0.01)
+        self.elevatorHeightSoftLimitMax = Calibration(name="Elevator Height Soft Limit Max", units="m", default= 0.45)
+        self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= 0.0)
 
         # Calibration Function Generator
         self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=0.0)
@@ -63,7 +63,7 @@ class CarriageControl(metaclass=Singleton):
         self.funcGenIsAtStart = True
 
         # Minimum height that we have to go to before we can freely rotate the singer
-        self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
+        self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.3)
 
         self.curElevHeight = 0.0
         self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
