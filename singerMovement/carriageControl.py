@@ -168,7 +168,7 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Run Motors
-        if not self.disableSingerMovement:
+        if not self.DISABLE_SINGER_MOVEMENT:
             self.elevCtrl.update()
             self.singerCtrl.update()
 
