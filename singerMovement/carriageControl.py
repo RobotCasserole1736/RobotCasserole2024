@@ -8,7 +8,7 @@ from singerMovement.singerAngleControl import SingerAngleControl
 from singerMovement.singerConstants import SINGER_ABS_ENC_OFF_DEG
 from utils.singleton import Singleton
 from utils.calibration import Calibration
-from utils.units import deg2Rad, rad2Deg
+from utils.units import deg2Rad
 from utils.signalLogging import log
 
 # Private enum describing all states in the carriage control state machine
@@ -69,11 +69,13 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorMinSafeHeight = Calibration(name="Elev Min Safe Height", units="m", default=0.4 )
 
         self.curElevHeight = 0.0
+        self.elevFinalHeight = 0.0
         self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
+        self.singerFinalAngle = self.curSingerRot
         self.desElevHeight = 0.0
         self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
         self.profiledElevHeight = self.desElevHeight
-        self.profiledSingerRot = self.curSingerAngle
+        self.profiledSingerRot = self.curSingerRot
 
         # State machine "from-init" actions
         self._stateMachineInit()
@@ -81,6 +83,7 @@ class CarriageControl(metaclass=Singleton):
         # Default inputs from the outside world
         self.autoAlignSingerRotCmd = 0.0
         self.curPosCmd = CarriageControlCmd.HOLD
+        self.prevPosCmd = self.curPosCmd
 
         #Code to disable all elevator & singer movement
         self.DISABLE_SINGER_MOVEMENT = False
@@ -134,7 +137,7 @@ class CarriageControl(metaclass=Singleton):
         elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
             return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
-            return self.curSingerAngle # No motion commanded (already in rads)
+            return self.curSingerRot # No motion commanded (already in rads)
         else:
             return 0.0 ## this could be really dangerous depending where we are!
         
@@ -152,7 +155,7 @@ class CarriageControl(metaclass=Singleton):
     # for carriage control logic
     def _readSensors(self):
         self.curElevHeight = self.elevCtrl.getHeightM()
-        self.curSingerAngle = self.singerCtrl.getAngleRad()
+        self.curSingerRot = self.singerCtrl.getAngleRad()
 
     # Should be called in robot code once every 20ms
     def update(self, useFuncGen = False):
@@ -177,14 +180,14 @@ class CarriageControl(metaclass=Singleton):
         
         self.telem.set(
             self.singerCtrl.getProfiledDesPos(),
-            self.curSingerAngle,
+            self.curSingerRot,
             self.elevCtrl.getProfiledDesPos(),
             self.curElevHeight
         )
 
     # Reset the function generator 
     def _funcGenInit(self):
-        self.singerFuncGenStart = self.curSingerAngle 
+        self.singerFuncGenStart = self.curSingerRot 
         self.elevatorFuncGenStart = self.curElevHeight
         self.profileStartTime = Timer.getFPGATimestamp()
 
@@ -227,7 +230,7 @@ class CarriageControl(metaclass=Singleton):
 
         if(self.curState == _CarriageStates.LATCH_AT_CURRENT):
             self.elevFinalHeight  = self.curElevHeight + self.elevCtrl.getStoppingDistanceM()
-            self.singerFinalAngle = self.curSingerAngle + self.singerCtrl.getStoppingDistanceRad()
+            self.singerFinalAngle = self.curSingerRot + self.singerCtrl.getStoppingDistanceRad()
             self.desSingerAngle = self.singerFinalAngle
             self.desElevHeight = self.elevFinalHeight
 
@@ -242,10 +245,10 @@ class CarriageControl(metaclass=Singleton):
 
         elif(self.curState == _CarriageStates.RECALC_TARGETS):
             self.desElevHeight = self.curElevHeight
-            self.desSingerAngle = self.curSingerAngle
+            self.desSingerAngle = self.curSingerRot
 
             self.elevStartHeight = self.curElevHeight
-            self.singerStartAngle = self.curSingerAngle
+            self.singerStartAngle = self.curSingerRot
             self.elevFinalHeight = self._getUnprofiledElevHeightCmd()
             self.singerFinalAngle = self._getUnprofiledSingerRotCmd()
 
@@ -292,7 +295,7 @@ class CarriageControl(metaclass=Singleton):
         elif(self.curState == _CarriageStates.RECALC_TARGETS):
             # New position command is here, let's see how to handle it
             angleErr = abs(
-                self.curSingerAngle - self._getUnprofiledSingerRotCmd()
+                self.curSingerRot - self._getUnprofiledSingerRotCmd()
             )
             goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
             rotateMoreThanThresh = angleErr > deg2Rad(25.0)
@@ -308,7 +311,6 @@ class CarriageControl(metaclass=Singleton):
                     # We're above safe height but going below it
                     # We can rotate now, but have to rotate first before going down
                     nextState = _CarriageStates.ROT_ABOVE_SAFE_HEIGHT
-                    
             else:
                 # We can do the normal elevator-then-singer sequence.
                 nextState = _CarriageStates.RUN_TO_HEIGHT
