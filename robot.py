@@ -26,6 +26,7 @@ from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
 import cscore as cs
 from cscore import CameraServer
+
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
@@ -119,17 +120,8 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        cs.enableLogging()
-        leftCamera = cs.UsbCamera("leftcam", 0)
-        leftCamera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-        rightCamera = cs.UsbCamera("rightcam", 1)
-        rightCamera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-        cs.CameraServer().startAutomaticCapture(leftCamera)
-        cs.CameraServer().startAutomaticCapture(rightCamera)
-        mjpegServer1 = cs.MjpegServer("httpserver", 8081)
-        mjpegServer2 = cs.MjpegServer("httpserver", 8082)
-        mjpegServer1.setSource(leftCamera)
-        mjpegServer2.setSource(rightCamera)
+        pass
+        
     
         
 
