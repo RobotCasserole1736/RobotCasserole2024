@@ -1,7 +1,7 @@
 #this will be in distance along the elevator, with 0 being at bottom and the top being whatever it is
 from enum import IntEnum
 
-from wpilib import Timer, TimedRobot
+from wpilib import Timer
 from singerMovement.carriageTelemetry import CarriageTelemetry
 from singerMovement.elevatorHeightControl import ElevatorHeightControl
 from singerMovement.singerAngleControl import SingerAngleControl
@@ -86,7 +86,7 @@ class CarriageControl(metaclass=Singleton):
         self.prevPosCmd = self.curPosCmd
 
         #Code to disable all elevator & singer movement
-        self.DISABLE_SINGER_MOVEMENT = False
+        self.disableSingerMovement = False
 
         # State Machine
         self.curState = _CarriageStates.HOLD_ALL
@@ -171,7 +171,7 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Run Motors
-        if not self.DISABLE_SINGER_MOVEMENT:
+        if not self.disableSingerMovement:
             self.elevCtrl.update()
             self.singerCtrl.update()
 
@@ -287,7 +287,7 @@ class CarriageControl(metaclass=Singleton):
             nextState = _CarriageStates.HOLD_ALL
 
         elif(self.curState == _CarriageStates.HOLD_ALL):
-            if(self.curPosCmd != self.prevPosCmd and self.curPosCmd != CarriageControlCmd.HOLD):
+            if(self.curPosCmd not in (self.prevPosCmd, CarriageControlCmd.HOLD)):
                 nextState = _CarriageStates.RECALC_TARGETS
             else:
                 nextState = _CarriageStates.HOLD_ALL
@@ -401,7 +401,8 @@ class CarriageControl(metaclass=Singleton):
         self.curState = nextState
         self.prevPosCmd = self.curPosCmd
 
-    # Should be called outside this class whenever anything (driver, automonous, etc) wants to set the target angle for singer auto-align for shot
+    # Should be called outside this class whenever anything (driver, automonous, etc)
+    # wants to set the target angle for singer auto-align for shot
     def setSignerAutoAlignAngle(self, desiredAngle:float):
 
         if(self.autoAlignSingerRotCmd > self.singerRotSoftLimitMax.get()):
@@ -412,6 +413,7 @@ class CarriageControl(metaclass=Singleton):
 
         self.autoAlignSingerRotCmd = desiredAngle
 
-    # Should be called outside this class whenever anything (driver aoutonomous, etc) wants to change the singer position
+    # Should be called outside this class whenever anything (driver aoutonomous, etc)
+    # wants to change the singer position
     def setPositionCmd(self, curPosCmdIn: CarriageControlCmd):
         self.curPosCmd = curPosCmdIn

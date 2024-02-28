@@ -11,9 +11,9 @@ class RobotIdentification(metaclass=Singleton):
     def __init__(self):
         self.roboControl = wpilib.RobotController
         self.robotType = RobotTypes.Main
-        self.serialFault = False    
-        self.robotTypeNumber = 0    
-        
+        self.serialFault = False
+        self.robotTypeNumber = 0
+
     def configureValue(self):
 
         self.serialFault = False
@@ -34,17 +34,17 @@ class RobotIdentification(metaclass=Singleton):
             self.robotType = RobotTypes.Main
             self.serialFault = True
             self.robotTypeNumber = 0
-                
+
         #I don't know why the logs aren't working. But it's printing so I give up. 
-            
+
     def getRobotType(self):
         return self.robotType 
-    
+
     def getRobotSerialNumber(self):
         return self.roboControl.getSerialNumber()
-    
+
     def getSerialFaulted(self):
         return self.serialFault
-    
+
     def getRobotTypeNumber(self):
         return self.robotTypeNumber

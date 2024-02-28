@@ -18,14 +18,11 @@ from utils.calibration import CalibrationWrangler
 from utils.faults import FaultWrangler
 from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
-from utils.robotIdentification import RobotIdentification
 from utils.singleton import destroyAllSingletonInstances
 from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
-from utils.powerMonitor import PowerMonitor
-from singerMovement.singerAngleControl import SingerAngleControl
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 

@@ -6,7 +6,6 @@ from utils.calibration import Calibration
 from utils.constants import SINGER_ANGLE_MOTOR_CANID, SINGER_ANGLE_ABS_POS_ENC
 from utils.units import deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
-from math import sin
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
 
@@ -67,18 +66,18 @@ class SingerAngleControl():
 
     def _motorRadToAngleRad(self, motorRev):
         return motorRev * 1/SINGER_GEARBOX_RATIO - self.relEncOffsetRad
-            
+
     def _angleRadToMotorRad(self, singerAngleRad):
         return (singerAngleRad + self.relEncOffsetRad) * SINGER_GEARBOX_RATIO
-    
+
     def _angleVelToMotorVel(self, singerAngleVel):
         return singerAngleVel * SINGER_GEARBOX_RATIO
-    
+
     def getAngleRad(self):
         motorRot = self.motor.getMotorPositionRad()
         singerAngle = self._motorRadToAngleRad(motorRot)
         return singerAngle
-    
+
     # Given the current profiler state, calculate the distance (in radians) needed to stop
     # Uses displacement under constant acceleration equations
     # see https://www.ck12.org/book/ck-12-physics-concepts-intermediate/r3/section/2.6/ 
@@ -90,8 +89,6 @@ class SingerAngleControl():
             state = self.profiler.getCurState()
             return state.velocity**2.0 / (2.0 * deg2Rad(self.maxA.get())) * sign(state.velocity)
 
-    
-    
     def atTarget(self):
         #return self.profiler.isFinished()
         return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6
@@ -133,10 +130,10 @@ class SingerAngleControl():
             motorPosCmd = self._angleRadToMotorRad(curState.position)
             self.motorVelCmd = self._angleVelToMotorVel(curState.velocity)
 
-            vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) - self.kG.get() * sin(actualPos)
+            vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) \
+                - self.kG.get() * sin(actualPos)
 
             self.motor.setPosCmd(motorPosCmd, vFF)
-
 
         log("Singer Pos Des", rad2Deg(self.curUnprofiledPosCmd),"deg")
         log("Singer Pos Profiled", rad2Deg(self.profiledPos) ,"deg")

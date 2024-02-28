@@ -1,5 +1,6 @@
 
 from playingwithfusion import TimeOfFlight
+from rev import CANSparkMax, CANSparkLowLevel
 from singerMovement.singerConstants import (ELEVATOR_GEARBOX_GEAR_RATIO, ELEVATOR_SPOOL_RADIUS_M, 
                                             MAX_CARRIAGE_ACCEL_MPS2, MAX_CARRIAGE_VEL_MPS)
 from singerMovement.profiledAxis import ProfiledAxis
@@ -8,7 +9,6 @@ from utils.units import sign
 from utils.signalLogging import log
 from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, ELEVATOR_TOF_CANID
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from rev import CANSparkMax, CANSparkLowLevel
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
 # and motion profiling
