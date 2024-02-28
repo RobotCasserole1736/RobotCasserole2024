@@ -32,15 +32,6 @@
                     "translationConstrained": true,
                     "headingConstrained": true,
                     "controlIntervalCount": 40
-                },
-                {
-                    "x": 2.014317512512207,
-                    "y": 9.65041732788086,
-                    "heading": 0,
-                    "isInitialGuess": false,
-                    "translationConstrained": true,
-                    "headingConstrained": true,
-                    "controlIntervalCount": 40
                 }
             ],
             "trajectory": [
@@ -826,7 +817,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "Speaker primary path": {
+        "Speaker_primary_path": {
             "waypoints": [
                 {
                     "x": 1.400078296661377,
@@ -3280,7 +3271,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "bottom path": {
+        "bottom_path": {
             "waypoints": [
                 {
                     "x": 0.7867807149887085,
@@ -4516,7 +4507,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "Speaker alternate path": {
+        "Speaker_alternate_path": {
             "waypoints": [
                 {
                     "x": 1.3994345664978027,
@@ -5401,7 +5392,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "amp alt path": {
+        "amp_alt_path": {
             "waypoints": [
                 {
                     "x": 1.599037766456604,
