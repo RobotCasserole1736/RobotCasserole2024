@@ -2,6 +2,7 @@ import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
+from Autonomous.modes.shootDriveOut import ShootDriveOut
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
@@ -20,11 +21,11 @@ from utils.crashLogger import CrashLogger
 from utils.rioMonitor import RIOMonitor
 from utils.robotIdentification import RobotIdentification
 from utils.singleton import destroyAllSingletonInstances
+from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
-from singerMovement.singerAngleControl import SingerAngleControl
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
@@ -58,6 +59,7 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer = AutoSequencer()
         self.autoSequencer.addMode(DriveOut())
         self.autoSequencer.addMode(NoteThief())
+        self.autoSequencer.addMode(ShootDriveOut())
 
         self.dashboard = Dashboard()
 
@@ -143,7 +145,7 @@ class MyRobot(wpilib.TimedRobot):
         elif(self.oInt.getSpeakerAutoAlignCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
         elif(self.oInt.getCarriageSpeakerSubwooferPosCmd()):
-             self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
+            self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
 

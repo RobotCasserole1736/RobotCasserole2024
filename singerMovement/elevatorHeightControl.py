@@ -1,4 +1,3 @@
-import math
 
 from playingwithfusion import TimeOfFlight
 from singerMovement.singerConstants import (ELEVATOR_GEARBOX_GEAR_RATIO, ELEVATOR_SPOOL_RADIUS_M, 

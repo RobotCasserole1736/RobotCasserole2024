@@ -83,12 +83,14 @@ class CarriageControl(metaclass=Singleton):
         self.curPosCmd = CarriageControlCmd.HOLD
 
         #Code to disable all elevator & singer movement
-        self.DISABLE_SINGER_MOVEMENT = False
+        self.disableSingerMovement = False
 
         self.telem = CarriageTelemetry()
 
         self.singerCtrl.setStopped()
         self.elevCtrl.setStopped()
+
+        self.elevatorFuncGenStart = self.curElevHeight
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
@@ -163,12 +165,13 @@ class CarriageControl(metaclass=Singleton):
 
         #######################################################
         # Run Motors
-        if self.DISABLE_SINGER_MOVEMENT == False:
+        if not self.disableSingerMovement:
             self.elevCtrl.update()
             self.singerCtrl.update()
 
         log("Carriage State", self.curState, "state")
         log("Carriage Cmd", self.curPosCmd, "state")
+        
         self.telem.set(
             self.singerCtrl.getProfiledDesPos(),
             self.curSingerAngle,
@@ -186,9 +189,9 @@ class CarriageControl(metaclass=Singleton):
     def _funcGenUpdate(self):
 
         if(Timer.getFPGATimestamp() > (self.profileStartTime + 5.0)):
-             # Every five seconds, profile to the opposite position
-             self.funcGenIsAtStart = not self.funcGenIsAtStart
-             self.profileStartTime = Timer.getFPGATimestamp()
+            # Every five seconds, profile to the opposite position
+            self.funcGenIsAtStart = not self.funcGenIsAtStart
+            self.profileStartTime = Timer.getFPGATimestamp()
 
         # Get the offsets
         elevOffset = self.elevatorFuncGenAmp.get()
