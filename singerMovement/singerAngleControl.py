@@ -1,4 +1,4 @@
-from math import sin
+from math import cos
 from singerMovement.singerConstants import (MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, 
                                             SINGER_GEARBOX_RATIO, SINGER_ABS_ENC_OFF_DEG)
 from singerMovement.profiledAxis import ProfiledAxis
@@ -15,6 +15,7 @@ class SingerAngleControl():
     def __init__(self):
         # Singer Rotation Control
         self.motor = WrapperedSparkMax(SINGER_ANGLE_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
+        self.motor.setInverted(False)
         self.maxV = Calibration(name="Singer Max Rot Vel", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
@@ -114,7 +115,8 @@ class SingerAngleControl():
 
     def update(self):
         actualPos = self.getAngleRad()
-
+        self.singerRotAbsSen.update()
+        
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
             self.motor.setPID(self.kP.get(), 0.0, 0.0)
@@ -131,7 +133,7 @@ class SingerAngleControl():
             self.motorVelCmd = self._angleVelToMotorVel(curState.velocity)
 
             vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) \
-                - self.kG.get() * sin(actualPos)
+                - self.kG.get() * cos(actualPos)
 
             self.motor.setPosCmd(motorPosCmd, vFF)
 
@@ -140,3 +142,4 @@ class SingerAngleControl():
         log("Singer Pos Act", rad2Deg(actualPos) ,"deg")
         log("Singer Motor Vel Cmd", self.motorVelCmd)
         log("Singer at Target?", self.atTarget(), "bool")
+        log("Singer Abs Sensor",rad2Deg(self.singerRotAbsSen.getAngleRad()))

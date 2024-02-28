@@ -70,10 +70,10 @@ class CarriageControl(metaclass=Singleton):
 
         self.curElevHeight = 0.0
         self.elevFinalHeight = 0.0
-        self.curSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
+        self.curSingerRot = deg2Rad(70)
         self.singerFinalAngle = self.curSingerRot
         self.desElevHeight = 0.0
-        self.desSingerRot = deg2Rad(self.singerCtrl.absEncOffsetDeg)
+        self.desSingerRot = deg2Rad(70)
         self.profiledElevHeight = self.desElevHeight
         self.profiledSingerRot = self.curSingerRot
 
