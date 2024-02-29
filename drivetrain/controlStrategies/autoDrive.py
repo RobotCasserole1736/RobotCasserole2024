@@ -61,7 +61,7 @@ class AutoDrive(metaclass=Singleton):
         distY = curPose.Y() - self.speakerY
 
         # Get singer height from carriage control
-        singerHeight = ElevatorHeightControl()._getAbsHeight()
+        singerHeight = ElevatorHeightControl().getHeightM()
         targetHeight = SPEAKER_TARGET_HEIGHT_M - singerHeight
         distFromTarget = math.sqrt(math.pow(distX, 2) + math.pow(distY , 2))
         noteTravelPath = math.sqrt(math.pow(targetHeight, 2) + math.pow(distFromTarget , 2))
