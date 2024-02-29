@@ -3,9 +3,9 @@ from Autonomous.commands.drivePathCommand import DrivePathCommand
 from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 
-class ShootDriveOut3(Mode):
+class ScSpeakL3(Mode):
     def __init__(self):
-        Mode.__init__(self, f"Shoot Drive Out 3")
+        Mode.__init__(self, f"Sc Speak L 3")
         self.SequentialCommandGroup = SequentialCommandGroup()
         self.pathCmd = DrivePathCommand("DriveOut3")
         self.shoot = SpeakerShootCommand()
