@@ -3,6 +3,8 @@ import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
 from Autonomous.modes.shootDriveOut2 import ShootDriveOut2
+from Autonomous.modes.shootDriveOut1 import ShootDriveOut1
+from Autonomous.modes.shootDriveOut3 import ShootDriveOut3
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
@@ -60,6 +62,8 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer.addMode(DriveOut())
         self.autoSequencer.addMode(NoteThief())
         self.autoSequencer.addMode(ShootDriveOut2())
+        self.autoSequencer.addMode(ShootDriveOut1())
+        self.autoSequencer.addMode(ShootDriveOut3())
 
         self.dashboard = Dashboard()
 
