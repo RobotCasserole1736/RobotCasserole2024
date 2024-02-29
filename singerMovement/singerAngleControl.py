@@ -15,7 +15,7 @@ class SingerAngleControl():
     def __init__(self):
         # Singer Rotation Control
         self.motor = WrapperedSparkMax(SINGER_ANGLE_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
-        self.motor.setInverted(False)
+        self.motor.setInverted(True)
         self.maxV = Calibration(name="Singer Max Rot Vel", default=MAX_SINGER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
