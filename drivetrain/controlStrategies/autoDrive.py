@@ -12,7 +12,7 @@ from utils.constants import SPEAKER_TARGET_HEIGHT_M, \
 from utils.signalLogging import log
 from utils.singleton import Singleton
 from humanInterface.ledControl import LEDControl
-from singerMovement.carriageControl import CarriageControl
+from singerMovement.elevatorHeightControl import ElevatorHeightControl
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
         self.speakerAlignActive = False
@@ -61,7 +61,7 @@ class AutoDrive(metaclass=Singleton):
         distY = curPose.Y() - self.speakerY
 
         # Get singer height from carriage control
-        singerHeight = CarriageControl()._getUnprofiledElevHeightCmd()
+        singerHeight = ElevatorHeightControl()._getAbsHeight()
         targetHeight = SPEAKER_TARGET_HEIGHT_M - singerHeight
         distFromTarget = math.sqrt(math.pow(distX, 2) + math.pow(distY , 2))
         noteTravelPath = math.sqrt(math.pow(targetHeight, 2) + math.pow(distFromTarget , 2))

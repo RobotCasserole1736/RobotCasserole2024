@@ -9,10 +9,11 @@ from utils.units import sign
 from utils.signalLogging import log
 from utils.constants import ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, ELEVATOR_TOF_CANID
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
+from utils.singleton import Singleton
 
 # Controls the elevator height motor, including rezeroing from absolute sensors
 # and motion profiling
-class ElevatorHeightControl():
+class ElevatorHeightControl(metaclass=Singleton):
     def __init__(self):
         # Elevator up/down control
         self.motor = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "ElevatorMotor", brakeMode=True)
