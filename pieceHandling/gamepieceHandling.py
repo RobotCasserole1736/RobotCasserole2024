@@ -62,7 +62,7 @@ class GamePieceHandling(metaclass=Singleton):
         # Calibrations for Gamepiece being absent and present
         self.gamePiecePresentCal = Calibration("NotePresentThresh", 6, "in")
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
-        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 5, "in")
+        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 7, "in")
 
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
@@ -133,7 +133,7 @@ class GamePieceHandling(metaclass=Singleton):
             if self.hasGamePiece:
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
-                if gamepieceDistSensorMeas > self.gamePieceInPlaceCal.get():
+                if gamepieceDistSensorMeas < self.gamePieceInPlaceCal.get():
                     self.feedBackSlow(True)
                 else:
                     self.feedBackSlow(False)
@@ -143,7 +143,7 @@ class GamePieceHandling(metaclass=Singleton):
 
             # And don't shoot
             self.updateShooter(False)
-            
+
         elif self.shooterOnCmd:
             # Shooting Commanded
             self.updateShooter(True)
@@ -157,7 +157,7 @@ class GamePieceHandling(metaclass=Singleton):
             else:
                 # Wait for spoolup
                 self.updateIntake(False)
-        
+
         elif self.ejectOnCmd:
             self.updateEject(True)
 
@@ -167,7 +167,7 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateFloorRoller(False)
             self.updateIntake(False)
             self.updateEject(False)
-        
+
         log("Has Game Piece", self.hasGamePiece)
 
     # Take in command from the outside world
