@@ -20,9 +20,9 @@ class SingerAngleControl():
         self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
 
-        self.kV = Calibration(name="Singer kV", default=0.05, units="V/rps")
-        self.kS = Calibration(name="Singer kS", default=1, units="V")
-        self.kG = Calibration(name="Singer kG", default=0.4, units="V/cos(deg)")
+        self.kV = Calibration(name="Singer kV", default=0.03, units="V/rps")
+        self.kS = Calibration(name="Singer kS", default=0.5, units="V")
+        self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
         self.kP = Calibration(name="Singer kP", default=0.4, units="V/RadErr")
 
         self.motorVelCmd = 0
