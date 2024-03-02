@@ -40,9 +40,6 @@ class ParallelCommandGroup(Runnable, Composer):
         return all(self._cmdFinishedDict.values())
     
     def getName(self):
-        return "parallelCommandGroup"
-
-    def getName(self):
         return "Parallel Command Group"
 
     ##################################################
