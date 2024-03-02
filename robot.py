@@ -59,11 +59,7 @@ class MyRobot(wpilib.TimedRobot):
         self.ledCtrl = LEDControl()
 
         self.autoSequencer = AutoSequencer()
-        self.autoSequencer.addMode(DriveOut())
-        self.autoSequencer.addMode(NoteThief())
-        self.autoSequencer.addMode(ScSpeakL1())
-        self.autoSequencer.addMode(ScSpeakL2())
-        self.autoSequencer.addMode(ScSpeakL3())
+    
 
         self.dashboard = Dashboard()
 

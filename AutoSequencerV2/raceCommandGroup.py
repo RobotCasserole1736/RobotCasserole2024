@@ -41,6 +41,9 @@ class RaceCommandGroup(Runnable, Composer):
     def isDone(self):
         # We're done when one command has finished
         return self._finishedFirstIdx is not None
+    
+    def getName(self):
+        return "raceCommandGroup"
 
     ##################################################
     ## composition handlers
