@@ -4,6 +4,12 @@ from AutoSequencerV2.modeList import ModeList
 from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
+from Autonomous.modes.driveOut import DriveOut
+from Autonomous.modes.noteThief import NoteThief
+from Autonomous.modes.scSpeakL1 import ScSpeakL1
+from Autonomous.modes.scSpeakL2 import ScSpeakL2
+from Autonomous.modes.scSpeakL3 import ScSpeakL3
+from Autonomous.modes.speakerAltPath import speakerAltPath
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
 from utils.allianceTransformUtils import transform
@@ -23,6 +29,12 @@ class AutoSequencer(metaclass=Singleton):
         # Create a list of every autonomous mode we want
         self.mainModeList = ModeList("Main")
         self.mainModeList.addMode(DoNothingMode())
+        self.mainModeList.addMode(DriveOut())
+        self.mainModeList.addMode(NoteThief())
+        self.mainModeList.addMode(speakerAltPath())
+        self.mainModeList.addMode(ScSpeakL1())
+        self.mainModeList.addMode(ScSpeakL2())
+        self.mainModeList.addMode(ScSpeakL3())
 
         self.topLevelCmdGroup = SequentialCommandGroup()
         self.startPose = Pose2d()

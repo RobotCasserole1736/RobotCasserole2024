@@ -38,6 +38,9 @@ class ParallelCommandGroup(Runnable, Composer):
     def isDone(self):
         # We're done when every command has finished
         return all(self._cmdFinishedDict.values())
+    
+    def getName(self):
+        return "parallelCommandGroup"
 
     def getName(self):
         return "Parallel Command Group"
