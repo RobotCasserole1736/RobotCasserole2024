@@ -39,5 +39,8 @@ class ParallelCommandGroup(Runnable, Composer):
         # We're done when every command has finished
         return all(self._cmdFinishedDict.values())
 
+    def getName(self):
+        return "Parallel Command Group"
+
     ##################################################
     ## composition handlers

@@ -5,6 +5,7 @@ from Autonomous.modes.noteThief import NoteThief
 from Autonomous.modes.scSpeakL2 import ScSpeakL2
 from Autonomous.modes.scSpeakL1 import ScSpeakL1
 from Autonomous.modes.scSpeakL3 import ScSpeakL3
+from Autonomous.modes.scSpeakLP1 import ScSpeakLP1
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
@@ -64,6 +65,7 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer.addMode(ScSpeakL1())
         self.autoSequencer.addMode(ScSpeakL2())
         self.autoSequencer.addMode(ScSpeakL3())
+        self.autoSequencer.addMode(ScSpeakLP1())
 
         self.dashboard = Dashboard()
 
