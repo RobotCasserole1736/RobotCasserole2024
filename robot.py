@@ -28,7 +28,6 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
-from singerMovement.singerAngleControl import SingerAngleControl
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
@@ -149,7 +148,6 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
 
-        
         # Gamepiece handling input
         self.gph.setInput(
             self.oInt.getSingerShootCmd(),
@@ -184,14 +182,12 @@ class MyRobot(wpilib.TimedRobot):
         SignalWrangler().markLoopStart()
         # Nothing else to do, main update does all the heavy lifting
 
-
     #########################################################
     ## Cleanup
     def endCompetition(self):
         self.rioMonitor.stopThreads()
         destroyAllSingletonInstances()
         super().endCompetition()
-
 
 def remoteRIODebugSupport():
     if __debug__ and "run" in sys.argv:

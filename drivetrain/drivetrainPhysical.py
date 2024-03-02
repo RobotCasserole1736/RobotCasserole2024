@@ -43,7 +43,6 @@ AZMTH_GEAR_RATIO = 12.8
 ## CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
 if RobotIdentification.getRobotType == RobotTypes.Main:
     WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3
-    print("L3")
 elif RobotIdentification.getRobotType == RobotTypes.Practice:
     WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L2
 else:
