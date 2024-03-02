@@ -47,6 +47,9 @@ class SequentialCommandGroup(Runnable, Composer):
     def isDone(self):
         # We're done when we hit the end of the list
         return self._curCmdIdx >= len(self.cmdList)
+    
+    def getName(self):
+        return "sewuentialCommandGroup"
 
     ##################################################
     ## composition handlers

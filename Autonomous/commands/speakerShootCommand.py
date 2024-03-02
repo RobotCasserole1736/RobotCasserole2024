@@ -1,3 +1,4 @@
+import wpilib
 from AutoSequencerV2.command import Command
 from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 from pieceHandling.gamepieceHandling import GamePieceHandling
@@ -9,8 +10,16 @@ class SpeakerShootCommand(Command):
         self.carriageControl = CarriageControl() 
         self.gamePieceHandling = GamePieceHandling()   
 
+        self.startTime = 0
+        self.curTime = 0
+        self.done = False
+        self.duration = 3
+
+    def initialize(self):
+        self.startTime = wpilib.Timer.getFPGATimestamp()
+
     def execute(self):
-        self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
+        self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
 
         self.gamePieceHandling.setInput(
             True,
@@ -18,6 +27,16 @@ class SpeakerShootCommand(Command):
             False
         )
 
+        self.curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
+        self.done = self.curTime >= self.duration
+
+        if self.done:
+            self.gamePieceHandling.setInput(
+                False,
+                False,
+                False
+            )
+
     def isDone(self):
-        return False
+        return self.done
         #return if we're done. Which should be never? It should be controlled by other things

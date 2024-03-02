@@ -2,6 +2,10 @@ import sys
 import wpilib
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
+from Autonomous.modes.scSpeakL2 import ScSpeakL2
+from Autonomous.modes.scSpeakL1 import ScSpeakL1
+from Autonomous.modes.scSpeakL3 import ScSpeakL3
+from Autonomous.modes.scSpeakLP1 import ScSpeakLP1
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
@@ -23,6 +27,8 @@ from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from climbControl.climberControl import ClimberControl
+from utils.powerMonitor import PowerMonitor
+from singerMovement.singerAngleControl import SingerAngleControl
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
 
@@ -54,8 +60,7 @@ class MyRobot(wpilib.TimedRobot):
         self.ledCtrl = LEDControl()
 
         self.autoSequencer = AutoSequencer()
-        self.autoSequencer.addMode(DriveOut())
-        self.autoSequencer.addMode(NoteThief())
+    
 
         self.dashboard = Dashboard()
 

@@ -94,7 +94,6 @@ class CarriageControl(metaclass=Singleton):
         self.telem = CarriageTelemetry()
 
         self.elevatorFuncGenStart = self.curElevHeight
-
         self.singerCtrl.setStopped()
         self.elevCtrl.setStopped()
     
