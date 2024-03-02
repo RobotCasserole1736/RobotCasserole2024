@@ -50,9 +50,9 @@ class DriverInterface:
                 vYJoyRaw *= -1.0
 
             # deadband
-            vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.1)
-            vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.1)
-            vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.1)
+            vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.15)
+            vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
+            vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.2)
 
             boostMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
 

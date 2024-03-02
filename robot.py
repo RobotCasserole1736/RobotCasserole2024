@@ -1,11 +1,5 @@
 import sys
 import wpilib
-from Autonomous.modes.driveOut import DriveOut
-from Autonomous.modes.noteThief import NoteThief
-from Autonomous.modes.scSpeakL2 import ScSpeakL2
-from Autonomous.modes.scSpeakL1 import ScSpeakL1
-from Autonomous.modes.scSpeakL3 import ScSpeakL3
-from Autonomous.modes.scSpeakLP1 import ScSpeakLP1
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
