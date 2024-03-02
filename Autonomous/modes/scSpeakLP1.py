@@ -8,8 +8,8 @@ from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 class ScSpeakLP1(Mode):
     def __init__(self):
         Mode.__init__(self, f"Sc Speak L P 1")
-        self.pathCmd1 = DrivePathCommand("DriveOut1")
-        self.pathCmd2 = DrivePathCommand("DriveOut1Pt2")
+        self.pathCmd1 = DrivePathCommand("DriveOut1.1")
+        self.pathCmd2 = DrivePathCommand("DriveOut1.2")
         self.shoot = SpeakerShootCommand()
         self.intake = IntakeCommand()
         self.firstCommandList = [self.shoot, self.pathCmd1]
