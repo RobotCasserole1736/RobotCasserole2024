@@ -6,7 +6,6 @@ from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 class ScSpeakL1(Mode):
     def __init__(self):
         Mode.__init__(self, f"Sc Speak L 1")
-        self.SequentialCommandGroup = SequentialCommandGroup()
         self.pathCmd = DrivePathCommand("DriveOut1")
         self.shoot = SpeakerShootCommand()
         self.commandList = [self.shoot, self.pathCmd]
