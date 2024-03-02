@@ -1,4 +1,4 @@
-from math import cos
+from math import sin
 from singerMovement.singerConstants import (MAX_SINGER_ROT_ACCEL_DEGPS2, MAX_SINGER_ROT_VEL_DEG_PER_SEC, 
                                             SINGER_GEARBOX_RATIO, SINGER_ABS_ENC_OFF_DEG)
 from singerMovement.profiledAxis import ProfiledAxis
@@ -133,7 +133,7 @@ class SingerAngleControl():
             self.motorVelCmd = self._angleVelToMotorVel(curState.velocity)
 
             vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) \
-                - self.kG.get() * cos(actualPos)
+                - self.kG.get() * sin(actualPos + deg2Rad(15))
 
             self.motor.setPosCmd(motorPosCmd, vFF)
 
