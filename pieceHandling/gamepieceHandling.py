@@ -51,7 +51,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
-        self.feedBackSlowCal = Calibration("FeedBackSlowVoltage", 0.5, "V")
+        self.feedBackSlowCal = Calibration("FeedBackSlowVoltage", 1.0, "V")
 
         # Time of Flight sensor
         self.tofSensor = TimeOfFlight(constants.GAMEPIECE_HANDLING_TOF_CANID)
@@ -60,9 +60,9 @@ class GamePieceHandling(metaclass=Singleton):
         self.hasGamePiece = False
 
         # Calibrations for Gamepiece being absent and present
-        self.gamePiecePresentCal = Calibration("NotePresentThresh", 6, "in")
+        self.gamePiecePresentCal = Calibration("NotePresentThresh", 4, "in")
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
-        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 7, "in")
+        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 5, "in")
 
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
@@ -81,8 +81,8 @@ class GamePieceHandling(metaclass=Singleton):
 
     def feedBackSlow(self, shouldRun):
         voltage = self.feedBackSlowCal.get() if shouldRun else 0.0
-        self.intakeMotorLower.setVoltage(voltage)
-        self.intakeMotorUpper.setVoltage(voltage)
+        self.intakeMotorLower.setVoltage(-voltage)
+        self.intakeMotorUpper.setVoltage(-voltage)
 
     def updateIntake(self, shouldRun):
         voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
@@ -169,6 +169,7 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateEject(False)
 
         log("Has Game Piece", self.hasGamePiece)
+        log("TOF Distance",gamepieceDistSensorMeas)
 
     # Take in command from the outside world
     def setInput(self, singerShooterBoolean, singerIntakeBoolean, singerEjectBoolean):
