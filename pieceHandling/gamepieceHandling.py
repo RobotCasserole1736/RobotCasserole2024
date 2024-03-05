@@ -31,6 +31,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorRight = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight"
         )
+        self.curShooterVel = 0
 
         # Intake Motors
         self.intakeMotorUpper = WrapperedSparkMax(constants.INTAKE_MOTOR_UPPER_CANID, "IntakeMotorUpper")
@@ -154,9 +155,9 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateShooter(True)
             self.updateFloorRoller(False)
             self.feedBackSlow(False)
-            curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
+            self.curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
                                 abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
-            if abs(RPM2RadPerSec(self.shooterVel.get()) - curShooterVel) < RPM2RadPerSec(100.0):
+            if abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel) < RPM2RadPerSec(100.0):
                 # We're at the right shooter speed, go ahead and inject the gamepiece
                 self.updateIntake(True)
             else:
@@ -175,6 +176,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         log("Has Game Piece", self.hasGamePiece)
         log("TOF Distance",gamepieceDistSensorMeas)
+        log("Cur Shooter Velocity", self.curShooterVel, "RPM")
 
     # Take in command from the outside world
     def setInput(self, singerShooterBoolean, singerIntakeBoolean, singerEjectBoolean):
