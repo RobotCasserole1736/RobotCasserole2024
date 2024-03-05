@@ -23,7 +23,7 @@ class SingerAngleControl():
         self.kV = Calibration(name="Singer kV", default=0.045, units="V/rps")
         self.kS = Calibration(name="Singer kS", default=0.4, units="V")
         self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
-        self.kP = Calibration(name="Singer kP", default=0.1, units="V/RadErr")
+        self.kP = Calibration(name="Singer kP", default=0.15, units="V/RadErr")
 
         self.motorVelCmd = 0
 
