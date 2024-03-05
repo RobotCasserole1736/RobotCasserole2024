@@ -45,8 +45,8 @@ class GamePieceHandling(metaclass=Singleton):
         self.tofFault = faults.Fault("Claw TOF Sensor is Disconnected")
 
         # Shooter Calibrations (PID Controller)
-        self.shooterkFCal = Calibration("ShooterRightkF", 0.002, "V/RPM")
-        self.shooterkPCal = Calibration("ShooterkP", 0.0001)
+        self.shooterkFCal = Calibration("ShooterRightkF", 0.0022, "V/RPM")
+        self.shooterkPCal = Calibration("ShooterkP", 0.0002)
         self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
         self._updateCals()
 
@@ -63,7 +63,7 @@ class GamePieceHandling(metaclass=Singleton):
         # Calibrations for Gamepiece being absent and present
         self.gamePiecePresentCal = Calibration("NotePresentThresh", 4, "in")
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
-        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 5, "in")
+        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 6, "in")
 
         self.noteInPlace = False
 
