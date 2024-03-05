@@ -19,16 +19,17 @@ class SpeakerShootCommand(Command):
         self.startTime = wpilib.Timer.getFPGATimestamp()
 
     def execute(self):
+        self.curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
+
         self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
 
-        if self.curTime > 1 :
+        if self.curTime > 1:
             self.gamePieceHandling.setInput(
                 True,
                 False,
                 False
             )
 
-        self.curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
         self.done = self.curTime >= self.duration
 
         if self.done:
@@ -40,4 +41,3 @@ class SpeakerShootCommand(Command):
 
     def isDone(self):
         return self.done
-        #return if we're done. Which should be never? It should be controlled by other things

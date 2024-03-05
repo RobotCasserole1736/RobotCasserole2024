@@ -7,25 +7,22 @@ class IntakeCommand(Command):
     def __init__(self):
         self.carriageControl = CarriageControl() 
         self.gamePieceHandling = GamePieceHandling()   
-        self.startTime = 0
-        self.curTime = 0
         self.done = False
-
-    def initialize(self):
-        self.startTime = wpilib.Timer.getFPGATimestamp()
-
+        #self.gamePieceHandling.setInput(False, True, False)
+        
     def execute(self):
-        self.curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
-
         self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
 
         self.gamePieceHandling.setInput(
-            False,
-            True,
-            False
-        )
+                False,
+                True,
+                False
+            )
 
-        if GamePieceHandling.getHasGamePiece:
+        if not self.done:
+            self.gamePieceHandling.updateIntake(True)
+
+        if self.gamePieceHandling.getHasGamePiece:
             self.done = True
         
         if self.done:
@@ -34,7 +31,10 @@ class IntakeCommand(Command):
                 False,
                 False
             )
-
+            self.gamePieceHandling.updateIntake(False)
+        
+        self.gamePieceHandling.update()
+    
     def isDone(self):
         return False
         #return if we're done. Which should be never? It should be controlled by other things

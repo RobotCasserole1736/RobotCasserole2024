@@ -107,7 +107,6 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
-        self.noteInPlace = False
 
         # Update PID Gains if needed
         if self.shooterkPCal.isChanged():

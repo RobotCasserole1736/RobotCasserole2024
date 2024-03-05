@@ -44,7 +44,7 @@ class CarriageControl(metaclass=Singleton):
         self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=SINGER_ABS_ENC_OFF_DEG)
         self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-40.0 )
         self.singerRotTrap = Calibration(name="Singer Rot Trap", units="deg", default=-20.0 )
-        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=55.0)
+        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=40.0)
 
         self.elevatorHeightIntake = Calibration(name="Elev Height Intake", units="m", default=0.0 )
         self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.5 )
@@ -297,7 +297,7 @@ class CarriageControl(metaclass=Singleton):
                 self.curSingerRot - self._getUnprofiledSingerRotCmd()
             )
             goingBelowSafe = self._getUnprofiledElevHeightCmd() < self.elevatorMinSafeHeight.get()
-            rotateMoreThanThresh = angleErr > deg2Rad(25.0)
+            rotateMoreThanThresh = angleErr > deg2Rad(35)
 
             if(goingBelowSafe and rotateMoreThanThresh):
                 currentlyBelowSafe = self.elevCtrl.getHeightM() < self.elevatorMinSafeHeight.get()

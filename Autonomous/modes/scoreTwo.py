@@ -14,7 +14,7 @@ class scoreTwo(Mode):
         self.pathCmd = DrivePathCommand("scoreTwo")
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
-        self.wait = WaitCommand(3)
+        self.wait = WaitCommand(10)
         
         self.intakeCommandList = [self.wait, self.pathCmd, self.intake]
         self.intakeCommandGroup = RaceCommandGroup(self.intakeCommandList)
