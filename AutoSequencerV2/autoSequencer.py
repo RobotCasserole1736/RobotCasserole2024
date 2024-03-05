@@ -10,6 +10,7 @@ from Autonomous.modes.scSpeakL1 import ScSpeakL1
 from Autonomous.modes.scSpeakL2 import ScSpeakL2
 from Autonomous.modes.scSpeakL3 import ScSpeakL3
 from Autonomous.modes.scSpeakLP1 import ScSpeakLP1
+from Autonomous.modes.scoreTwo import scoreTwo
 from Autonomous.modes.speakerAltPath import speakerAltPath
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
@@ -37,6 +38,7 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScSpeakL2())
         self.mainModeList.addMode(ScSpeakL3())
         self.mainModeList.addMode(ScSpeakLP1())
+        self.mainModeList.addMode(scoreTwo())
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()

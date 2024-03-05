@@ -64,6 +64,8 @@ class GamePieceHandling(metaclass=Singleton):
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
         self.gamePieceInPlaceCal = Calibration("NoteInPlace", 5, "in")
 
+        self.noteInPlace = False
+
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
@@ -104,6 +106,8 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
+        self.noteInPlace = False
+
         # Update PID Gains if needed
         if self.shooterkPCal.isChanged():
             self._updateCals()
@@ -137,6 +141,7 @@ class GamePieceHandling(metaclass=Singleton):
                     self.feedBackSlow(True)
                 else:
                     self.feedBackSlow(False)
+                    self.noteInPlace = True
             else:
                 self.updateIntake(True)
                 self.updateFloorRoller(True)
@@ -180,3 +185,6 @@ class GamePieceHandling(metaclass=Singleton):
     def getShooterMotorSpeed(self):
         return min(abs(radPerSec2RPM(self.shooterMotorLeft.getMotorVelocityRadPerSec())), \
         abs(radPerSec2RPM(self.shooterMotorRight.getMotorVelocityRadPerSec())))
+    
+    def getHasGamePiece(self):
+        return self.noteInPlace
