@@ -137,11 +137,11 @@ class GamePieceHandling(metaclass=Singleton):
             if self.hasGamePiece:
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
-                if gamepieceDistSensorMeas < self.gamePieceInPlaceCal.get():
+                self.noteInPlace = gamepieceDistSensorMeas >= self.gamePieceInPlaceCal.get()
+                if not self.noteInPlace:
                     self.feedBackSlow(True)
                 else:
                     self.feedBackSlow(False)
-                    self.noteInPlace = True
             else:
                 self.updateIntake(True)
                 self.updateFloorRoller(True)
