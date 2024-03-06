@@ -99,7 +99,7 @@ class CarriageControl(metaclass=Singleton):
     
     def initFromAbsoluteSensors(self):
         self.elevCtrl.initFromAbsoluteSensor()
-        self.singerCtrl.initFromAbsoluteSensor()
+        # self.singerCtrl.initFromAbsoluteSensor()
 
     def _stateMachineInit(self):
         self.curState = _CarriageStates.LATCH_AT_CURRENT
@@ -178,7 +178,7 @@ class CarriageControl(metaclass=Singleton):
         log("Carriage Cmd", self.curPosCmd, "state")
         
         self.telem.set(
-            self.singerCtrl.getProfiledDesPos(),
+            self.singerCtrl.getDesPos(),
             self.curSingerRot,
             self.elevCtrl.getProfiledDesPos(),
             self.curElevHeight
