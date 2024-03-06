@@ -8,22 +8,14 @@ class IntakeCommand(Command):
         self.carriageControl = CarriageControl() 
         self.gamePieceHandling = GamePieceHandling()   
         self.done = False
+        self.hasRan = False
         #self.gamePieceHandling.setInput(False, True, False)
-        
+
     def execute(self):
         self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
 
-        self.gamePieceHandling.setInput(
-                False,
-                True,
-                False
-            )
-
-        if not self.done:
-            self.gamePieceHandling.updateIntake(True)
-
-        if self.gamePieceHandling.getHasGamePiece:
-            self.done = True
+        """if self.gamePieceHandling.getHasGamePiece:
+            self.done = True"""
         
         if self.done:
             self.gamePieceHandling.setInput(
@@ -31,10 +23,18 @@ class IntakeCommand(Command):
                 False,
                 False
             )
-            self.gamePieceHandling.updateIntake(False)
-        
+            #self.gamePieceHandling.updateIntake(False)
+            #self.gamePieceHandling.updateFloorRoller(False)
+        else:
+            self.gamePieceHandling.setInput(
+                False,
+                True,
+                False
+            )
+            self.hasRan = True
+
         self.gamePieceHandling.update()
     
     def isDone(self):
-        return False
+        return (self.done and self.hasRan)
         #return if we're done. Which should be never? It should be controlled by other things

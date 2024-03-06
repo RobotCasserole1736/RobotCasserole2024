@@ -44,7 +44,7 @@ class CarriageControl(metaclass=Singleton):
         self.singerRotIntake = Calibration(name="Singer Rot Intake", units="deg", default=SINGER_ABS_ENC_OFF_DEG)
         self.singerRotAmp= Calibration(name="Singer Rot Amp", units="deg", default=-40.0 )
         self.singerRotTrap = Calibration(name="Singer Rot Trap", units="deg", default=-20.0 )
-        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=40.0)
+        self.singerRotSub = Calibration(name="Singer Sub Shot", units="deg", default=57.0)
 
         self.elevatorHeightIntake = Calibration(name="Elev Height Intake", units="m", default=0.0 )
         self.elevatorHeightAmp= Calibration(name="Elev Height Amp", units="m", default=0.5 )

@@ -1,3 +1,4 @@
+from AutoSequencerV2.parallelCommandGroup import ParallelCommandGroup
 from AutoSequencerV2.raceCommandGroup import RaceCommandGroup
 from AutoSequencerV2.builtInCommands.waitCommand import WaitCommand
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
@@ -16,7 +17,7 @@ class scoreTwo(Mode):
         self.shoot = SpeakerShootCommand()
         self.wait = WaitCommand(10)
         
-        self.intakeCommandList = [self.wait, self.pathCmd, self.intake]
+        self.intakeCommandList = [self.pathCmd, self.intake]
         self.intakeCommandGroup = RaceCommandGroup(self.intakeCommandList)
         
     def getCmdGroup(self):
