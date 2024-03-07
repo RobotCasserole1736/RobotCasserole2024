@@ -59,6 +59,7 @@ class WrapperedSparkMax:
                 print(
                     f"Failure configuring Spark Max {name} CAN ID {canID}, retrying..."
                 )
+                self.configSuccess = True
             else:
                 # Only attempt other communication if we're able to successfully configure
                 self.configSuccess = True
