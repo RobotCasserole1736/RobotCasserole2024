@@ -7,6 +7,7 @@ from utils.constants import SINGER_ANGLE_MOTOR_CANID, SINGER_ANGLE_ABS_POS_ENC
 from utils.units import deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
 from rev import CANSparkMax
+from rev import SparkAbsoluteEncoder
 
 # Controls the singer angle motor, including rezeroing from absolute sensors
 # and motion profiling
@@ -16,7 +17,7 @@ class SingerAngleControl():
         self.motor = CANSparkMax(SINGER_ANGLE_MOTOR_CANID, CANSparkMax.MotorType.kBrushless)
         self.motor.setInverted(True)
 
-        self.singerRotAbsSen = self.motor.getAbsoluteEncoder()
+        self.singerRotAbsSen = self.motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle)
         self.singerRotAbsSen.setPositionConversionFactor(6.283185)
 
         self.pidController = self.motor.getPIDController()
@@ -27,10 +28,13 @@ class SingerAngleControl():
         # self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_SINGER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         # self.profiler = ProfiledAxis()
 
-        self.kV = Calibration(name="Singer kV", default=0.045, units="V/rps")
-        self.kS = Calibration(name="Singer kS", default=0.4, units="V")
-        self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
+        # self.kV = Calibration(name="Singer kV", default=0.045, units="V/rps")
+        # self.kS = Calibration(name="Singer kS", default=0.4, units="V")
+        # self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
         self.kP = Calibration(name="Singer kP", default=0.15, units="V/RadErr")
+        # self.kI = Calibration(name="Singer kI", default=0.0)
+        # self.kD = Calibration(name="Singer kD", default=0.0)
+        # self.kIz = Calibration(name="Singer kI zone", default=0.0)
 
         self.pidController.setFeedbackDevice(self.singerRotAbsSen)
         self.pidController.setP(self.kP.get())
@@ -69,7 +73,7 @@ class SingerAngleControl():
     def getAngleRad(self):
         return self._getAbsRot
 
-    def atTarget(self):
+    def atTarget(self) -> float:
         #return self.profiler.isFinished()
         return abs(rad2Deg(self.desPos - self.getAngleRad())) <= 6
 
