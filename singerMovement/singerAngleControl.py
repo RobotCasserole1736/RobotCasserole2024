@@ -101,7 +101,7 @@ class SingerAngleControl():
 
         if(self.stopped):
             self.motor.stopMotor()
-            self.profiledPos = actualPos
+            self.desPos = actualPos
         else:
             self.pidController.setReference(self.desPos, CANSparkMax.ControlType.kPosition)
 
