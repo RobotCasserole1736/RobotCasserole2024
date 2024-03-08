@@ -75,7 +75,7 @@ class SingerAngleControl():
 
     def atTarget(self) -> float:
         #return self.profiler.isFinished()
-        return abs(rad2Deg(self.desPos - self.getAngleRad())) <= 6
+        return abs(self.desPos - rad2Deg(self.getAngleRad())) <= 6
 
     def setDesPos(self, desPos):
         self.stopped = False
