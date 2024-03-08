@@ -61,9 +61,9 @@ class GamePieceHandling(metaclass=Singleton):
         self.hasGamePiece = False
 
         # Calibrations for Gamepiece being absent and present
-        self.gamePiecePresentCal = Calibration("NotePresentThresh", 4, "in")
-        self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 8, "in")
-        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 6, "in")
+        self.gamePiecePresentCal = Calibration("NotePresentThresh", 10, "in")
+        self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 12, "in")
+        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 4, "in")
 
         self.noteInPlace = False
 

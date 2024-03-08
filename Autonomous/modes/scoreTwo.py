@@ -15,14 +15,13 @@ class scoreTwo(Mode):
         self.pathCmd = DrivePathCommand("scoreTwo")
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
-        self.wait = WaitCommand(10)
+        self.wait = WaitCommand(0)
         
         self.intakeCommandList = [self.pathCmd, self.intake]
         self.intakeCommandGroup = RaceCommandGroup(self.intakeCommandList)
         
     def getCmdGroup(self):
-        # Just return the path command
-        return self.shoot.andThen(self.intakeCommandGroup).andThen(self.shoot)
+        return self.wait.andThen(self.shoot).andThen(self.intakeCommandGroup).andThen(self.shoot)
 
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose
