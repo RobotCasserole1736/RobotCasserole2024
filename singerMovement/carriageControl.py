@@ -229,7 +229,7 @@ class CarriageControl(metaclass=Singleton):
 
         if(self.curState == _CarriageStates.LATCH_AT_CURRENT):
             self.elevFinalHeight  = self.curElevHeight + self.elevCtrl.getStoppingDistanceM()
-            self.singerFinalAngle = self.curSingerRot + self.singerCtrl.getStoppingDistanceRad()
+            self.singerFinalAngle = self.singerCtrl.getDesPos()
             self.desSingerAngle = self.singerFinalAngle
             self.desElevHeight = self.elevFinalHeight
 

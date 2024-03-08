@@ -61,17 +61,17 @@ class SingerAngleControl():
         self.stopped = True
         # self.profiledPos = self.absEncOffsetDeg
         # self.curUnprofiledPosCmd = self.absEncOffsetDeg
-        self.desPos = self.absEncOffsetDeg
-        self.actPos = self.absEncOffsetDeg
+        self.desPos = deg2Rad(self.absEncOffsetDeg)
+        self.actPos = deg2Rad(self.absEncOffsetDeg)
 
         # self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
     # Return the rotation of the signer as measured by the absolute sensor in radians
-    def _getAbsRot(self):
+    def _getAbsRot(self) -> float:
         return self.singerRotAbsSen.getPosition() - deg2Rad(self.absEncOffsetDeg)
 
-    def getAngleRad(self):
-        return self._getAbsRot
+    def getAngleRad(self) -> float:
+        return self._getAbsRot()
 
     def atTarget(self) -> float:
         #return self.profiler.isFinished()
