@@ -1,44 +1,30 @@
-import wpilib
+from wpilib import Timer
 from AutoSequencerV2.command import Command
-from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
-from pieceHandling.gamepieceHandling import GamePieceHandling
+from singerMovement.carriageControl import CarriageControl as cc
+from singerMovement.carriageControl import CarriageControlCmd
+from pieceHandling.gamepieceHandling import GamePieceHandling as gph
 
 #This is from anywhere? Just shooting into the speaker. It should auto align
 
 class SpeakerShootCommand(Command):
     def __init__(self):
-        self.carriageControl = CarriageControl() 
-        self.gamePieceHandling = GamePieceHandling()   
-
-        self.startTime = 0
         self.curTime = 0
         self.done = False
-        self.duration = 3
 
     def initialize(self):
-        self.startTime = wpilib.Timer.getFPGATimestamp()
+        self.startTime = Timer.getFPGATimestamp()
 
     def execute(self):
-        self.curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
+        self.curTime = Timer.getFPGATimestamp() - self.startTime
 
-        self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
+        cc().setPositionCmd(CarriageControlCmd.SUB_SHOT)
 
         if self.curTime > 1:
-            self.gamePieceHandling.setInput(
-                True,
-                False,
-                False
-            )
-
-        self.done = self.curTime >= self.duration
-
-        if self.done:
-            self.gamePieceHandling.setInput(
-                False,
-                False,
-                False
-            )
-            self.gamePieceHandling.update()
+            # Intake
+            gph().setInput(True, False, False)
+        else:
+            # Stop intake
+            gph().setInput(False, False, False)
 
     def isDone(self):
-        return self.done
+        return not gph().getHasGamePiece()
