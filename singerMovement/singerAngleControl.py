@@ -143,3 +143,4 @@ class SingerAngleControl():
         log("Singer Motor Vel Cmd", self.motorVelCmd)
         log("Singer at Target?", self.atTarget(), "bool")
         log("Singer Abs Sensor",rad2Deg(self.singerRotAbsSen.getAngleRad()))
+        log("Singer Inverted", self.motor.ctrl.getInverted())

@@ -144,3 +144,4 @@ class ElevatorHeightControl(metaclass=Singleton):
         log("Elevator Pos Profiled", self.profiledPos ,"m")
         log("Elevator Pos Act", actualPos ,"m")
         log("Elevator at Target?", self.atTarget(), "bool")
+        log("Elevator Inverted", self.motor.ctrl.getInverted())
