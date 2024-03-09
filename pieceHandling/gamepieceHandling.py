@@ -188,4 +188,7 @@ class GamePieceHandling(metaclass=Singleton):
         abs(radPerSec2RPM(self.shooterMotorRight.getMotorVelocityRadPerSec())))
     
     def getHasGamePiece(self):
+        return self.hasGamePiece
+
+    def getNoteInPlace(self):
         return self.noteInPlace
