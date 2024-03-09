@@ -6,13 +6,13 @@ from singerMovement.carriageControl import CarriageControlCmd
 
 class IntakeCommand(Command):
     def __init__(self):
-        pass
+        self.posCommanded = False
 
     def execute(self):
-        cc().setPositionCmd(CarriageControlCmd.INTAKE)
+        if not self.posCommanded:
+            cc().setPositionCmd(CarriageControlCmd.INTAKE)
+            self.posCommanded = True
 
-        """if self.gamePieceHandling.getHasGamePiece:
-            self.done = True"""
         gph().setInput(False, True, False)
 
     def isDone(self):
