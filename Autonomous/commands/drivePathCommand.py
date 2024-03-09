@@ -46,11 +46,10 @@ class DrivePathCommand(Command):
 
         self.trajCtrl.setCmd(curState)
 
-        self.done = curTime >= (self.duration)
-
-        if self.done:
+        if curTime >= self.duration:
             self.trajCtrl.setCmd(None)
             self.poseTelem.setTrajectory(None)
+            self.done = True
 
     def isDone(self):
         return self.done

@@ -11,7 +11,7 @@ class SpeakerShootCommand(Command):
         self.startTime = 0
         self.curTime = 0
         self.done = False
-        self.duration = 2
+        self.duration = 2.5
         self.posCommanded = False
 
     def initialize(self):
