@@ -6,6 +6,7 @@ from Autonomous.commands.drivePathCommand import DrivePathCommand
 from AutoSequencerV2.mode import Mode
 from Autonomous.commands.intakeCommand import IntakeCommand
 from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
+from Autonomous.commands.retractCommand import RetractCommand
 
 
 # Just drives out of the starting zone. That's all.
@@ -15,14 +16,17 @@ class scoreTwo(Mode):
         self.pathCmd = DrivePathCommand("scoreTwo")
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
-        self.wait = WaitCommand(0)
+        self.shoot2 = SpeakerShootCommand()
+        self.wait = WaitCommand(1)
+        self.retract = RetractCommand()
 
         self.intakeCommandGroup = ParallelCommandGroup([self.pathCmd, self.intake])
-        self.shootCommandGroup = SequentialCommandGroup([self.wait, self.shoot])
-        self.shootCommandGroup2 = SequentialCommandGroup([self.wait, self.shoot])
+        self.shootCommandGroup = SequentialCommandGroup([self.shoot, self.wait])
+        self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait])
 
     def getCmdGroup(self):
-        return self.shootCommandGroup.andThen(self.intakeCommandGroup).andThen(self.shootCommandGroup2)
+        return self.shootCommandGroup.andThen(self.intakeCommandGroup). \
+            andThen(self.retract).andThen(self.shootCommandGroup2)
 
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose
