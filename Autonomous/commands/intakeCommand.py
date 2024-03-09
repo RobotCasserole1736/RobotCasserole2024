@@ -18,4 +18,4 @@ class IntakeCommand(Command):
         )
 
     def isDone(self):
-        return self.gamePieceHandling.getHasGamePiece()
+        return self.gamePieceHandling.getNoteInPlace()

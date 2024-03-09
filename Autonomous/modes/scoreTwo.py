@@ -16,10 +16,10 @@ class scoreTwo(Mode):
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
         self.wait = WaitCommand(0)
-    
+
         self.intakeCommandGroup = RaceCommandGroup([self.pathCmd, self.intake])
         self.shootCommandGroup = SequentialCommandGroup([self.wait, self.shoot])
-        
+
     def getCmdGroup(self):
         return self.shootCommandGroup.andThen(self.intakeCommandGroup).andThen(self.shootCommandGroup)
 
