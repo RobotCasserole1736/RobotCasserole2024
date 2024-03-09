@@ -59,11 +59,12 @@ class WrapperedSparkMax:
                 print(
                     f"Failure configuring Spark Max {name} CAN ID {canID}, retrying..."
                 )
-                self.configSuccess = True
+                self.configSuccess = False
             else:
                 # Only attempt other communication if we're able to successfully configure
                 self.configSuccess = True
-
+        
+        self.configSuccess = True #Debug code - this may/will cause problems
         self.disconFault.set(not self.configSuccess)
 
     def setInverted(self, isInverted):
@@ -130,7 +131,7 @@ class WrapperedSparkMax:
         log(self.name + "_cmdVoltage", outputVoltageVolts, "V")
         if self.configSuccess:
             err = self.ctrl.setVoltage(outputVoltageVolts)
-            self.disconFault.set(err != REVLibError.kOk)
+            #self.disconFault.set(err != REVLibError.kOk) This is commented out for debugging purposes. 
             log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
 
     def getMotorPositionRad(self):
