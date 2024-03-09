@@ -11,7 +11,7 @@ class SpeakerShootCommand(Command):
         self.startTime = 0
         self.curTime = 0
         self.done = False
-        self.duration = 2.5
+        self.duration = 2.2
         self.posCommanded = False
 
     def initialize(self):
@@ -38,5 +38,5 @@ class SpeakerShootCommand(Command):
     def isDone(self):
         return self.done
     
-    def end(self):
+    def end(self,interrupt):
         self.gamePieceHandling.setInput(False,False,False)

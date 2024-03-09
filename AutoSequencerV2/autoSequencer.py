@@ -17,7 +17,6 @@ from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
 from utils.allianceTransformUtils import transform
 
-
 class AutoSequencer(metaclass=Singleton):
     """Top-level implementation of the AutoSequencer"""
 
@@ -79,7 +78,7 @@ class AutoSequencer(metaclass=Singleton):
             )
 
     # Call this once during autonmous init to init the current command sequence
-    def initiaize(self):
+    def initialize(self):
         print("[Auto] Starting Sequencer")
         self.topLevelCmdGroup.initialize()
 

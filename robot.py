@@ -90,7 +90,7 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
 
         # Start up the autonomous sequencer
-        self.autoSequencer.initiaize()
+        self.autoSequencer.initialize()
 
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())

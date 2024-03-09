@@ -19,3 +19,6 @@ class IntakeCommand(Command):
 
     def isDone(self):
         return self.gamePieceHandling.getNoteInPlace()
+
+    def end(self,interrupt):
+        self.gamePieceHandling.setInput(False,False,False)

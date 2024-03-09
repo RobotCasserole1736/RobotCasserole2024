@@ -32,7 +32,7 @@ class DrivePathCommand(Command):
         )
         
         # we'll populate these for real later, just declare they'll exist
-        self.duration = self.path.getTotalTime()
+        self.duration = 3 #self.path.getTotalTime()
         self.drivetrain = DrivetrainControl()
         self.poseTelem = self.drivetrain.poseEst.telemetry
 
@@ -55,8 +55,8 @@ class DrivePathCommand(Command):
 
     def isDone(self):
         return self.done
-    
-    def end(self):
+
+    def end(self,interrupt):
         self.trajCtrl.setCmd(None)
         self.poseTelem.setTrajectory(None)
 
