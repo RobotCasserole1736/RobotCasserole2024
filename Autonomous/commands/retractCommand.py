@@ -5,7 +5,7 @@ from wpilib import Timer
 class RetractCommand(Command):
     def __init__(self):
         self.gamePieceHandling = GamePieceHandling()
-        self.duration = 0.1
+        self.duration = 0.4
 
     def initialize(self):
         self.startTime = Timer.getFPGATimestamp()
