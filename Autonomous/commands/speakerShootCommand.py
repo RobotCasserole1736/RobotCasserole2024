@@ -37,3 +37,6 @@ class SpeakerShootCommand(Command):
 
     def isDone(self):
         return self.done
+    
+    def end(self):
+        self.gamePieceHandling.setInput(False,False,False)

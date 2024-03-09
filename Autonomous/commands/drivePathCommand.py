@@ -1,5 +1,5 @@
 import os
-import wpilib
+from wpilib import Timer
 from drivetrain.controlStrategies.trajectory import Trajectory
 from drivetrain.drivetrainControl import DrivetrainControl
 from jormungandr import choreo
@@ -29,17 +29,19 @@ class DrivePathCommand(Command):
         self.done = False
         self.startTime = (
             -1
-        )  # we'll populate these for real later, just declare they'll exist
+        )
+        
+        # we'll populate these for real later, just declare they'll exist
         self.duration = self.path.getTotalTime()
         self.drivetrain = DrivetrainControl()
         self.poseTelem = self.drivetrain.poseEst.telemetry
 
     def initialize(self):
-        self.startTime = wpilib.Timer.getFPGATimestamp()
+        self.startTime = Timer.getFPGATimestamp()
         self.poseTelem.setTrajectory(self.path)
 
     def execute(self):
-        curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
+        curTime = Timer.getFPGATimestamp() - self.startTime
         curState = self.path.sample(curTime)
 
         curState = transform(curState)
@@ -53,6 +55,10 @@ class DrivePathCommand(Command):
 
     def isDone(self):
         return self.done
+    
+    def end(self):
+        self.trajCtrl.setCmd(None)
+        self.poseTelem.setTrajectory(None)
 
     def getName(self):
         return f"Drive Trajectory {self.name}"
