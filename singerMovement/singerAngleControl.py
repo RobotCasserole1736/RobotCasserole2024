@@ -30,9 +30,9 @@ class SingerAngleControl():
 
         # self.kV = Calibration(name="Singer kV", default=0.045, units="V/rps")
         # self.kS = Calibration(name="Singer kS", default=0.4, units="V")
-        # self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
-        self.kP = Calibration(name="Singer kP", default=0.05, units="V/RadErr")
-        # self.kI = Calibration(name="Singer kI", default=0.0)
+        # self.kG = Calibration(name="Singer kG", default=0.0, units="V/cos(deg)")
+        self.kP = Calibration(name="Singer kP", default=1.0, units="V/RadErr")
+        self.kI = Calibration(name="Singer kI", default=0.0)
         # self.kD = Calibration(name="Singer kD", default=0.0)
         # self.kIz = Calibration(name="Singer kI zone", default=0.0)
 
@@ -61,14 +61,14 @@ class SingerAngleControl():
         self.stopped = True
         # self.profiledPos = self.absEncOffsetDeg
         # self.curUnprofiledPosCmd = self.absEncOffsetDeg
-        self.desPos = self.getAngleRad()
+        self.desPos = self.singerRotAbsSen.getPosition()# self.getAngleRad()
         self.actPos = self.getAngleRad()
 
         # self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
     # Return the rotation of the singer as measured by the absolute sensor in radians
     def getAngleRad(self) -> float:
-        return self.singerRotAbsSen.getPosition() - deg2Rad(self.absEncOffsetDeg)
+        return self.singerRotAbsSen.getPosition() # - deg2Rad(self.absEncOffsetDeg)
 
     def atTarget(self) -> float:
         #return self.profiler.isFinished()
@@ -91,6 +91,8 @@ class SingerAngleControl():
 
     def update(self):
         self.actPos = self.getAngleRad()
+
+        # self.pidController.setFF(self.kG.get() * sin(self.actPos - deg2Rad(203)))
         
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
@@ -98,10 +100,11 @@ class SingerAngleControl():
 
         if(self.stopped):
             self.motor.stopMotor()
-            self.desPos = self.actPos
+            self.desPos = self.singerRotAbsSen.getPosition() # self.actPos
         else:
             self.pidController.setReference(self.desPos, CANSparkMax.ControlType.kPosition)
 
         log("Singer Pos Des", rad2Deg(self.desPos),"deg")
         log("Singer Pos Act", rad2Deg(self.actPos) ,"deg")
+        log("Raw Sensor Reading",rad2Deg(self.singerRotAbsSen.getPosition()))
         log("Singer at Target?", self.atTarget(), "bool")

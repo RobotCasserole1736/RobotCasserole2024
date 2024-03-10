@@ -58,7 +58,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= 0.0)
 
         # Calibration Function Generator
-        self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=-1.0)
+        self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=-10.0)
         self.elevatorFuncGenAmp = Calibration("Elevator Test Function Generator Amp", units="m", default=0.0)
         self.singerFuncGenStart = 0.0
         self.elevFuncGenStart = 0.0
