@@ -17,7 +17,7 @@ class RobotIdentification(metaclass=Singleton):
 
         self.serialFault = False
 
-        if self.roboControl.getSerialNumber() == "03134d41": #the L3
+        if self.roboControl.getSerialNumber() == "030e2cb0": #the L3
             self.robotType = RobotTypes.Main 
         elif self.roboControl.getSerialNumber() == "03064e3f":  #the L2
             self.robotType = RobotTypes.Practice
