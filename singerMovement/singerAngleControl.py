@@ -31,7 +31,7 @@ class SingerAngleControl():
         # self.kV = Calibration(name="Singer kV", default=0.045, units="V/rps")
         # self.kS = Calibration(name="Singer kS", default=0.4, units="V")
         # self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
-        self.kP = Calibration(name="Singer kP", default=0.15, units="V/RadErr")
+        self.kP = Calibration(name="Singer kP", default=0.05, units="V/RadErr")
         # self.kI = Calibration(name="Singer kI", default=0.0)
         # self.kD = Calibration(name="Singer kD", default=0.0)
         # self.kIz = Calibration(name="Singer kI zone", default=0.0)
@@ -61,17 +61,14 @@ class SingerAngleControl():
         self.stopped = True
         # self.profiledPos = self.absEncOffsetDeg
         # self.curUnprofiledPosCmd = self.absEncOffsetDeg
-        self.desPos = deg2Rad(self.absEncOffsetDeg)
-        self.actPos = deg2Rad(self.absEncOffsetDeg)
+        self.desPos = self.getAngleRad()
+        self.actPos = self.getAngleRad()
 
         # self.motor.setPID(self.kP.get(), 0.0, 0.0)
 
-    # Return the rotation of the signer as measured by the absolute sensor in radians
-    def _getAbsRot(self) -> float:
-        return self.singerRotAbsSen.getPosition() - deg2Rad(self.absEncOffsetDeg)
-
+    # Return the rotation of the singer as measured by the absolute sensor in radians
     def getAngleRad(self) -> float:
-        return self._getAbsRot()
+        return self.singerRotAbsSen.getPosition() - deg2Rad(self.absEncOffsetDeg)
 
     def atTarget(self) -> float:
         #return self.profiler.isFinished()
@@ -93,7 +90,7 @@ class SingerAngleControl():
         self.motor.setVoltage(cmdIn)
 
     def update(self):
-        actualPos = self.getAngleRad()
+        self.actPos = self.getAngleRad()
         
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
@@ -101,7 +98,7 @@ class SingerAngleControl():
 
         if(self.stopped):
             self.motor.stopMotor()
-            self.desPos = actualPos
+            self.desPos = self.actPos
         else:
             self.pidController.setReference(self.desPos, CANSparkMax.ControlType.kPosition)
 

@@ -58,7 +58,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= 0.0)
 
         # Calibration Function Generator
-        self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=0.0)
+        self.singerFuncGenAmp = Calibration("Singer Test Function Generator Amp", units="deg", default=-1.0)
         self.elevatorFuncGenAmp = Calibration("Elevator Test Function Generator Amp", units="m", default=0.0)
         self.singerFuncGenStart = 0.0
         self.elevFuncGenStart = 0.0
@@ -217,7 +217,7 @@ class CarriageControl(metaclass=Singleton):
         desPosSinger = max(desPosSinger, self.singerRotSoftLimitMin.get())
         desPosSinger = min(desPosSinger, self.singerRotSoftLimitMax.get())
 
-        self.elevCtrl.setDesPos(desPosElevator)
+        # self.elevCtrl.setDesPos(desPosElevator)
         self.singerCtrl.setDesPos(desPosSinger)
 
     # Update logic for the main state machine that makes sure we don't crash into ourselves
@@ -275,7 +275,7 @@ class CarriageControl(metaclass=Singleton):
             self.desElevHeight = self.elevFinalHeight
             self.desSingerAngle = self.singerFinalAngle
 
-        self.elevCtrl.setDesPos(self.desElevHeight)
+        # self.elevCtrl.setDesPos(self.desElevHeight)
         self.singerCtrl.setDesPos(self.desSingerAngle)
 
         ################################################################
