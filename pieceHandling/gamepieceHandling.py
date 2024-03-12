@@ -59,13 +59,14 @@ class GamePieceHandling(metaclass=Singleton):
         self.tofSensor = TimeOfFlight(constants.GAMEPIECE_HANDLING_TOF_CANID)
         self.tofSensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.tofSensor.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
-        self.hasGamePiece = False
 
         # Calibrations for Gamepiece being absent and present
         self.gamePiecePresentCal = Calibration("NotePresentThresh", 10, "in")
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 12, "in")
-        self.gamePieceInPlaceCal = Calibration("NoteInPlace", 4, "in")
+        self.gamePieceInPlaceLowCal = Calibration("NoteInPlaceLow", 4, "in")
+        self.gamePieceInPlaceHighCal = Calibration("NoteInPlaceHigh", 6, "in")
 
+        self.hasGamePiece = False
         self.noteInPlace = False
 
         # TOF Disconnected Fault
@@ -138,7 +139,10 @@ class GamePieceHandling(metaclass=Singleton):
             if self.hasGamePiece:
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
-                self.noteInPlace = gamepieceDistSensorMeas >= self.gamePieceInPlaceCal.get()
+                if gamepieceDistSensorMeas < self.gamePieceInPlaceLowCal.get():
+                    self.noteInPlace = True
+                elif gamepieceDistSensorMeas >= self.gamePieceInPlaceHighCal.get():
+                    self.noteInPlace = False
                 if not self.noteInPlace:
                     self.feedBackSlow(True)
                 else:
