@@ -28,6 +28,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorLeft = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
         )
+        self.shooterMotorLeft.setInverted(True)
         self.shooterMotorRight = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight"
         )
@@ -45,7 +46,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.tofFault = faults.Fault("Claw TOF Sensor is Disconnected")
 
         # Shooter Calibrations (PID Controller)
-        self.shooterkFCal = Calibration("ShooterRightkF", 0.0022, "V/RPM")
+        self.shooterkFCal = Calibration("ShooterRightkF", 0.0024, "V/RPM")
         self.shooterkPCal = Calibration("ShooterkP", 0.0002)
         self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
         self._updateCals()
