@@ -9,10 +9,9 @@ from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 from Autonomous.commands.retractCommand import RetractCommand
 
 
-# Just drives out of the starting zone. That's all.
-class scoreTwo(Mode):
+class ScLBP2Sc(Mode):
     def __init__(self):
-        Mode.__init__(self, f"Score Two")
+        Mode.__init__(self, f"Score 2 - Zone 2")
         self.pathCmd = DrivePathCommand("scoreTwo")
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
