@@ -54,11 +54,11 @@ class DriverInterface:
             vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
             vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.2)
 
-            boostMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
+            slowMult = .75 if (self.ctrl.getRightBumper()) else 1.0
 
             # velocity cmd
-            velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * boostMult
-            velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * boostMult
+            velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * slowMult
+            velCmdYRaw = vYJoyWithDeadband * MAX_FWD_REV_SPEED_MPS * slowMult
             velCmdRotRaw = vRotJoyWithDeadband * MAX_ROTATE_SPEED_RAD_PER_SEC
 
             # Slew rate limiter
