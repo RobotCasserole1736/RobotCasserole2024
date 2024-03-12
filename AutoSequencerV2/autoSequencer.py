@@ -11,6 +11,7 @@ from Autonomous.modes.scSpeakL2 import ScSpeakL2
 from Autonomous.modes.scSpeakL3 import ScSpeakL3
 from Autonomous.modes.scSpeakLP1 import ScSpeakLP1
 from Autonomous.modes.scoreTwo import scoreTwo
+from Autonomous.modes.scoreThree import scoreThree
 from Autonomous.modes.speakerAltPath import speakerAltPath
 from Autonomous.modes.intakeTest import IntakeTest
 from utils.singleton import Singleton
@@ -32,14 +33,15 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList = ModeList("Main")
         self.mainModeList.addMode(DoNothingMode())
         self.mainModeList.addMode(DriveOut())
-        self.mainModeList.addMode(NoteThief())
-        self.mainModeList.addMode(speakerAltPath())
+        #self.mainModeList.addMode(NoteThief())
+        #self.mainModeList.addMode(speakerAltPath())
         self.mainModeList.addMode(ScSpeakL1())
         self.mainModeList.addMode(ScSpeakL2())
         self.mainModeList.addMode(ScSpeakL3())
-        self.mainModeList.addMode(ScSpeakLP1())
+        #self.mainModeList.addMode(ScSpeakLP1())
         self.mainModeList.addMode(scoreTwo())
-        self.mainModeList.addMode(IntakeTest())
+        #self.mainModeList.addMode(IntakeTest())
+        self.mainModeList.addMode(scoreThree())
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()
