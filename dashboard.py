@@ -4,14 +4,12 @@ from dashboardWidgets.autoChooser import AutoChooser
 from dashboardWidgets.swerveState import SwerveState
 from dashboardWidgets.icon import Icon
 from dashboardWidgets.text import Text
-from dashboardWidgets.camera import Camera
-from utils.faults import FaultWrangler
-from humanInterface.operatorInterface import OperatorInterface
-from utils.signalLogging import log
-from webserver.webserver import Webserver
 from dashboardWidgets.circularGauge import CircularGauge
+from utils.faults import FaultWrangler
+from utils.signalLogging import log
+from humanInterface.operatorInterface import OperatorInterface
+from webserver.webserver import Webserver
 from pieceHandling.gamepieceHandling import GamePieceHandling
-import cscore as cs
 
 class Dashboard:
     def __init__(self):
@@ -25,11 +23,6 @@ class Dashboard:
         webServer.addDashboardWidget(Icon(45, 65, "/SmartDashboard/GamepieceIconState", "#00FF00", "newIntakeimg"))
         webServer.addDashboardWidget(Icon(55, 65, "/SmartDashboard/AutoAlignIconState", "#0000FF", "autoAlign"))
 
-        driverCam = cs.UsbCamera("driverCam", 0) 
-        cs.CameraServer.startAutomaticCapture(0)
-        cs.CameraServer.getVideo(driverCam)
-        driverCam.setPath("http://roborio-1736-frc.local:1181")
-        webServer.addDashboardWidget(Camera(75, 60, "http://roborio-1736-frc.local:1181/stream.mjpg"))
 
         webServer.addDashboardWidget(
             CircularGauge(10, 55, "/SmartDashboard/ShooterGaugeSpeed", 0, 4700, 0, 4700))
@@ -67,4 +60,3 @@ class Dashboard:
         log("AutoAlignIconState", Icon.kON if OperatorInterface().getSpeakerAutoAlignCmd() else Icon.kOFF)
 
         log("ShooterGaugeSpeed", GamePieceHandling().getShooterMotorSpeed())
-
