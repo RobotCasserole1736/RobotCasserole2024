@@ -8,7 +8,7 @@ class IntakeCommand(Command):
         self.gamePieceHandling = GamePieceHandling()
 
     def execute(self):
-        self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
+        #self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
 
         # Intake
         self.gamePieceHandling.setInput(

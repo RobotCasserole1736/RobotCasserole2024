@@ -8,7 +8,7 @@ class EjectCommand(Command):
         self.gamePieceHandling = GamePieceHandling()   
 
     def execute(self):
-        self.carriageControl.setPositionCmd(CarriageControlCmd.AMP)
+        #self.carriageControl.setPositionCmd(CarriageControlCmd.AMP)
 
         self.gamePieceHandling.setInput(
             True,

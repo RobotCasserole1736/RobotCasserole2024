@@ -11,7 +11,7 @@ class SpeakerShootCommand(Command):
         self.startTime = 0
         self.curTime = 0
         self.done = False
-        self.duration = 2.2
+        self.duration = 3
         self.posCommanded = False
 
     def initialize(self):
@@ -19,15 +19,18 @@ class SpeakerShootCommand(Command):
 
     def execute(self):
         if not self.posCommanded:
-            self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
+            #self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
             self.posCommanded = True
 
         self.curTime = wpilib.Timer.getFPGATimestamp() - self.startTime
         self.gamePieceHandling.update()
 
+        """
         # Start Shooting
         if self.curTime > 1:
             self.gamePieceHandling.setInput(True,False,False)
+        """
+        self.gamePieceHandling.setInput(True,False,False)
 
         # Stop Shooting
         if self.curTime > self.duration:

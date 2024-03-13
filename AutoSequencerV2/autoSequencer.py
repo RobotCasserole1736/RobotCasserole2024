@@ -40,7 +40,7 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScSpeakLC())
         self.mainModeList.addMode(ScSpeakLAP1())
         self.mainModeList.addMode(ScLBP2Sc())
-        #self.mainModeList.addMode(IntakeTest())
+        self.mainModeList.addMode(IntakeTest())
         #self.mainModeList.addMode(scoreThree())
 
 

@@ -105,8 +105,10 @@ class ElevatorHeightControl(metaclass=Singleton):
         return abs(self.curUnprofiledPosCmd - self.getHeightM()) <= .04
 
     def setDesPos(self, desPos):
-        self.stopped = False
-        self.curUnprofiledPosCmd = desPos
+        #self.stopped = False
+        self.stopped = True
+        #self.curUnprofiledPosCmd = desPos
+        self.curUnprofiledPosCmd = self.getHeightM()
         self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getHeightM())
 
     def setStopped(self):

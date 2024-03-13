@@ -129,6 +129,7 @@ class MyRobot(wpilib.TimedRobot):
             self.driveTrain.resetGyro()
 
         # Map operator command to carriage control command
+        """
         if(self.oInt.getCarriageAmpPosCmd()):
             self.carriageControl.setPositionCmd(CarriageControlCmd.AMP)
         elif(self.oInt.getCarriageIntakePosCmd()):
@@ -141,6 +142,7 @@ class MyRobot(wpilib.TimedRobot):
             self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
         else:
             self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
+        """
 
         # Gamepiece handling input
         self.gph.setInput(

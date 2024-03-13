@@ -159,8 +159,8 @@ class GamePieceHandling(metaclass=Singleton):
             self.updateShooter(True)
             self.updateFloorRoller(False)
             self.feedBackSlow(False)
-            self.curShooterVel = max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
-                                abs(self.shooterMotorRight.getMotorVelocityRadPerSec()))
+            self.curShooterVel = (max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
+                                abs(self.shooterMotorRight.getMotorVelocityRadPerSec())))
             if abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel) < RPM2RadPerSec(100.0):
                 # We're at the right shooter speed, go ahead and inject the gamepiece
                 self.updateIntake(True)
@@ -180,7 +180,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         log("Has Game Piece", self.hasGamePiece)
         log("TOF Distance",gamepieceDistSensorMeas)
-        log("Cur Shooter Velocity", self.curShooterVel, "RPM")
+        log("Cur Shooter Velocity", radPerSec2RPM(self.curShooterVel) , "RPM")
 
     # Take in command from the outside world
     def setInput(self, singerShooterBoolean, singerIntakeBoolean, singerEjectBoolean):
