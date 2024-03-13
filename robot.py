@@ -71,9 +71,9 @@ class MyRobot(wpilib.TimedRobot):
         self.carriageControl.initFromAbsoluteSensors()
 
         cs.enableLogging()
-        driverCam = cs.UsbCamera("leftcam", 0)
+        driverCam = cs.UsbCamera("driverCam", 0)
         driverCam.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-        cs.CameraServer().startAutomaticCapture(driverCam)
+        cs.CameraServer.startAutomaticCapture(driverCam)
         mjpegServer = cs.MjpegServer("httpserver", 8081)
         mjpegServer.setSource(driverCam)
 

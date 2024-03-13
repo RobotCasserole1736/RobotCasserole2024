@@ -12,7 +12,7 @@ from webserver.webserver import Webserver
 from dashboardWidgets.circularGauge import CircularGauge
 from pieceHandling.gamepieceHandling import GamePieceHandling
 import cscore as cs
-from cscore import CameraServer
+
 class Dashboard:
     def __init__(self):
 
@@ -25,7 +25,7 @@ class Dashboard:
         webServer.addDashboardWidget(Icon(45, 65, "/SmartDashboard/GamepieceIconState", "#00FF00", "newIntakeimg"))
         webServer.addDashboardWidget(Icon(55, 65, "/SmartDashboard/AutoAlignIconState", "#0000FF", "autoAlign"))
 
-        driverCam = cs.UsbCamera("LEFT_CAM", 0) 
+        driverCam = cs.UsbCamera("driverCam", 0) 
         cs.CameraServer.startAutomaticCapture(0)
         cs.CameraServer.getVideo(driverCam)
         driverCam.setPath("http://roborio-1736-frc.local:1181")
