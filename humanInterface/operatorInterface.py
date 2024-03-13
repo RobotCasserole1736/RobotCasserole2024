@@ -6,6 +6,7 @@ from singerMovement.singerConstants import MAX_MAN_VEL_MPS, MAX_MANUAL_DEG_PER_S
 from utils.faults import Fault
 from utils.singleton import Singleton
 from utils.signalLogging import log
+from pieceHandling.gamepieceHandling import GamePieceHandling
 
 class OperatorInterface(metaclass=Singleton):
     def __init__(self):
@@ -27,6 +28,8 @@ class OperatorInterface(metaclass=Singleton):
         self.carriageTrapPos = False
         self.carriagePodiumPos = False
         self.carriageSpeakerSubwooferPos = False
+
+        self.gamepieceHandling = GamePieceHandling()
 
         # if the operator wants the auto align desired
         self.speakerAutoAlignDesired = False
@@ -84,6 +87,12 @@ class OperatorInterface(metaclass=Singleton):
 
             self.connectedFault.setNoFault()
 
+            if self.getHasGamePiece():
+                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,.5)
+            else:
+                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
+
+
         else:
             self.connectedFault.setFaulted()
 
@@ -123,7 +132,6 @@ class OperatorInterface(metaclass=Singleton):
         log("OI Manual Singer Rot Cmd", self.manualSingerRot, "deg/s")
 
 
-
     # and now a bunch of functions to call
     def getSpeakerAutoAlignCmd(self):
         # returns whether auto align is desired or not
@@ -143,20 +151,9 @@ class OperatorInterface(metaclass=Singleton):
     def getSingerEjectCmd(self):
         # returns whether the singer is being commanded to eject
         return self.singerEject
-
-    """Robot.py logic? What about shooter in the speaker vs the amp, 
-    and do we need different amounts of shooter wheel power depending on where the robot is 
-    Also, what happens when multiple of these things are being commanded. Need logic for that too
-        If singerIsCmdd:
-            if getsingerIntakeCmd:
-                send something to the class that controls the actual rollers.
-            if getSingerShootCmd:
-                send something to the class that controls the rollers
-            if getSingerEjectCmd:
-                again, send something to the rollers
-        else:
-            just don't do anything (pass?)
-            """
+    
+    def getHasGamePiece(self):
+        return self.gamepieceHandling.getHasGamePiece()
 
     def getCarriageIntakePosCmd(self):
         # returns whether the singer is being commanded go to intake position

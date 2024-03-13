@@ -137,6 +137,7 @@ class GamePieceHandling(metaclass=Singleton):
         if self.intakeOnCmd:
             # Intake desired - run if we don't yet have a gamepiece
             if self.hasGamePiece:
+                self.ledCtrl.setNoteInIntake(True)
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
                 if gamepieceDistSensorMeas < self.gamePieceInPlaceLowCal.get():
@@ -148,6 +149,7 @@ class GamePieceHandling(metaclass=Singleton):
                 else:
                     self.feedBackSlow(False)
             else:
+                self.ledCtrl.setNoteInIntake(False)
                 self.updateIntake(True)
                 self.updateFloorRoller(True)
 
