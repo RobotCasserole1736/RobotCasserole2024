@@ -1,5 +1,8 @@
+import cscore as cs
 import sys
 import wpilib
+from AutoSequencerV2.autoSequencer import AutoSequencer
+from climbControl.climberControl import ClimberControl
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
@@ -19,11 +22,6 @@ from utils.rioMonitor import RIOMonitor
 from utils.singleton import destroyAllSingletonInstances
 from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
-from AutoSequencerV2.autoSequencer import AutoSequencer
-from climbControl.climberControl import ClimberControl
-from utils.powerMonitor import PowerMonitor
-#from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
-
 
 class MyRobot(wpilib.TimedRobot):
     #########################################################
@@ -71,6 +69,13 @@ class MyRobot(wpilib.TimedRobot):
 
         # One-time init of carriage position from the absolute sensors
         self.carriageControl.initFromAbsoluteSensors()
+
+        cs.enableLogging()
+        driverCam = cs.UsbCamera("driverCam", 0)
+        driverCam.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+        cs.CameraServer.startAutomaticCapture(driverCam)
+        mjpegServer = cs.MjpegServer("httpserver", 8081)
+        mjpegServer.setSource(driverCam)
 
     def robotPeriodic(self):
         self.stt.start()
