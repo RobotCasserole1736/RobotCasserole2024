@@ -53,7 +53,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
-        self.feedBackSlowCal = Calibration("FeedBackSlowVoltage", 1.0, "V")
+        self.feedBackSlowCal = Calibration("FeedBackSlowVoltage", 1.5, "V")
 
         # Time of Flight sensor
         self.tofSensor = TimeOfFlight(constants.GAMEPIECE_HANDLING_TOF_CANID)
@@ -63,8 +63,8 @@ class GamePieceHandling(metaclass=Singleton):
         # Calibrations for Gamepiece being absent and present
         self.gamePiecePresentCal = Calibration("NotePresentThresh", 10, "in")
         self.gamePieceAbsentCal = Calibration("NoteAbsentThresh", 12, "in")
-        self.gamePieceInPlaceLowCal = Calibration("NoteInPlaceLow", 4, "in")
-        self.gamePieceInPlaceHighCal = Calibration("NoteInPlaceHigh", 6, "in")
+        self.gamePieceInPlaceLowCal = Calibration("NoteInPlaceLow", 3, "in")
+        self.gamePieceInPlaceHighCal = Calibration("NoteInPlaceHigh", 7, "in")
 
         self.hasGamePiece = False
         self.noteInPlace = False
@@ -140,14 +140,13 @@ class GamePieceHandling(metaclass=Singleton):
                 self.ledCtrl.setNoteInIntake(True)
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
-                if gamepieceDistSensorMeas < self.gamePieceInPlaceLowCal.get():
-                    self.noteInPlace = True
-                elif gamepieceDistSensorMeas >= self.gamePieceInPlaceHighCal.get():
-                    self.noteInPlace = False
-                if not self.noteInPlace:
-                    self.feedBackSlow(True)
-                else:
+                if gamepieceDistSensorMeas > self.gamePieceInPlaceLowCal.get() and \
+                    gamepieceDistSensorMeas < self.gamePieceInPlaceHighCal.get():
                     self.feedBackSlow(False)
+                    self.noteInPlace = False
+                else:
+                    self.feedBackSlow(True)
+                    self.noteInPlace = False
             else:
                 self.ledCtrl.setNoteInIntake(False)
                 self.updateIntake(True)
