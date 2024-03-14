@@ -1,18 +1,19 @@
 import wpilib
+import cscore as cs
+from cscore import CameraServer
 from AutoSequencerV2.autoSequencer import AutoSequencer
 from dashboardWidgets.autoChooser import AutoChooser
 from dashboardWidgets.swerveState import SwerveState
 from dashboardWidgets.icon import Icon
 from dashboardWidgets.text import Text
+from dashboardWidgets.camera import Camera
 from dashboardWidgets.circularGauge import CircularGauge
 from utils.faults import FaultWrangler
 from utils.signalLogging import log
 from humanInterface.operatorInterface import OperatorInterface
 from webserver.webserver import Webserver
 from pieceHandling.gamepieceHandling import GamePieceHandling
-from dashboardWidgets.camera import Camera
-import cscore as cs
-from cscore import CameraServer
+
 
 class Dashboard:
     def __init__(self):

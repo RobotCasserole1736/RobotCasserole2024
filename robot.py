@@ -73,17 +73,6 @@ class MyRobot(wpilib.TimedRobot):
         # One-time init of carriage position from the absolute sensors
         self.carriageControl.initFromAbsoluteSensors()
 
-        cs.enableLogging()
-        leftCamera = cs.UsbCamera("leftcam", 0)
-        leftCamera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-        rightCamera = cs.UsbCamera("rightcam", 1)
-        rightCamera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-        cs.CameraServer().startAutomaticCapture(leftCamera)
-        cs.CameraServer().startAutomaticCapture(rightCamera)
-        mjpegServer1 = cs.MjpegServer("httpserver", 8081)
-        mjpegServer2 = cs.MjpegServer("httpserver", 8082)
-        mjpegServer1.setSource(leftCamera)
-        mjpegServer2.setSource(rightCamera)
 
     def robotPeriodic(self):
         self.stt.start()
