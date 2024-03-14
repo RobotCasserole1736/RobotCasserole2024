@@ -21,7 +21,7 @@ from utils.singleton import destroyAllSingletonInstances
 from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
-from climbControl.climberControl import ClimberControl
+# from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
 #from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
 
@@ -46,7 +46,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
-        self.climbCtrl = ClimberControl() 
+        # self.climbCtrl = ClimberControl()
 
         self.carriageControl = CarriageControl()
         self.gph = GamePieceHandling()
@@ -79,7 +79,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driveTrain.update()
 
-        self.climbCtrl.update()
+        # self.climbCtrl.update()
 
         self.gph.update()
 
@@ -108,7 +108,7 @@ class MyRobot(wpilib.TimedRobot):
         # Operators cannot control in autonomous
         self.driveTrain.setManualCmd(DrivetrainCommand())
 
-        self.climbCtrl.ctrlWinch(0.0)
+        # self.climbCtrl.ctrlWinch(0.0)
 
     def autonomousExit(self):
         self.autoSequencer.end()
@@ -161,7 +161,7 @@ class MyRobot(wpilib.TimedRobot):
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
-        self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
+        # self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
 
     #########################################################
     ## Disabled-Specific init and update
