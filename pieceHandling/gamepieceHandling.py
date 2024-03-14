@@ -28,7 +28,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorLeft = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_LEFT_CANID, "ShooterMotorLeft"
         )
-        # self.shooterMotorLeft.setInverted(True)
+        self.shooterMotorLeft.setInverted(True)
         self.shooterMotorRight = WrapperedSparkMax(
             constants.SHOOTER_MOTOR_RIGHT_CANID, "ShooterMotorRight"
         )

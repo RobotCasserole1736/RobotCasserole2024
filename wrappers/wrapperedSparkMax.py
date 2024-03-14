@@ -3,6 +3,7 @@ from wpilib import TimedRobot
 from utils.signalLogging import log
 from utils.units import rev2Rad, rad2Rev, radPerSec2RPM, RPM2RadPerSec
 from utils.faults import Fault
+import time
 
 
 _StatusFramePeriodConfigs = [
@@ -63,6 +64,7 @@ class WrapperedSparkMax:
             else:
                 # Only attempt other communication if we're able to successfully configure
                 self.configSuccess = True
+            time.sleep(0.1)
         
         self.configSuccess = True #Debug code - this may/will cause problems
         self.disconFault.set(not self.configSuccess)
