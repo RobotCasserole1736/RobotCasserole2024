@@ -10,6 +10,9 @@ from utils.signalLogging import log
 from humanInterface.operatorInterface import OperatorInterface
 from webserver.webserver import Webserver
 from pieceHandling.gamepieceHandling import GamePieceHandling
+from dashboardWidgets.camera import Camera
+import cscore as cs
+from cscore import CameraServer
 
 class Dashboard:
     def __init__(self):
@@ -23,6 +26,11 @@ class Dashboard:
         webServer.addDashboardWidget(Icon(45, 65, "/SmartDashboard/GamepieceIconState", "#00FF00", "newIntakeimg"))
         webServer.addDashboardWidget(Icon(55, 65, "/SmartDashboard/AutoAlignIconState", "#0000FF", "autoAlign"))
 
+        leftCamera = cs.UsbCamera("LEFT_CAM", 0)
+        cs.CameraServer.startAutomaticCapture(0)
+        cs.CameraServer.getVideo(leftCamera)
+        leftCamera.setPath("http://roborio-1736-frc.local:1181")
+        webServer.addDashboardWidget(Camera(75, 60, "http://roborio-1736-frc.local:1181/stream.mjpg"))
 
         webServer.addDashboardWidget(
             CircularGauge(10, 55, "/SmartDashboard/ShooterGaugeSpeed", 0, 4700, 0, 4700))
