@@ -17,11 +17,12 @@ class ScLBP2Sc(Mode):
         self.shoot = SpeakerShootCommand()
         self.shoot2 = SpeakerShootCommand()
         self.wait = WaitCommand(1)
+        self.wait2 = WaitCommand(1)
         self.retract = RetractCommand()
 
         self.intakeCommandGroup = ParallelCommandGroup([self.pathCmd, self.intake])
         self.shootCommandGroup = SequentialCommandGroup([self.shoot, self.wait])
-        self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait])
+        self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait2])
 
     def getCmdGroup(self):
         return self.shootCommandGroup.andThen(self.intakeCommandGroup).andThen(self.shootCommandGroup2)
