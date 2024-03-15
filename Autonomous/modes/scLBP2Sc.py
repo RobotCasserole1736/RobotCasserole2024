@@ -24,8 +24,7 @@ class ScLBP2Sc(Mode):
         self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait])
 
     def getCmdGroup(self):
-        return self.shootCommandGroup.andThen(self.intakeCommandGroup). \
-            andThen(self.retract).andThen(self.shootCommandGroup2)
+        return self.shootCommandGroup.andThen(self.intakeCommandGroup).andThen(self.shootCommandGroup2)
 
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose
