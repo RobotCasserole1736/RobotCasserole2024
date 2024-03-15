@@ -54,7 +54,7 @@ class DriverInterface:
             vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
             vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.2)
 
-            slowMult = .75 if (self.ctrl.getRightBumper()) else .5
+            slowMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
 
             # velocity cmd
             velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * slowMult
