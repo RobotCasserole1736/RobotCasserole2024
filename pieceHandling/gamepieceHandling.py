@@ -132,7 +132,6 @@ class GamePieceHandling(metaclass=Singleton):
             else:
                 # Hystersis - hold state
                 pass
-        self.hasGamePiece = True
 
         # Gamepiece Handling
         if self.intakeOnCmd:

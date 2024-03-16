@@ -8,6 +8,7 @@ from drivetrain.drivetrainPhysical import MAX_ROTATE_SPEED_RAD_PER_SEC
 from drivetrain.drivetrainPhysical import MAX_TRANSLATE_ACCEL_MPS2
 from drivetrain.drivetrainPhysical import MAX_ROTATE_ACCEL_RAD_PER_SEC_2
 from drivetrain.controlStrategies.autoDrive import AutoDrive
+from pieceHandling.gamepieceHandling import GamePieceHandling
 from utils.faults import Fault
 from utils.signalLogging import log
 from utils.allianceTransformUtils import onRed
@@ -82,6 +83,11 @@ class DriverInterface:
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
             self.connectedFault.setNoFault()
+
+            if GamePieceHandling().getHasGamePiece():
+                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0.25)
+            else:
+                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
 
         else:
             # If the joystick is unplugged, pick safe-state commands and raise a fault
