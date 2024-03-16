@@ -132,6 +132,7 @@ class GamePieceHandling(metaclass=Singleton):
             else:
                 # Hystersis - hold state
                 pass
+        self.hasGamePiece = True
 
         # Gamepiece Handling
         if self.intakeOnCmd:
@@ -143,7 +144,7 @@ class GamePieceHandling(metaclass=Singleton):
                 if gamepieceDistSensorMeas > self.gamePieceInPlaceLowCal.get() and \
                     gamepieceDistSensorMeas < self.gamePieceInPlaceHighCal.get():
                     self.feedBackSlow(False)
-                    self.noteInPlace = False
+                    self.noteInPlace = True
                 else:
                     self.feedBackSlow(True)
                     self.noteInPlace = False

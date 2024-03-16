@@ -16,3 +16,4 @@ class SpeakerShootCommand(Command):
 
     def end(self,interrupt):
         self.gamePieceHandling.setInput(False,False,False)
+        self.gamePieceHandling.update()

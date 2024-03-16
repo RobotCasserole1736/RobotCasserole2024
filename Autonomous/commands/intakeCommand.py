@@ -1,15 +1,11 @@
 from AutoSequencerV2.command import Command
 from pieceHandling.gamepieceHandling import GamePieceHandling
-from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 
 class IntakeCommand(Command):
     def __init__(self):
-        self.carriageControl = CarriageControl()
         self.gamePieceHandling = GamePieceHandling()
 
     def execute(self):
-        #self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
-
         # Intake
         self.gamePieceHandling.setInput(
             False,
@@ -22,3 +18,4 @@ class IntakeCommand(Command):
 
     def end(self,interrupt):
         self.gamePieceHandling.setInput(False,False,False)
+        self.gamePieceHandling.update()
