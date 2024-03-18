@@ -131,6 +131,7 @@ class WrapperedSparkMax:
         log(self.name + "_cmdVoltage", outputVoltageVolts, "V")
         if self.configSuccess:
             err = self.ctrl.setVoltage(outputVoltageVolts)
+            
             #self.disconFault.set(err != REVLibError.kOk) This is commented out for debugging purposes. 
             log(self.name + "_outputCurrent", self.ctrl.getOutputCurrent(), "A")
 
