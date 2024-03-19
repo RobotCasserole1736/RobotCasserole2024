@@ -55,7 +55,7 @@ class DriverInterface:
             vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
             vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.2)
 
-            slowMult = 1.0 if (self.ctrl.getRightBumper()) else 0.5
+            slowMult = 1.0 if (self.ctrl.getRightBumper()) else 0.75
 
             # velocity cmd
             velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * slowMult
@@ -85,7 +85,7 @@ class DriverInterface:
             self.connectedFault.setNoFault()
 
             if GamePieceHandling().getHasGamePiece():
-                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0.25)
+                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0.15)
             else:
                 self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
 

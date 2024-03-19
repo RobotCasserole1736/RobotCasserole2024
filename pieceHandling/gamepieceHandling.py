@@ -53,6 +53,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         # Intake Voltage Calibration
         self.intakeVoltageCal = Calibration("IntakeVoltage", 12, "V")
+        self.sushiRollerVoltageCal = Calibration("SushiRollervoltage", 12, "V")
         self.feedBackSlowCal = Calibration("FeedBackSlowVoltage", 1.5, "V")
 
         # Time of Flight sensor
@@ -101,7 +102,7 @@ class GamePieceHandling(metaclass=Singleton):
         self.floorRoolerMotor1.setVoltage(voltage)
 
     def updateFloorRoller(self, shouldRun):
-        voltage = self.intakeVoltageCal.get() if shouldRun else 0.0
+        voltage = self.sushiRollerVoltageCal.get() if shouldRun else 0.0
         self.floorRoolerMotor1.setVoltage(-voltage)
 
     def _updateCals(self):

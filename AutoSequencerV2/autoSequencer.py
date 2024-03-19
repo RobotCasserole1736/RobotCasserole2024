@@ -6,12 +6,14 @@ from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
+from Autonomous.modes.scLB2Sc5Sc import ScLB2Sc5Sc
 from Autonomous.modes.scSpeakLA import ScSpeakLA
 from Autonomous.modes.scSpeakLB import ScSpeakLB
 from Autonomous.modes.scSpeakLC import ScSpeakLC
 from Autonomous.modes.scSpeakLAP1 import ScSpeakLAP1
 from Autonomous.modes.scLBP2Sc import ScLBP2Sc
 from Autonomous.modes.scoreThree import scoreThree
+from Autonomous.modes.scLC3Sc6Sc import ScLB3Sc6Sc
 from Autonomous.modes.speakerAltPath import speakerAltPath
 from Autonomous.modes.intakeTest import IntakeTest
 from utils.singleton import Singleton
@@ -41,6 +43,8 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScSpeakLAP1())
         self.mainModeList.addMode(ScLBP2Sc())
         self.mainModeList.addMode(IntakeTest())
+        self.mainModeList.addMode(ScLB2Sc5Sc())
+        self.mainModeList.addMode(ScLB3Sc6Sc())
         #self.mainModeList.addMode(scoreThree())
 
 

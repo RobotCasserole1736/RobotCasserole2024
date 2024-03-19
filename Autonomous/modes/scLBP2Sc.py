@@ -12,7 +12,7 @@ from Autonomous.commands.retractCommand import RetractCommand
 class ScLBP2Sc(Mode):
     def __init__(self):
         Mode.__init__(self, f"Score 2 - Zone 2")
-        self.pathCmd = DrivePathCommand("scoreTwo")
+        self.pathCmd = DrivePathCommand("scoreTwo.1")
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
         self.shoot2 = SpeakerShootCommand()
