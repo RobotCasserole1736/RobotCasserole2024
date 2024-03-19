@@ -6,8 +6,6 @@ from Autonomous.commands.drivePathCommand import DrivePathCommand
 from AutoSequencerV2.mode import Mode
 from Autonomous.commands.intakeCommand import IntakeCommand
 from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
-from Autonomous.commands.retractCommand import RetractCommand
-
 
 class ScLB2Sc5Sc(Mode):
     def __init__(self):

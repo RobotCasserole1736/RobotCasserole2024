@@ -41,9 +41,9 @@ WHEEL_GEAR_RATIO_L3 = 6.12
 AZMTH_GEAR_RATIO = 12.8
 
 ## CHANGE THIS DEPENDING ON WHICH MODULE GEAR RATIO IS INSTALLED
-if RobotIdentification.getRobotType == RobotTypes.Main:
+if RobotIdentification().getRobotType() == RobotTypes.Main:
     WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3
-elif RobotIdentification.getRobotType == RobotTypes.Practice:
+elif RobotIdentification().getRobotType() == RobotTypes.Practice:
     WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L2
 else:
     WHEEL_GEAR_RATIO = WHEEL_GEAR_RATIO_L3
@@ -104,16 +104,16 @@ MAX_ROTATE_ACCEL_RAD_PER_SEC_2 = (
 # 5 - Redeploy code, verify that the  encoder readings are correct as each module is manually rotated
 
 
-if RobotIdentification.getRobotType == RobotTypes.Main:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 0.0 # 3.713
-    FR_ENCODER_MOUNT_OFFSET_RAD = 0.0 # -2.425
-    BL_ENCODER_MOUNT_OFFSET_RAD = 0.0 # 2.419
-    BR_ENCODER_MOUNT_OFFSET_RAD = 0.0 # -2.356
+if RobotIdentification().getRobotType() == RobotTypes.Main:
+    FL_ENCODER_MOUNT_OFFSET_RAD = 2.489
+    FR_ENCODER_MOUNT_OFFSET_RAD = 2.340
+    BL_ENCODER_MOUNT_OFFSET_RAD = -2.208
+    BR_ENCODER_MOUNT_OFFSET_RAD = -1.168
 else:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 2.489 # -0.641
-    FR_ENCODER_MOUNT_OFFSET_RAD = 2.340 # -0.860
-    BL_ENCODER_MOUNT_OFFSET_RAD = -2.208 # -2.1629
-    BR_ENCODER_MOUNT_OFFSET_RAD = -1.168 # 1.992
+    FL_ENCODER_MOUNT_OFFSET_RAD = 2.489
+    FR_ENCODER_MOUNT_OFFSET_RAD = 2.340
+    BL_ENCODER_MOUNT_OFFSET_RAD = -2.208
+    BR_ENCODER_MOUNT_OFFSET_RAD = -1.168
 
 
 # Module Indices (for ease of array manipulation)

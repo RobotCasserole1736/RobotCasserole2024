@@ -29,8 +29,6 @@ class OperatorInterface(metaclass=Singleton):
         self.carriagePodiumPos = False
         self.carriageSpeakerSubwooferPos = False
 
-        self.gamepieceHandling = GamePieceHandling()
-
         # if the operator wants the auto align desired
         self.speakerAutoAlignDesired = False
         self.ampAutoAlignDesired = False
@@ -50,9 +48,7 @@ class OperatorInterface(metaclass=Singleton):
         self.motorRotations = 0
         self.linearDisp = 0
 
-
     def update(self):
-
         # update the values from the xbox controller. Updates every 20(?)ms
         """Make sure there's logic for if a controller is connected and nothing happens if 
         it doesn't update the values from the xbox controller. Updates every 20(?)ms"""
@@ -87,7 +83,7 @@ class OperatorInterface(metaclass=Singleton):
 
             self.connectedFault.setNoFault()
 
-            if self.getHasGamePiece():
+            if GamePieceHandling().getHasGamePiece:
                 self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,.5)
             else:
                 self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
@@ -151,9 +147,6 @@ class OperatorInterface(metaclass=Singleton):
     def getSingerEjectCmd(self):
         # returns whether the singer is being commanded to eject
         return self.singerEject
-    
-    def getHasGamePiece(self):
-        return self.gamepieceHandling.getHasGamePiece()
 
     def getCarriageIntakePosCmd(self):
         # returns whether the singer is being commanded go to intake position

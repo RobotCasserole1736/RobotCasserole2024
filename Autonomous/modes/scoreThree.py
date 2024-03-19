@@ -8,7 +8,6 @@ from Autonomous.commands.intakeCommand import IntakeCommand
 from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 from Autonomous.commands.retractCommand import RetractCommand
 
-
 # Just drives out of the starting zone. That's all.
 class scoreThree(Mode):
     def __init__(self):

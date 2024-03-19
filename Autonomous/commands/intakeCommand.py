@@ -11,11 +11,7 @@ class IntakeCommand(Command):
 
     def execute(self):
         # Intake
-        self.gamePieceHandling.setInput(
-            False,
-            True,
-            False
-        )
+        self.gamePieceHandling.setInput(False,True,False)
 
     def isDone(self):
         return Timer.getFPGATimestamp() - self.startTime >= 3

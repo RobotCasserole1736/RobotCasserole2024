@@ -1,5 +1,4 @@
 from AutoSequencerV2.command import Command
-from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 from pieceHandling.gamepieceHandling import GamePieceHandling
 
 class SpeakerShootCommand(Command):

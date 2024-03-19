@@ -12,7 +12,7 @@ class SwerveModuleGainSet:
     """
 
     def __init__(self):
-        if RobotIdentification.getRobotType == RobotTypes.Practice:
+        if RobotIdentification().getRobotType() == RobotTypes.Practice:
             self.wheelP = Calibration("Drivetrain Module Wheel kP", 0.00005)
             self.wheelI = Calibration("Drivetrain Module Wheel kI", 0.0)
             self.wheelD = Calibration("Drivetrain Module Wheel kD", 0.0)
@@ -26,7 +26,7 @@ class SwerveModuleGainSet:
             self.azmthP = Calibration("Drivetrain Module Azmth kP", 0.115)
             self.azmthI = Calibration("Drivetrain Module Azmth kI", 0.0)
             self.azmthD = Calibration("Drivetrain Module Azmth kD", 0.0001)
-        else: 
+        else:
             self.wheelP = Calibration("Drivetrain Module Wheel kP", 0.00005)
             self.wheelI = Calibration("Drivetrain Module Wheel kI", 0.0)
             self.wheelD = Calibration("Drivetrain Module Wheel kD", 0.0)

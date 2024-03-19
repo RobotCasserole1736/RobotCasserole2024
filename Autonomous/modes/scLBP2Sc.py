@@ -1,13 +1,10 @@
 from AutoSequencerV2.parallelCommandGroup import ParallelCommandGroup
-from AutoSequencerV2.raceCommandGroup import RaceCommandGroup
 from AutoSequencerV2.builtInCommands.waitCommand import WaitCommand
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from Autonomous.commands.drivePathCommand import DrivePathCommand
 from AutoSequencerV2.mode import Mode
 from Autonomous.commands.intakeCommand import IntakeCommand
 from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
-from Autonomous.commands.retractCommand import RetractCommand
-
 
 class ScLBP2Sc(Mode):
     def __init__(self):
@@ -18,7 +15,6 @@ class ScLBP2Sc(Mode):
         self.shoot2 = SpeakerShootCommand()
         self.wait = WaitCommand(1)
         self.wait2 = WaitCommand(1)
-        self.retract = RetractCommand()
 
         self.intakeCommandGroup = ParallelCommandGroup([self.pathCmd, self.intake])
         self.shootCommandGroup = SequentialCommandGroup([self.shoot, self.wait])
