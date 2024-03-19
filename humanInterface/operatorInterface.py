@@ -21,7 +21,7 @@ class OperatorInterface(metaclass=Singleton):
         self.singerIntake = False
         self.singerShoot = False
         self.singerEject = False
-        self.singerGetReady = False
+        self.singerSpoolUp = False
 
         # element of the elevator. Goes up, down, and rotates into position
         self.carriageIntakePos = False
@@ -62,7 +62,7 @@ class OperatorInterface(metaclass=Singleton):
             # Singer commands
             self.singerIntake = self.ctrl.getRightBumper()
             self.singerShoot = self.ctrl.getRightTriggerAxis() > 0.5
-            self.singerGetReady = self.ctrl.getLeftTriggerAxis() > 0.5
+            self.singerSpoolUp = self.ctrl.getLeftTriggerAxis() > 0.5
             self.singerEject = self.ctrl.getLeftBumper()
 
             # element of the elevator. Goes up, down, and rotates into position
@@ -148,11 +148,11 @@ class OperatorInterface(metaclass=Singleton):
         return self.singerIntake
 
     def getSingerShootCmd(self):
-        # returns whether the singer is being commanded to shoot
+        # actually shootin command
         return self.singerShoot
     
     def getSingerSpoolUpCmd(self):
-        # when the singer wheels are at the correct velocity
+        # spooling up the wheels
         return self.singerSpoolUp
 
     def getSingerEjectCmd(self):
