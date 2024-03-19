@@ -18,4 +18,4 @@ class RetractCommand(Command):
         return (Timer.getFPGATimestamp() - self.startTime) >= self.duration
 
     def end(self,interrupt):
-        self.gamePieceHandling.setInput(False,False,False)
+        self.gamePieceHandling.setInput(False,False,False,False)

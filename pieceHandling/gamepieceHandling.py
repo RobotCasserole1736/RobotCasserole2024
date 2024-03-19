@@ -20,6 +20,7 @@ class GamePieceHandling(metaclass=Singleton):
     def __init__(self):
         # Booleans
         self.shooterOnCmd = False
+        self.shooterSpooledUpCmd = False
         self.intakeOnCmd = False
         self.ejectOnCmd = False
         self.intakeRunning = False
@@ -162,16 +163,16 @@ class GamePieceHandling(metaclass=Singleton):
             self.feedBackSlow(False)
             self.curShooterVel = (max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
                                 abs(self.shooterMotorRight.getMotorVelocityRadPerSec())))
-            if abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel) < RPM2RadPerSec(100.0):
+            self.shooterSpooledUpCmd = abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel) < RPM2RadPerSec(100.0):
                 # We're at the right shooter speed, go ahead and inject the gamepiece
-                self.updateIntake(True)
-            else:
-                # Wait for spoolup
-                self.updateIntake(False)
 
+           
         elif self.ejectOnCmd:
             self.updateEject(True)
 
+        if self.shooterSpooledUpCmd and self.actualShootCmd:
+            self.updateIntake(True)
+    
         else:
             # Nothing commanded
             self.updateShooter(False)
@@ -184,11 +185,11 @@ class GamePieceHandling(metaclass=Singleton):
         log("Cur Shooter Velocity", radPerSec2RPM(self.curShooterVel) , "RPM")
 
     # Take in command from the outside world
-    def setInput(self, singerShooterBoolean, singerIntakeBoolean, singerEjectBoolean):
-        self.shooterOnCmd = singerShooterBoolean
+    def setInput(self, singerSpoolUpBoolean, singerIntakeBoolean, singerEjectBoolean, singerShooterBolean):
+        self.shooterOnCmd = singerSpoolUpBoolean
         self.intakeOnCmd = singerIntakeBoolean
         self.ejectOnCmd = singerEjectBoolean
-
+        self.actualShootCmd = singerShootBolean
     def getShooterMotorSpeed(self):
         return min(abs(radPerSec2RPM(self.shooterMotorLeft.getMotorVelocityRadPerSec())), \
         abs(radPerSec2RPM(self.shooterMotorRight.getMotorVelocityRadPerSec())))
