@@ -150,7 +150,8 @@ class MyRobot(wpilib.TimedRobot):
         self.gph.setInput(
             self.oInt.getSingerShootCmd(),
             self.oInt.getSingerIntakeCmd(),
-            self.oInt.getSingerEjectCmd()
+            self.oInt.getSingerEjectCmd(),
+            self.oInt.getSingerSpoolUpCmd()
         )
 
         self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())

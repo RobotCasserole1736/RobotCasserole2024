@@ -1,3 +1,4 @@
+
 from AutoSequencerV2.mode import Mode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from AutoSequencerV2.parallelCommandGroup import ParallelCommandGroup

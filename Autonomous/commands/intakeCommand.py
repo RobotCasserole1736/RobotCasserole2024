@@ -14,6 +14,7 @@ class IntakeCommand(Command):
         self.gamePieceHandling.setInput(
             False,
             True,
+            False,
             False
         )
 
@@ -21,5 +22,5 @@ class IntakeCommand(Command):
         return Timer.getFPGATimestamp() - self.startTime >= 3
 
     def end(self,interrupt):
-        self.gamePieceHandling.setInput(False,False,False)
+        self.gamePieceHandling.setInput(False,False,False,False)
         self.gamePieceHandling.update()
