@@ -185,11 +185,12 @@ class GamePieceHandling(metaclass=Singleton):
         log("Cur Shooter Velocity", radPerSec2RPM(self.curShooterVel) , "RPM")
 
     # Take in command from the outside world
-    def setInput(self, singerSpoolUpBoolean, singerIntakeBoolean, singerEjectBoolean, singerShootBolean):
+    def setInput(self, singerSpoolUpBoolean, singerIntakeBoolean, singerEjectBoolean, singerShootBoolean):
         self.shooterOnCmd = singerSpoolUpBoolean
         self.intakeOnCmd = singerIntakeBoolean
         self.ejectOnCmd = singerEjectBoolean
-        self.actualShootCmd = singerShootBolean
+        self.actualShootCmd = singerShootBoolean
+        
     def getShooterMotorSpeed(self):
         return min(abs(radPerSec2RPM(self.shooterMotorLeft.getMotorVelocityRadPerSec())), \
         abs(radPerSec2RPM(self.shooterMotorRight.getMotorVelocityRadPerSec())))

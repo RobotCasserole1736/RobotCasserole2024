@@ -157,7 +157,7 @@ class OperatorInterface(metaclass=Singleton):
     
     def getSingerSpoolUpCmd(self):
         # returns whether the singer is being commanded to spool up 
-        return self.singerEject
+        return self.singerSpool
     
     def getHasGamePiece(self):
         return self.gamepieceHandling.getHasGamePiece()
