@@ -165,14 +165,14 @@ class GamePieceHandling(metaclass=Singleton):
                                 abs(self.shooterMotorRight.getMotorVelocityRadPerSec())))
             self.shooterSpooledUpCmd = abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel) < RPM2RadPerSec(100.0)
                 # We're at the right shooter speed, go ahead and inject the gamepiece
-
+            if self.shooterSpooledUpCmd and self.actualShootCmd:
+                self.updateIntake(True)
+            else:
+                self.updateIntake(False)
            
         elif self.ejectOnCmd:
             self.updateEject(True)
 
-        if self.shooterSpooledUpCmd and self.actualShootCmd:
-            self.updateIntake(True)
-    
         else:
             # Nothing commanded
             self.updateShooter(False)
