@@ -21,7 +21,7 @@ class OperatorInterface(metaclass=Singleton):
         self.singerIntake = False
         self.singerShoot = False
         self.singerEject = False
-
+        self.singerSpool = False 
         # element of the elevator. Goes up, down, and rotates into position
         self.carriageIntakePos = False
         self.carriageAmpPos = False
@@ -62,6 +62,7 @@ class OperatorInterface(metaclass=Singleton):
             self.singerIntake = self.ctrl.getRightBumper()
             self.singerShoot = self.ctrl.getRightTriggerAxis() > 0.5
             self.singerEject = self.ctrl.getLeftBumper()
+            self.singerSpool = self.ctrl.getLeftTriggerAxis() > 0.5
 
             # element of the elevator. Goes up, down, and rotates into position
             self.carriageIntakePos = self.ctrl.getAButton()
@@ -100,6 +101,7 @@ class OperatorInterface(metaclass=Singleton):
             self.singerIntake = False
             self.singerShoot = False
             self.singerEject = False
+            self.singerSpool = False
 
             # element of the elevator. Goes up, down, and rotates into position
             self.carriageIntakePos = False
@@ -119,6 +121,7 @@ class OperatorInterface(metaclass=Singleton):
         log("OI Singer Intake Cmd", self.singerIntake, "bool")
         log("OI Singer Shoot Cmd", self.singerShoot, "bool")
         log("OI Singer Eject Cmd", self.singerEject, "bool")
+        log("OI Singer Eject Cmd", self.singerSpool, "bool")
         log("OI Carriage Intake Pos Cmd", self.carriageIntakePos, "bool")
         log("OI Carriage Amp Pos Cmd", self.carriageAmpPos, "bool")
         log("OI Carriage Trap Pos Cmd", self.carriageTrapPos, "bool")
@@ -138,7 +141,7 @@ class OperatorInterface(metaclass=Singleton):
         return self.speakerAutoAlignDesired
 
     def singerIsCmdd(self):
-        return self.singerIntake or self.singerShoot or self.singerEject
+        return self.singerIntake or self.singerShoot or self.singerEject or self.singerSpool
 
     def getSingerIntakeCmd(self):
         # returns whether the singer is being commanded to intake
@@ -150,6 +153,10 @@ class OperatorInterface(metaclass=Singleton):
 
     def getSingerEjectCmd(self):
         # returns whether the singer is being commanded to eject
+        return self.singerEject
+    
+    def getSingerSpoolUpCmd(self):
+        # returns whether the singer is being commanded to spool up 
         return self.singerEject
     
     def getHasGamePiece(self):
