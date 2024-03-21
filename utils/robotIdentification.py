@@ -17,20 +17,18 @@ class RobotIdentification(metaclass=Singleton):
 
         self.serialFault = False
 
-        if self.roboControl.getSerialNumber() == "030e2cb0": #the L3
+        if self.roboControl.getSerialNumber() == "030e2cb0":
             self.robotType = RobotTypes.Main 
-        elif self.roboControl.getSerialNumber() == "03064e3f":  #the L2
+        elif self.roboControl.getSerialNumber() == "03064e3f":
             self.robotType = RobotTypes.Practice
-        elif self.roboControl.getSerialNumber() == "0316b37c":  
+        elif self.roboControl.getSerialNumber() == "0316b37c":
             #Test to see if the RoboRio serial number is our testboard's serial number.
             self.robotType = RobotTypes.TestBoard
         else:
-            #If the Robo Rio's serial number is not equal to any of our known serial numbers, 
-            #assume we are the main robot
+            # If the Robo Rio's serial number is not equal to any of our known serial numbers, 
+            # assume we are the main robot
             self.robotType = RobotTypes.Main
             self.serialFault = True
-
-        #I don't know why the logs aren't working. But it's printing so I give up. 
 
     def getRobotType(self):
         return self.robotType 

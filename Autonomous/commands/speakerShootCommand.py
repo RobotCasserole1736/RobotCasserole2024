@@ -3,16 +3,16 @@ from pieceHandling.gamepieceHandling import GamePieceHandling
 
 class SpeakerShootCommand(Command):
     def __init__(self):
-        self.gamePieceHandling = GamePieceHandling()
+        pass
 
     def execute(self):
-        if self.gamePieceHandling.getHasGamePiece():
-            self.gamePieceHandling.setInput(True,False,False)
-            self.gamePieceHandling.update()
+        if GamePieceHandling().getHasGamePiece():
+            GamePieceHandling().setInput(True,False,False)
+            GamePieceHandling().update()
 
     def isDone(self):
-        return not self.gamePieceHandling.getHasGamePiece()
+        return not GamePieceHandling().getHasGamePiece()
 
     def end(self,interrupt):
-        self.gamePieceHandling.setInput(False,False,False)
-        self.gamePieceHandling.update()
+        GamePieceHandling().setInput(False,False,False)
+        GamePieceHandling().update()
