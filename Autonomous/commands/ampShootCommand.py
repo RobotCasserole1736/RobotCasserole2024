@@ -13,6 +13,7 @@ class EjectCommand(Command):
         self.gamePieceHandling.setInput(
             True,
             False,
+            False,
             False
         )
 

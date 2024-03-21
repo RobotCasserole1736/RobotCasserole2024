@@ -7,12 +7,12 @@ class SpeakerShootCommand(Command):
 
     def execute(self):
         if GamePieceHandling().getHasGamePiece():
-            GamePieceHandling().setInput(True,False,False)
+            GamePieceHandling().setInput(True,False,False,True)
             GamePieceHandling().update()
 
     def isDone(self):
         return not GamePieceHandling().getHasGamePiece()
 
     def end(self,interrupt):
-        GamePieceHandling().setInput(False,False,False)
+        GamePieceHandling().setInput(False,False,False,False)
         GamePieceHandling().update()
