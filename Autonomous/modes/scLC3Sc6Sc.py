@@ -25,17 +25,26 @@ class ScLB3Sc6Sc(Mode):
         self.wait3 = WaitCommand(1)
         self.wait4 = WaitCommand(1)
 
-        self.intakeCommandGroup1 = RaceCommandGroup([self.pathCmd2, self.intake1])
+        self.practicePath = DrivePathCommand("ZoneC_Score3")
+
+        self.intakeCommandGroup1 = ParallelCommandGroup([self.pathCmd2, self.intake1])
         self.intakeCommandGroup2 = ParallelCommandGroup([self.pathCmd3, self.intake2])
         self.justDriveCommandGroup = ParallelCommandGroup([self.pathCmd1, self.wait4])
         self.shootCommandGroup1 = SequentialCommandGroup([self.shoot, self.wait])
         self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait2])
         self.shootCommandGroup3 = SequentialCommandGroup([self.shoot3, self.wait3])
 
+        self.practiceCommandgroup = SequentialCommandGroup([self.practicePath, self.wait2])
+
     def getCmdGroup(self):
+        
         return self.shootCommandGroup1.andThen(self.justDriveCommandGroup).andThen(self.intakeCommandGroup1).andThen(
             self.shootCommandGroup2).andThen(self.intakeCommandGroup2).andThen(self.shootCommandGroup3)
-                
+        
+        #return self.practiceCommandgroup
+
+        return self.shootCommandGroup1.andThen(self.justDriveCommandGroup).andThen(self.intakeCommandGroup1).andThen(
+            self.shootCommandGroup2).andThen(self.intakeCommandGroup2).andThen(self.shootCommandGroup3)
 
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose
