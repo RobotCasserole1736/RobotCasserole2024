@@ -1,6 +1,5 @@
 import sys
 import wpilib
-import cscore as cs
 from dashboard import Dashboard
 from drivetrain.controlStrategies.autoDrive import AutoDrive
 from drivetrain.controlStrategies.trajectory import Trajectory
@@ -23,8 +22,6 @@ from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
 # from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
-#from drivetrain.drivetrainPhysical import WHEEL_GEAR_RATIO
-
 
 class MyRobot(wpilib.TimedRobot):
     #########################################################

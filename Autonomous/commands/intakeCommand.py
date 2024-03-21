@@ -4,14 +4,14 @@ from pieceHandling.gamepieceHandling import GamePieceHandling
 
 class IntakeCommand(Command):
     def __init__(self):
-        self.gamePieceHandling = GamePieceHandling()
+        pass
 
     def initialize(self):
         self.startTime = Timer.getFPGATimestamp()
 
     def execute(self):
         # Intake
-        self.gamePieceHandling.setInput(
+        GamePieceHandling().setInput(
             False,
             True,
             False,
@@ -19,8 +19,8 @@ class IntakeCommand(Command):
         )
 
     def isDone(self):
-        return Timer.getFPGATimestamp() - self.startTime >= 5 or self.gamePieceHandling.getNoteInPlace()
+        return Timer.getFPGATimestamp() - self.startTime >= 5 or GamePieceHandling().getNoteInPlace()
 
     def end(self,interrupt):
-        self.gamePieceHandling.setInput(False,False,False,False)
-        self.gamePieceHandling.update()
+        GamePieceHandling().setInput(False,False,False,False)
+        GamePieceHandling().update()

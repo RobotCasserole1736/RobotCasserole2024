@@ -1,16 +1,14 @@
 from AutoSequencerV2.command import Command
-from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 from pieceHandling.gamepieceHandling import GamePieceHandling
 
 class EjectCommand(Command):
     def __init__(self):
-        self.carriageControl = CarriageControl() 
-        self.gamePieceHandling = GamePieceHandling()   
+        pass
 
     def execute(self):
         #self.carriageControl.setPositionCmd(CarriageControlCmd.AMP)
 
-        self.gamePieceHandling.setInput(
+        GamePieceHandling().setInput(
             True,
             False,
             False,
@@ -18,5 +16,5 @@ class EjectCommand(Command):
         )
 
     def isDone(self):
+        # return if we're done. Which should be never? It should be controlled by other things
         return False
-        #return if we're done. Which should be never? It should be controlled by other things

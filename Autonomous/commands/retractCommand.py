@@ -4,7 +4,6 @@ from wpilib import Timer
 
 class RetractCommand(Command):
     def __init__(self):
-        self.gamePieceHandling = GamePieceHandling()
         self.duration = 0.4
 
     def initialize(self):
@@ -12,10 +11,10 @@ class RetractCommand(Command):
 
     def execute(self):
         # Feedback a little to allow the shooter to work
-        self.gamePieceHandling.feedBackSlow(True)
+        GamePieceHandling().feedBackSlow(True)
 
     def isDone(self):
         return (Timer.getFPGATimestamp() - self.startTime) >= self.duration
 
     def end(self,interrupt):
-        self.gamePieceHandling.setInput(False,False,False,False)
+        GamePieceHandling().setInput(False,False,False,False)
