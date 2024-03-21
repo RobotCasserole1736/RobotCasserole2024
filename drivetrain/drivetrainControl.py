@@ -1,5 +1,6 @@
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.geometry import Pose2d, Rotation2d
+from Autonomous.commands.driveForwardSlowCommand import DriveForwardSlowCommand
 from drivetrain.poseEstimation.drivetrainPoseEstimator import DrivetrainPoseEstimator
 from drivetrain.swerveModuleControl import SwerveModuleControl
 from drivetrain.swerveModuleGainSet import SwerveModuleGainSet
@@ -84,6 +85,9 @@ class DrivetrainControl(metaclass=Singleton):
         self.curCmd = self.curManCmd
         self.curCmd = Trajectory().update(self.curCmd, curEstPose)
         self.curCmd = AutoDrive().update(self.curCmd, curEstPose)
+
+        if DriveForwardSlowCommand().isRunning():
+           self.curCmd = DriveForwardSlowCommand().execute()
 
         # Transform the current command to be robot relative
         tmp = ChassisSpeeds.fromFieldRelativeSpeeds(

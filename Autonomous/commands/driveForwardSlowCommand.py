@@ -15,7 +15,7 @@ class DriveForwardSlowCommand(Command):
     def initialize(self):
         self.startTime = Timer.getFPGATimestamp()
         self.started = True
-    
+
     def isRunning(self):
         return self.started and not self.isDone()
 
@@ -26,5 +26,4 @@ class DriveForwardSlowCommand(Command):
         return Timer.getFPGATimestamp() - self.startTime >= 3
 
     def end(self,interrupt):
-        self.returnDriveTrainCommand.velX = 0.0
         return self.returnDriveTrainCommand
