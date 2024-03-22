@@ -84,11 +84,10 @@ class OperatorInterface(metaclass=Singleton):
 
             self.connectedFault.setNoFault()
 
-            if GamePieceHandling().getHasGamePiece:
-                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,.5)
+            if GamePieceHandling().getHasGamePiece():
+                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0.5)
             else:
                 self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
-
 
         else:
             self.connectedFault.setFaulted()
@@ -154,9 +153,6 @@ class OperatorInterface(metaclass=Singleton):
     def getSingerSpoolUpCmd(self):
         # returns whether the singer is being commanded to spool up 
         return self.singerSpool
-    
-    def getHasGamePiece(self):
-        return self.gamepieceHandling.getHasGamePiece()
 
     def getCarriageIntakePosCmd(self):
         # returns whether the singer is being commanded go to intake position

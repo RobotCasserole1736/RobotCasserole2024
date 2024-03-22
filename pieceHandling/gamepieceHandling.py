@@ -169,7 +169,8 @@ class GamePieceHandling(metaclass=Singleton):
             self.curShooterVel = (max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
                                 abs(self.shooterMotorRight.getMotorVelocityRadPerSec())))
             # We're at the right shooter speed, go ahead and inject the gamepiece
-            self.shooterSpooledUp = abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel) < RPM2RadPerSec(100.0)
+            self.shooterSpooledUp = abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel)\
+                < RPM2RadPerSec(250.0)
 
         elif self.ejectOnCmd:
             self.updateEject(True)
