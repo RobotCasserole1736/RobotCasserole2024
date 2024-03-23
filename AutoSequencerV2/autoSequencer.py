@@ -6,6 +6,7 @@ from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
+from Autonomous.modes.scoreThree import scoreThree
 from Autonomous.modes.scoreTwo import ScoreTwo
 from Autonomous.modes.scoreTwoA import ScoreTwoA
 from Autonomous.modes.scoreTwoC import ScoreTwoC
@@ -45,7 +46,7 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScoreTwo())
         self.mainModeList.addMode(ScoreTwoA())
         self.mainModeList.addMode(ScoreTwoC())
-        #self.mainModeList.addMode(scoreThree())
+        self.mainModeList.addMode(scoreThree())
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()

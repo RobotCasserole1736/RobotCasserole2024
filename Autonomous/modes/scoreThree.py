@@ -12,27 +12,32 @@ from Autonomous.commands.retractCommand import RetractCommand
 class scoreThree(Mode):
     def __init__(self):
         Mode.__init__(self, f"Score Three")
+        
         self.pathCmd = DrivePathCommand("scoreTwo")
         self.pathCmd2 = DrivePathCommand("scoreThree")
+        
         self.intake = IntakeCommand()
+        self.intake.maxDuration(3)
+        self.intake2 = IntakeCommand()
+        self.intake2.maxDuration(4)
+        
         self.shoot = SpeakerShootCommand()
         self.shoot2 = SpeakerShootCommand()
         self.shoot3 = SpeakerShootCommand()
-        self.wait = WaitCommand(1)
-        self.retract = RetractCommand()
+        
+        self.wait = WaitCommand(0)
+     
 
         self.intakeDriveCommandGroup = ParallelCommandGroup([self.pathCmd, self.intake])
         self.shootCommandGroup = SequentialCommandGroup([self.shoot, self.wait])
         self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait])
         
-        self.intakeDriveCommandGroup2 = ParallelCommandGroup([self.pathCmd2, self.intake])
+        self.intakeDriveCommandGroup2 = ParallelCommandGroup([self.pathCmd2, self.intake2])
         self.shootCommandGroup3 = SequentialCommandGroup([self.shoot3, self.wait])
 
     def getCmdGroup(self):
-        return self.shootCommandGroup.andThen(self.intakeDriveCommandGroup). \
-            andThen(self.retract).andThen(self.shootCommandGroup2).andThen(self.intakeDriveCommandGroup2) \
-                .andThen(self.retract).andThen(self.shootCommandGroup3)
-
+        return self.shootCommandGroup.andThen(self.intakeDriveCommandGroup).andThen(self.shootCommandGroup2).andThen(self.intakeDriveCommandGroup2).andThen(self.shootCommandGroup3)
+       
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose.
         return self.pathCmd.path.getInitialPose()
