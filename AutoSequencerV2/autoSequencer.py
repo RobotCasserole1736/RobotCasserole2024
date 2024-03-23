@@ -7,6 +7,8 @@ from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.noteThief import NoteThief
 from Autonomous.modes.scoreTwo import ScoreTwo
+from Autonomous.modes.scoreTwoA import ScoreTwoA
+from Autonomous.modes.scoreTwoC import ScoreTwoC
 # from Autonomous.modes.scoreThree import scoreThree
 from Autonomous.modes.scSpeakLA import ScSpeakLA
 from Autonomous.modes.scSpeakLB import ScSpeakLB
@@ -41,6 +43,8 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScSpeakLAP1())
         self.mainModeList.addMode(IntakeTest())
         self.mainModeList.addMode(ScoreTwo())
+        self.mainModeList.addMode(ScoreTwoA())
+        self.mainModeList.addMode(ScoreTwoC())
         #self.mainModeList.addMode(scoreThree())
 
 
