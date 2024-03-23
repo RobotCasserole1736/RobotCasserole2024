@@ -29,6 +29,8 @@ class OperatorInterface(metaclass=Singleton):
         self.carriagePodiumPos = False
         self.carriageSpeakerSubwooferPos = False
 
+        self.gamePieceHandling = GamePieceHandling()
+
         # if the operator wants the auto align desired
         self.speakerAutoAlignDesired = False
         self.ampAutoAlignDesired = False
@@ -84,7 +86,7 @@ class OperatorInterface(metaclass=Singleton):
 
             self.connectedFault.setNoFault()
 
-            if GamePieceHandling().getHasGamePiece:
+            if GamePieceHandling().getHasGamePiece():
                 self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,.5)
             else:
                 self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
@@ -112,6 +114,7 @@ class OperatorInterface(metaclass=Singleton):
             # manual commands
             self.manualSingerUpDown = 0
             self.manualSingerRot = 0
+
 
         log("OI AutoAlign Cmd", self.speakerAutoAlignDesired, "bool")
         log("OI Singer Intake Cmd", self.singerIntake, "bool")
@@ -156,7 +159,7 @@ class OperatorInterface(metaclass=Singleton):
         return self.singerSpool
     
     def getHasGamePiece(self):
-        return self.gamepieceHandling.getHasGamePiece()
+        return self.gamePieceHandling.getHasGamePiece()
 
     def getCarriageIntakePosCmd(self):
         # returns whether the singer is being commanded go to intake position
