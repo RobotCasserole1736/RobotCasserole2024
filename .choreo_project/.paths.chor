@@ -5244,7 +5244,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreLeaveLeft": {
+        "ScoreLeaveA": {
             "waypoints": [
                 {
                     "x": 0.7391523122787476,
@@ -5580,7 +5580,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreLeaveCenter": {
+        "ScoreLeaveB": {
             "waypoints": [
                 {
                     "x": 1.0892974138259888,
@@ -5736,7 +5736,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreLeaveRight": {
+        "ScoreLeaveC": {
             "waypoints": [
                 {
                     "x": 0.6689382195472717,
@@ -6029,7 +6029,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreTwoCenterB": {
+        "ScoreTwoB2": {
             "waypoints": [
                 {
                     "x": 1.3305332660675049,
@@ -6348,7 +6348,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreThreeCenterBA": {
+        "ScoreThreeB21": {
             "waypoints": [
                 {
                     "x": 1.3436737060546875,
@@ -6758,7 +6758,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreTwoRightC": {
+        "ScoreTwoC3": {
             "waypoints": [
                 {
                     "x": 0.7084316611289978,
@@ -7165,7 +7165,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreTwoLeftA": {
+        "ScoreTwoA1": {
             "waypoints": [
                 {
                     "x": 0.6543866991996765,
@@ -7901,7 +7901,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "ScoreThreeCenterBC": {
+        "ScoreThreeB23": {
             "waypoints": [
                 {
                     "x": 1.2889786958694458,

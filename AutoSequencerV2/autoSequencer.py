@@ -4,16 +4,15 @@ from AutoSequencerV2.modeList import ModeList
 from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
-from Autonomous.modes.ScoreThreeCenterBA import ScoreThreeCenterBA
-from Autonomous.modes.ScoreThreeCenterBC import ScoreThreeCenterBC
-from Autonomous.modes.ScoreTwoRightC import ScoreTwoRightC
+from Autonomous.modes.scoreLeaveA import ScoreLeaveA
+from Autonomous.modes.scoreLeaveB import ScoreLeaveB
+from Autonomous.modes.scoreLeaveC import ScoreLeaveC
 from Autonomous.modes.driveOut import DriveOut
-from Autonomous.modes.ScoreLeaveRight import ScoreLeaveRight
-from Autonomous.modes.ScoreTwoCenterB import ScoreTwoCenterB
-from Autonomous.modes.ScoreTwoLeftA import ScoreTwoLeftA
-# from Autonomous.modes.scoreThree import scoreThree
-from Autonomous.modes.ScoreLeaveLeft import ScoreLeaveLeft
-from Autonomous.modes.ScoreLeaveCenter import ScoreLeaveCenter
+from Autonomous.modes.scoreThreeB21 import ScoreThreeB21
+from Autonomous.modes.scoreThreeB23 import ScoreThreeB23
+from Autonomous.modes.scoreTwoA1 import ScoreTwoA1
+from Autonomous.modes.scoreTwoB2 import ScoreTwoB2
+from Autonomous.modes.scoreTwoC3 import ScoreTwoC3
 from Autonomous.modes.justShoot import justShoot
 from Autonomous.modes.scSpeakLAP1 import ScSpeakLAP1
 from Autonomous.modes.intakeTest import IntakeTest
@@ -37,16 +36,15 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(DoNothingMode())
         self.mainModeList.addMode(DriveOut())
         self.mainModeList.addMode(justShoot())
-        self.mainModeList.addMode(IntakeTest())
-        self.mainModeList.addMode(ScoreLeaveLeft())
-        self.mainModeList.addMode(ScoreLeaveCenter())
-        self.mainModeList.addMode(ScoreLeaveRight())
-        #self.mainModeList.addMode(ScSpeakLAP1())
-        self.mainModeList.addMode(ScoreTwoCenterB())
-        self.mainModeList.addMode(ScoreTwoLeftA())
-        self.mainModeList.addMode(ScoreTwoRightC())
-        self.mainModeList.addMode(ScoreThreeCenterBA())
-        self.mainModeList.addMode(ScoreThreeCenterBC())
+        #self.mainModeList.addMode(IntakeTest())
+        self.mainModeList.addMode(ScoreLeaveA())
+        self.mainModeList.addMode(ScoreLeaveB())
+        self.mainModeList.addMode(ScoreLeaveC())
+        self.mainModeList.addMode(ScoreTwoA1())
+        self.mainModeList.addMode(ScoreTwoB2())
+        self.mainModeList.addMode(ScoreTwoC3())
+        self.mainModeList.addMode(ScoreThreeB21())
+        self.mainModeList.addMode(ScoreThreeB23())
         
         
 

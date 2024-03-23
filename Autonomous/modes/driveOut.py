@@ -6,8 +6,8 @@ from AutoSequencerV2.mode import Mode
 class DriveOut(Mode):
     def __init__(self):
         Mode.__init__(self, f"Drive Out")
-        #self.pathCmd = DrivePathCommand("DriveOut")
-        self.pathCmd = DrivePathCommand("rotate")
+        self.pathCmd = DrivePathCommand("DriveOut")
+        #self.pathCmd = DrivePathCommand("rotate")
 
     def getCmdGroup(self):
         # Just return the path command

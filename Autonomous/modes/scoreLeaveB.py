@@ -3,9 +3,9 @@ from Autonomous.commands.drivePathCommand import DrivePathCommand
 from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 
-class ScoreLeaveCenter(Mode):
+class ScoreLeaveB(Mode):
     def __init__(self):
-        Mode.__init__(self, f"Score Leave Center")
+        Mode.__init__(self, f"Score Leave B")
         self.SequentialCommandGroup = SequentialCommandGroup()
         self.pathCmd = DrivePathCommand("DriveOut2")
         self.shoot = SpeakerShootCommand()
