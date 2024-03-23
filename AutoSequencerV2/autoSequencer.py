@@ -13,6 +13,7 @@ from Autonomous.modes.ScoreTwoLeftA import ScoreTwoLeftA
 # from Autonomous.modes.scoreThree import scoreThree
 from Autonomous.modes.ScoreLeaveLeft import ScoreLeaveLeft
 from Autonomous.modes.ScoreLeaveCenter import ScoreLeaveCenter
+from Autonomous.modes.justShoot import justShoot
 from Autonomous.modes.scSpeakLAP1 import ScSpeakLAP1
 from Autonomous.modes.intakeTest import IntakeTest
 from utils.singleton import Singleton
@@ -43,6 +44,7 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScoreTwoLeftA())
         self.mainModeList.addMode(ScoreTwoRightC())
         self.mainModeList.addMode(ScoreThreeCenterBA())
+        self.mainModeList.addMode(justShoot())
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()
