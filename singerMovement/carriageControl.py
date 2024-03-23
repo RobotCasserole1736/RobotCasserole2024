@@ -52,7 +52,7 @@ class CarriageControl(metaclass=Singleton):
         self.elevatorHeightAutoAlign = Calibration(name="Elev Height AutoAlign", units="m", default=0.4 )
 
         # Physical travel limits
-        self.singerRotSoftLimitMax = Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 70.0 )
+        self.singerRotSoftLimitMax = Calibration(name="Singer Rot Soft Limit Max", units="deg", default= 60.0 )
         self.singerRotSoftLimitMin = Calibration(name="Singer Rot Soft Limit Min", units="deg", default=-20.0 )
         self.elevatorHeightSoftLimitMax = Calibration(name="Elevator Height Soft Limit Max", units="m", default= 0.5 )
         self.elevatorHeightSoftLimitMin = Calibration(name="Elevator Height Soft Limit Min", units="m", default= 0.0)

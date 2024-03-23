@@ -24,4 +24,4 @@ SINGER_GEARBOX_RATIO = 125.0/1.0
 #how fast we want our motor to be running if we are controlling it manually
 SINGER_MOTOR_SLOW_FACTOR = .5
 
-SINGER_ABS_ENC_OFF_DEG = 70.0
+SINGER_ABS_ENC_OFF_DEG = 60.0

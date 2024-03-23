@@ -95,30 +95,28 @@ class SingerAngleControl():
         return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6
 
     def setDesPos(self, desPos):
-        #self.stopped = False
-        self.stopped = True
-        #self.curUnprofiledPosCmd = desPos
-        self.curUnprofiledPosCmd = self.getAngleRad()
+        self.stopped = False
+        self.curUnprofiledPosCmd = desPos
         self._setProfile(self.curUnprofiledPosCmd)
 
     def setStopped(self):
-        #self.stopped = True
+        self.stopped = True
         self.curUnprofiledPosCmd = self.getAngleRad()
-        #self.profiler.disable()
+        self.profiler.disable()
 
     def _setProfile(self, desPos):
         self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngleRad())
 
     def getProfiledDesPos(self):
         return self.profiledPos
-    
+
     def manualCtrl(self,cmdIn):
         self.motor.setVoltage(cmdIn)
 
     def update(self):
         actualPos = self.getAngleRad()
         self.singerRotAbsSen.update()
-        
+
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
             self.motor.setPID(self.kP.get(), 0.0, 0.0)

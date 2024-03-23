@@ -31,10 +31,10 @@ class ElevatorHeightControl(metaclass=Singleton):
         self.heightAbsSen.setRangingMode(TimeOfFlight.RangingMode.kShort, 24)
         self.heightAbsSen.setRangeOfInterest(6, 6, 10, 10)  # fov for sensor
 
-        self.kV = Calibration(name="Elevator kV", default=0.02, units="V/rps")
-        self.kS = Calibration(name="Elevator kS", default=0.1, units="V")
-        self.kG = Calibration(name="Elevator kG", default=0.25, units="V")
-        self.kP = Calibration(name="Elevator kP", default=0.05, units="V/rad error")
+        self.kV = Calibration(name="Elevator kV", default=0.01, units="V/rps")
+        self.kS = Calibration(name="Elevator kS", default=0.2, units="V")
+        self.kG = Calibration(name="Elevator kG", default=0.2, units="V")
+        self.kP = Calibration(name="Elevator kP", default=0.1, units="V/rad error")
 
         self.motor.setPID(self.kV.get(), 0.0, 0.0)
         self.motor.setPID(self.kS.get(), 0.0, 0.0)
@@ -47,7 +47,7 @@ class ElevatorHeightControl(metaclass=Singleton):
         # After mounting the sensor, these should be tweaked one time
         # in order to adjust whatever the sensor reads into the reference frame
         # of the mechanism
-        self.absOffsetM = 0.074
+        self.absOffsetM = 0.0
 
         # Relative Encoder Offsets
         # Releative encoders always start at 0 at power-on
@@ -105,16 +105,14 @@ class ElevatorHeightControl(metaclass=Singleton):
         return abs(self.curUnprofiledPosCmd - self.getHeightM()) <= .04
 
     def setDesPos(self, desPos):
-        #self.stopped = False
-        self.stopped = True
-        #self.curUnprofiledPosCmd = desPos
-        self.curUnprofiledPosCmd = self.getHeightM()
+        self.stopped = False
+        self.curUnprofiledPosCmd = desPos
         self.profiler.set(desPos, self.maxV.get(), self.maxA.get(), self.getHeightM())
 
     def setStopped(self):
-        #self.stopped = True
+        self.stopped = True
         self.curUnprofiledPosCmd = self.getHeightM()
-        #self.profiler.disable()
+        self.profiler.disable()
     
     def getProfiledDesPos(self):
         return self.profiledPos
