@@ -10,7 +10,7 @@ from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 class ScoreTwoCenterB(Mode):
     def __init__(self):
         Mode.__init__(self, f"Score Two Center B")
-        self.pathCmd = DrivePathCommand("scoreTwo.1")
+        self.pathCmd = DrivePathCommand("ScoreTwoCenterB")
         self.driveSlow = DriveForwardSlowCommand()
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()

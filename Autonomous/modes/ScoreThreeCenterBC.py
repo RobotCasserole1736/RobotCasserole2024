@@ -9,12 +9,12 @@ from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 from Autonomous.commands.retractCommand import RetractCommand
 
 # Just drives out of the starting zone. That's all.
-class ScoreThreeCenterBA(Mode):
+class ScoreThreeCenterBC(Mode):
     def __init__(self):
-        Mode.__init__(self, f"Score Three Center BA")
+        Mode.__init__(self, f"Score Three Center BC")
         
         self.pathCmd = DrivePathCommand("ScoreTwoCenterB")
-        self.pathCmd2 = DrivePathCommand("ScoreThreeCenterBA")
+        self.pathCmd2 = DrivePathCommand("ScoreThreeCenterBC")
         
         self.intake = IntakeCommand()
         self.intake.maxDuration(3)

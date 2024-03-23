@@ -5,6 +5,7 @@ from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
 from Autonomous.modes.ScoreThreeCenterBA import ScoreThreeCenterBA
+from Autonomous.modes.ScoreThreeCenterBC import ScoreThreeCenterBC
 from Autonomous.modes.ScoreTwoRightC import ScoreTwoRightC
 from Autonomous.modes.driveOut import DriveOut
 from Autonomous.modes.ScoreLeaveRight import ScoreLeaveRight
@@ -35,16 +36,19 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList = ModeList("Main")
         self.mainModeList.addMode(DoNothingMode())
         self.mainModeList.addMode(DriveOut())
+        self.mainModeList.addMode(justShoot())
+        self.mainModeList.addMode(IntakeTest())
         self.mainModeList.addMode(ScoreLeaveLeft())
         self.mainModeList.addMode(ScoreLeaveCenter())
         self.mainModeList.addMode(ScoreLeaveRight())
-        self.mainModeList.addMode(ScSpeakLAP1())
-        self.mainModeList.addMode(IntakeTest())
+        #self.mainModeList.addMode(ScSpeakLAP1())
         self.mainModeList.addMode(ScoreTwoCenterB())
         self.mainModeList.addMode(ScoreTwoLeftA())
         self.mainModeList.addMode(ScoreTwoRightC())
         self.mainModeList.addMode(ScoreThreeCenterBA())
-        self.mainModeList.addMode(justShoot())
+        self.mainModeList.addMode(ScoreThreeCenterBC())
+        
+        
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()

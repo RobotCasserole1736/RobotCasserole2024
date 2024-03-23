@@ -10,7 +10,8 @@ from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
 class ScoreTwoRightC(Mode):
     def __init__(self):
         Mode.__init__(self, f"Score Two Right C")
-        self.pathCmd = DrivePathCommand("scoreTwoC.1")
+        self.pathCmd = DrivePathCommand("ScoreTwoRightC")
+        self.driveSlow = DriveForwardSlowCommand()
         self.intake = IntakeCommand()
         self.shoot = SpeakerShootCommand()
         self.shoot2 = SpeakerShootCommand()
@@ -25,6 +26,7 @@ class ScoreTwoRightC(Mode):
     def getCmdGroup(self):
         return self.shootCommandGroup.andThen(self.intakeCommandGroup).\
             andThen(self.shootCommandGroup2)
+        #return self.intakeCommandGroup.andThen(self.shootCommandGroup)
 
     def getInitialDrivetrainPose(self):
         # Use the path command to specify the starting pose
