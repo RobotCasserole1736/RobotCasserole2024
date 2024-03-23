@@ -19,7 +19,7 @@ class IntakeCommand(Command):
         )
 
     def isDone(self):
-        return Timer.getFPGATimestamp() - self.startTime >= 5 or GamePieceHandling().getNoteInPlace()
+        return Timer.getFPGATimestamp() - self.startTime >= 5
 
     def end(self,interrupt):
         GamePieceHandling().setInput(False,False,False,False)

@@ -112,7 +112,6 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
     def update(self):
-
         # Update PID Gains if needed
         if self.shooterkPCal.isChanged():
             self._updateCals()
@@ -158,9 +157,6 @@ class GamePieceHandling(metaclass=Singleton):
             # And don't shoot
             self.updateShooter(False)
 
-        elif self.shooterSpooledUp and self.spoolUpCmd and self.shooterOnCmd:
-            self.updateIntake(True)
-
         elif self.spoolUpCmd:
             # Shooting Commanded
             self.updateShooter(True)
@@ -170,7 +166,11 @@ class GamePieceHandling(metaclass=Singleton):
                                 abs(self.shooterMotorRight.getMotorVelocityRadPerSec())))
             # We're at the right shooter speed, go ahead and inject the gamepiece
             self.shooterSpooledUp = abs(RPM2RadPerSec(self.shooterVel.get()) - self.curShooterVel)\
-                < RPM2RadPerSec(250.0)
+                  < RPM2RadPerSec(250.0)
+            if self.shooterSpooledUp and self.shooterOnCmd:
+                self.updateIntake(True)
+            else:
+                self.updateIntake(False)
 
         elif self.ejectOnCmd:
             self.updateEject(True)
