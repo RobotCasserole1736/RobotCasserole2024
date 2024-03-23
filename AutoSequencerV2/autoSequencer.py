@@ -4,18 +4,16 @@ from AutoSequencerV2.modeList import ModeList
 from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
+from Autonomous.modes.ScoreThreeCenterBA import ScoreThreeCenterBA
+from Autonomous.modes.ScoreTwoRightC import ScoreTwoRightC
 from Autonomous.modes.driveOut import DriveOut
-from Autonomous.modes.noteThief import NoteThief
-from Autonomous.modes.scoreThree import scoreThree
-from Autonomous.modes.scoreTwo import ScoreTwo
-from Autonomous.modes.scoreTwoA import ScoreTwoA
-from Autonomous.modes.scoreTwoC import ScoreTwoC
+from Autonomous.modes.ScoreLeaveRight import ScoreLeaveRight
+from Autonomous.modes.ScoreTwoCenterB import ScoreTwoCenterB
+from Autonomous.modes.ScoreTwoLeftA import ScoreTwoLeftA
 # from Autonomous.modes.scoreThree import scoreThree
-from Autonomous.modes.scSpeakLA import ScSpeakLA
-from Autonomous.modes.scSpeakLB import ScSpeakLB
-from Autonomous.modes.scSpeakLC import ScSpeakLC
+from Autonomous.modes.ScoreLeaveLeft import ScoreLeaveLeft
+from Autonomous.modes.ScoreLeaveCenter import ScoreLeaveCenter
 from Autonomous.modes.scSpeakLAP1 import ScSpeakLAP1
-from Autonomous.modes.speakerAltPath import speakerAltPath
 from Autonomous.modes.intakeTest import IntakeTest
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
@@ -36,17 +34,15 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList = ModeList("Main")
         self.mainModeList.addMode(DoNothingMode())
         self.mainModeList.addMode(DriveOut())
-        self.mainModeList.addMode(NoteThief())
-        self.mainModeList.addMode(speakerAltPath())
-        self.mainModeList.addMode(ScSpeakLA())
-        self.mainModeList.addMode(ScSpeakLB())
-        self.mainModeList.addMode(ScSpeakLC())
+        self.mainModeList.addMode(ScoreLeaveLeft())
+        self.mainModeList.addMode(ScoreLeaveCenter())
+        self.mainModeList.addMode(ScoreLeaveRight())
         self.mainModeList.addMode(ScSpeakLAP1())
         self.mainModeList.addMode(IntakeTest())
-        self.mainModeList.addMode(ScoreTwo())
-        self.mainModeList.addMode(ScoreTwoA())
-        self.mainModeList.addMode(ScoreTwoC())
-        self.mainModeList.addMode(scoreThree())
+        self.mainModeList.addMode(ScoreTwoCenterB())
+        self.mainModeList.addMode(ScoreTwoLeftA())
+        self.mainModeList.addMode(ScoreTwoRightC())
+        self.mainModeList.addMode(ScoreThreeCenterBA())
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()

@@ -5244,7 +5244,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "DriveOut1": {
+        "ScoreLeaveLeft": {
             "waypoints": [
                 {
                     "x": 0.7391523122787476,
@@ -5580,7 +5580,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "DriveOut2": {
+        "ScoreLeaveCenter": {
             "waypoints": [
                 {
                     "x": 1.0892974138259888,
@@ -5736,7 +5736,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "DriveOut3": {
+        "ScoreLeaveRight": {
             "waypoints": [
                 {
                     "x": 0.6689382195472717,
@@ -6029,7 +6029,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "scoreTwo": {
+        "ScoreTwoCenterB": {
             "waypoints": [
                 {
                     "x": 1.3305332660675049,
@@ -6348,7 +6348,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "scoreThree": {
+        "ScoreThreeCenterBA": {
             "waypoints": [
                 {
                     "x": 1.3436737060546875,
@@ -6758,7 +6758,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "scoreTwoC": {
+        "ScoreTwoRightC": {
             "waypoints": [
                 {
                     "x": 0.6848086714744568,
@@ -7282,7 +7282,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": []
         },
-        "scoreTwoA": {
+        "ScoreTwoLeftA": {
             "waypoints": [
                 {
                     "x": 0.6543866991996765,
