@@ -77,6 +77,7 @@ class DriverInterface:
 
             # Climber Winch Cmd
             self.velWinchCmd = (
+                #TODO - this command logic doesn't make sense. I believe drivers need to be able to control the winch in both directions. We also likely want a lock-out button so it isn't accidentally run during the match
                 self.ctrl.getLeftTriggerAxis() + self.ctrl.getRightTriggerAxis()
             )
 
@@ -103,6 +104,7 @@ class DriverInterface:
         log("DI Rot Cmd", self.velTCmd, "radps")
         log("DI connective fault", self.ctrl.isConnected(), "bool")
         log("DI gyroResetCmd", self.gyroResetCmd, "bool")
+        #TODO - at the moment, velWinchCmdd is definitely not a bool...
         log("DI velWinchCmdd", self.velWinchCmd, "bool")
 
     # TODO - are these individual getters for x/y/theta needed?
