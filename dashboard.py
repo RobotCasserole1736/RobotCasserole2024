@@ -27,12 +27,12 @@ class Dashboard:
         webServer.addDashboardWidget(Icon(45, 65, "/SmartDashboard/GamepieceIconState", "#00FF00", "newIntakeimg"))
         webServer.addDashboardWidget(Icon(55, 65, "/SmartDashboard/AutoAlignIconState", "#0000FF", "autoAlign"))
 
-        
-        leftCamera = cs.UsbCamera("LEFT_CAM", 0)
-        cs.CameraServer.startAutomaticCapture(0)
-        cs.CameraServer.getVideo(leftCamera)
-        leftCamera.setPath("http://roborio-1736-frc.local:1181")
-        webServer.addDashboardWidget(Camera(75, 60, "http://roborio-1736-frc.local:1181/stream.mjpg"))
+        if not wpilib.RobotBase.isSimulation():
+            leftCamera = cs.UsbCamera("LEFT_CAM", 0)
+            cs.CameraServer.startAutomaticCapture(0)
+            cs.CameraServer.getVideo(leftCamera)
+            leftCamera.setPath("http://roborio-1736-frc.local:1181")
+            webServer.addDashboardWidget(Camera(75, 60, "http://roborio-1736-frc.local:1181/stream.mjpg"))
         
 
         webServer.addDashboardWidget(

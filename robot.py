@@ -171,6 +171,11 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer.updateMode()
         Trajectory().trajCtrl.updateCals()
 
+    def disabledInit(self):
+        self.oInt.update()
+        self.dInt.update()
+        self.autoSequencer.updateMode(True)
+
     #########################################################
     ## Test-Specific init and update
     def testInit(self):

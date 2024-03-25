@@ -49,7 +49,7 @@ class SequentialCommandGroup(Runnable, Composer):
         return self._curCmdIdx >= len(self.cmdList)
     
     def getName(self):
-        return "sewuentialCommandGroup"
+        return "sequentialCommandGroup"
 
     ##################################################
     ## composition handlers

@@ -75,6 +75,7 @@ class AutoSequencer(metaclass=Singleton):
         delayChanged = self.delayModeList.updateMode()
         if mainChanged or delayChanged or force or self._allianceChanged():
             mainMode = self.mainModeList.getCurMode()
+            mainMode.__init__()
             delayMode = self.delayModeList.getCurMode()
             self.topLevelCmdGroup = delayMode.getCmdGroup().andThen(
                 mainMode.getCmdGroup()
