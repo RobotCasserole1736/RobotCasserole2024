@@ -62,7 +62,7 @@ class DriverInterface:
             # Climber Winch Cmd
             self.velWinchCmdUp = self.ctrl.getRightTriggerAxis() > 0.5
             self.velWinchCmdDown = self.ctrl.getLeftTriggerAxis() * 12.0
-            self.allowWinchCmd = self.ctrl.getLeftBumperPressed()
+            self.allowWinchCmd = self.ctrl.getLeftBumper()
 
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
@@ -99,10 +99,12 @@ class DriverInterface:
 
     def getWinchCmd(self):
         if self.allowWinchCmd:
-            if self.velWinchCmdDown is not 0 and not self.velWinchCmdUp:
+            if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
                 return self.velWinchCmdDown
-            elif self.velWinchCmdUp and self.velWinchCmdDown is 0:
+            elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
                 return 2.4
+            else:
+                return 0
         else:
             return 0
 

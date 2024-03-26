@@ -24,7 +24,7 @@ class ClimberControl:
         self.ratchetDebouncer = Debouncer(
             self.ratchetDebouncerTime.get(), Debouncer.DebounceType.kRising
         )
-        self.cmdSpd = 0
+        self.cmdVol = 0
 
     def ctrlWinch(self, cmdIn):
         self.cmdVol = cmdIn
@@ -38,11 +38,9 @@ class ClimberControl:
         self.ratchetRight.set(Relay.Value.kOff)
 
     def update(self):
-        if self.cmdVol is not 0:
+        if not self.cmdVol == 0:
             self.unlockClimber()
-            if self.ratchetDebouncer.calculate(self.ratchetLeft.get() != Relay.Value.kOn):
-                self.winchLeft.setVoltage(self.cmdVol)
-            else:
-                self.winchLeft.setVoltage(0)
+            self.winchLeft.setVoltage(self.cmdVol)
         else:
+            self.lockClimber()
             self.winchLeft.setVoltage(0)
