@@ -14,7 +14,9 @@ from Autonomous.modes.scoreTwoA1 import ScoreTwoA1
 from Autonomous.modes.scoreTwoB2 import ScoreTwoB2
 from Autonomous.modes.scoreTwoC3 import ScoreTwoC3
 from Autonomous.modes.justShoot import justShoot
-from Autonomous.modes.scSpeakLAP1 import ScSpeakLAP1
+from Autonomous.modes.scoreTwoC6 import ScoreTwoC6
+from Autonomous.modes.scoreTwoA4 import ScoreTwoA4
+from Autonomous.modes.scoreTwoC8 import ScoreTwoC8
 from Autonomous.modes.intakeTest import IntakeTest
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
@@ -43,8 +45,13 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList.addMode(ScoreTwoA1())
         self.mainModeList.addMode(ScoreTwoB2())
         self.mainModeList.addMode(ScoreTwoC3())
+        self.mainModeList.addMode(ScoreTwoA4())
+        self.mainModeList.addMode(ScoreTwoC6())
+        self.mainModeList.addMode(ScoreTwoC8())
+
         self.mainModeList.addMode(ScoreThreeB21())
         self.mainModeList.addMode(ScoreThreeB23())
+    
         
         
 
