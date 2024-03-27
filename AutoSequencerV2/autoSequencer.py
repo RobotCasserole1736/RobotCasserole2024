@@ -4,15 +4,17 @@ from AutoSequencerV2.modeList import ModeList
 from AutoSequencerV2.builtInModes.doNothingMode import DoNothingMode
 from AutoSequencerV2.builtInModes.waitMode import WaitMode
 from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
+from Autonomous.modes.scoreLeaveA import ScoreLeaveA
+from Autonomous.modes.scoreLeaveB import ScoreLeaveB
+from Autonomous.modes.scoreLeaveC import ScoreLeaveC
 from Autonomous.modes.driveOut import DriveOut
-from Autonomous.modes.noteThief import NoteThief
-from Autonomous.modes.scoreTwo import ScoreTwo
-# from Autonomous.modes.scoreThree import scoreThree
-from Autonomous.modes.scSpeakLA import ScSpeakLA
-from Autonomous.modes.scSpeakLB import ScSpeakLB
-from Autonomous.modes.scSpeakLC import ScSpeakLC
+from Autonomous.modes.scoreThreeB21 import ScoreThreeB21
+from Autonomous.modes.scoreThreeB23 import ScoreThreeB23
+from Autonomous.modes.scoreTwoA1 import ScoreTwoA1
+from Autonomous.modes.scoreTwoB2 import ScoreTwoB2
+from Autonomous.modes.scoreTwoC3 import ScoreTwoC3
+from Autonomous.modes.justShoot import justShoot
 from Autonomous.modes.scSpeakLAP1 import ScSpeakLAP1
-from Autonomous.modes.speakerAltPath import speakerAltPath
 from Autonomous.modes.intakeTest import IntakeTest
 from utils.singleton import Singleton
 from utils.allianceTransformUtils import onRed
@@ -33,15 +35,18 @@ class AutoSequencer(metaclass=Singleton):
         self.mainModeList = ModeList("Main")
         self.mainModeList.addMode(DoNothingMode())
         self.mainModeList.addMode(DriveOut())
-        self.mainModeList.addMode(NoteThief())
-        self.mainModeList.addMode(speakerAltPath())
-        self.mainModeList.addMode(ScSpeakLA())
-        self.mainModeList.addMode(ScSpeakLB())
-        self.mainModeList.addMode(ScSpeakLC())
-        self.mainModeList.addMode(ScSpeakLAP1())
-        self.mainModeList.addMode(IntakeTest())
-        self.mainModeList.addMode(ScoreTwo())
-        #self.mainModeList.addMode(scoreThree())
+        self.mainModeList.addMode(justShoot())
+        #self.mainModeList.addMode(IntakeTest())
+        self.mainModeList.addMode(ScoreLeaveA())
+        self.mainModeList.addMode(ScoreLeaveB())
+        self.mainModeList.addMode(ScoreLeaveC())
+        self.mainModeList.addMode(ScoreTwoA1())
+        self.mainModeList.addMode(ScoreTwoB2())
+        self.mainModeList.addMode(ScoreTwoC3())
+        self.mainModeList.addMode(ScoreThreeB21())
+        self.mainModeList.addMode(ScoreThreeB23())
+        
+        
 
 
         self.topLevelCmdGroup = SequentialCommandGroup()
@@ -70,6 +75,7 @@ class AutoSequencer(metaclass=Singleton):
         delayChanged = self.delayModeList.updateMode()
         if mainChanged or delayChanged or force or self._allianceChanged():
             mainMode = self.mainModeList.getCurMode()
+            mainMode.__init__()
             delayMode = self.delayModeList.getCurMode()
             self.topLevelCmdGroup = delayMode.getCmdGroup().andThen(
                 mainMode.getCmdGroup()

@@ -17,6 +17,9 @@ class IntakeCommand(Command):
             False,
             False
         )
+        
+    def maxDuration(self, duration):
+        self.duration = duration + 1
 
     def isDone(self):
         return Timer.getFPGATimestamp() - self.startTime >= 5

@@ -174,20 +174,3 @@ class OperatorInterface(metaclass=Singleton):
     def getCarriagePodiumPosCmd(self):
         # returns whether the singer is being commanded go to the position it will need to shoot from the podium
         return self.carriagePodiumPos
-
-    # when you're using this logic, make sure there is an "else" if none of these commands are activated.
-    # In the else:, nothing should happen
-
-    """We will use these getters with other motor-related setters, once those have been created"""
-
-    # if the manual commands to control the singer are active, we will have to know that and get them later
-    def manCmdActive(self):
-        return self.manualSingerUpDown != 0 or self.manualSingerRot != 0
-
-    # this will be joystick command for degrees
-    def getManSingerRotCmd(self):
-        return self.manualSingerRot*12
-
-    # this will be joystick command for going up/down
-    def manSingerUpDown(self):
-        return self.manSingerUpDown

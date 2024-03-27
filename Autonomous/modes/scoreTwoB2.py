@@ -1,0 +1,33 @@
+from AutoSequencerV2.parallelCommandGroup import ParallelCommandGroup
+from AutoSequencerV2.builtInCommands.waitCommand import WaitCommand
+from AutoSequencerV2.sequentialCommandGroup import SequentialCommandGroup
+from Autonomous.commands.drivePathCommand import DrivePathCommand
+from AutoSequencerV2.mode import Mode
+from Autonomous.commands.driveForwardSlowCommand import DriveForwardSlowCommand
+from Autonomous.commands.intakeCommand import IntakeCommand
+from Autonomous.commands.speakerShootCommand import SpeakerShootCommand
+
+class ScoreTwoB2(Mode):
+    def __init__(self):
+        Mode.__init__(self, f"Score Two B 2")
+        self.pathCmd = DrivePathCommand("ScoreTwoB2")
+        self.driveSlow = DriveForwardSlowCommand()
+        self.intake = IntakeCommand()
+        self.shoot = SpeakerShootCommand()
+        self.shoot2 = SpeakerShootCommand()
+        self.wait = WaitCommand(1)
+        self.wait2 = WaitCommand(1)
+        self.wait3 = WaitCommand(1)
+
+        self.intakeCommandGroup = ParallelCommandGroup([self.pathCmd, self.intake])
+        self.shootCommandGroup = SequentialCommandGroup([self.shoot, self.wait])
+        self.shootCommandGroup2 = SequentialCommandGroup([self.shoot2, self.wait3])
+
+    def getCmdGroup(self):
+        return self.shootCommandGroup.andThen(self.intakeCommandGroup).\
+            andThen(self.shootCommandGroup2)
+        #return self.intakeCommandGroup.andThen(self.shootCommandGroup)
+
+    def getInitialDrivetrainPose(self):
+        # Use the path command to specify the starting pose
+        return self.pathCmd.path.getInitialPose()

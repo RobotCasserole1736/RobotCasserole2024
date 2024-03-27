@@ -9,7 +9,6 @@ from pieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.operatorInterface import OperatorInterface
 from humanInterface.driverInterface import DriverInterface
 from humanInterface.ledControl import LEDControl
-from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -20,7 +19,7 @@ from utils.singleton import destroyAllSingletonInstances
 from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
-# from climbControl.climberControl import ClimberControl
+from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
 
 class MyRobot(wpilib.TimedRobot):
@@ -43,15 +42,13 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
-        # self.climbCtrl = ClimberControl()
+        self.climbCtrl = ClimberControl()
 
-        self.carriageControl = CarriageControl()
         self.gph = GamePieceHandling()
 
         self.ledCtrl = LEDControl()
 
         self.autoSequencer = AutoSequencer()
-    
 
         self.dashboard = Dashboard()
 
@@ -67,20 +64,14 @@ class MyRobot(wpilib.TimedRobot):
         self.addPeriodic(CalibrationWrangler().update, 0.5, 0.0)
         self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
 
-        # One-time init of carriage position from the absolute sensors
-        self.carriageControl.initFromAbsoluteSensors()
-
-
     def robotPeriodic(self):
         self.stt.start()
 
         self.driveTrain.update()
 
-        # self.climbCtrl.update()
+        self.climbCtrl.update()
 
         self.gph.update()
-
-        self.carriageControl.update(useFuncGen=self.isTestEnabled())
 
         self.stt.end()
 
@@ -93,8 +84,6 @@ class MyRobot(wpilib.TimedRobot):
 
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
-
-        self.carriageControl.onEnable(False) 
 
 
     def autonomousPeriodic(self):
@@ -113,7 +102,7 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        self.carriageControl.onEnable(False) 
+        pass
 
     def teleopPeriodic(self):
 
@@ -122,26 +111,9 @@ class MyRobot(wpilib.TimedRobot):
         self.dInt.update()
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
-        # AutoDrive().setSpeakerAutoAlignCmd(self.oInt.getSpeakerAutoAlignCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
-
-        # Map operator command to carriage control command
-        """
-        if(self.oInt.getCarriageAmpPosCmd()):
-            self.carriageControl.setPositionCmd(CarriageControlCmd.AMP)
-        elif(self.oInt.getCarriageIntakePosCmd()):
-            self.carriageControl.setPositionCmd(CarriageControlCmd.INTAKE)
-        elif(self.oInt.getCarriageTrapPosCmd()):
-            self.carriageControl.setPositionCmd(CarriageControlCmd.TRAP)
-        elif(self.oInt.getSpeakerAutoAlignCmd()):
-            self.carriageControl.setPositionCmd(CarriageControlCmd.AUTO_ALIGN)
-        elif(self.oInt.getCarriageSpeakerSubwooferPosCmd()):
-            self.carriageControl.setPositionCmd(CarriageControlCmd.SUB_SHOT)
-        else:
-            self.carriageControl.setPositionCmd(CarriageControlCmd.HOLD)
-        """
 
         # Gamepiece handling input
         self.gph.setInput(
@@ -154,12 +126,12 @@ class MyRobot(wpilib.TimedRobot):
         self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())
         self.ledCtrl.setNoteInIntake(self.gph.hasGamePiece)
         self.ledCtrl.update()
-        
+
         # No trajectory in Teleop
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
-        # self.climbCtrl.ctrlWinch(self.dInt.velWinchCmd)
+        self.climbCtrl.ctrlWinch(self.dInt.getWinchCmd())
 
     #########################################################
     ## Disabled-Specific init and update
@@ -168,11 +140,15 @@ class MyRobot(wpilib.TimedRobot):
         self.autoSequencer.updateMode()
         Trajectory().trajCtrl.updateCals()
 
+    def disabledInit(self):
+        self.oInt.update()
+        self.dInt.update()
+        self.autoSequencer.updateMode(True)
+
     #########################################################
     ## Test-Specific init and update
     def testInit(self):
         wpilib.LiveWindow.setEnabled(False)
-        self.carriageControl.onEnable(True) # init the function generator
 
     def testPeriodic(self):
         SignalWrangler().markLoopStart()
