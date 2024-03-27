@@ -102,7 +102,7 @@ class DriverInterface:
             if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
                 return self.velWinchCmdDown
             elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
-                return -2.4
+                return -4.0
             else:
                 return 0
         else:

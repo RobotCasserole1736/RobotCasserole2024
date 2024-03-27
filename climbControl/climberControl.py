@@ -5,6 +5,7 @@ from wrappers.wrapperedSparkMax import WrapperedSparkMax
 class ClimberControl:
     def __init__(self):
         self.winchLeft = WrapperedSparkMax(CLIMBER_MOTOR_LEFT_CANID,"_winchLeft",brakeMode=True)
+        self.winchLeft.setInverted(True)
         self.winchRight = CANSparkMax(CLIMBER_MOTOR_RIGHT_CANID,CANSparkLowLevel.MotorType.kBrushless)
         self.winchRight.setIdleMode(CANSparkMax.IdleMode.kBrake)
         self.winchRight.follow(self.winchLeft.ctrl,True)
