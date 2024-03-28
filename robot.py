@@ -123,7 +123,7 @@ class MyRobot(wpilib.TimedRobot):
             self.oInt.getSingerShootCmd()
         )
 
-        self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())
+        # self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())
         self.ledCtrl.setNoteInIntake(self.gph.hasGamePiece)
         self.ledCtrl.update()
 
