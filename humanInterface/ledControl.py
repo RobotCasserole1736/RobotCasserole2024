@@ -21,6 +21,8 @@ class LEDControl(metaclass=Singleton):
         if self._noteInIntakeCounter > 0:
             pwmVal = -0.35  # Green Blink
             self._noteInIntakeCounter -= 1
+        elif self.noteInIntake:
+            pwmVal = 0.35 # Solid Green
         else:
             pwmVal = 0.0  # default = off
 
