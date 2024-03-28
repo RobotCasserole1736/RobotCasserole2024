@@ -11,7 +11,6 @@ from utils.constants import SPEAKER_TARGET_HEIGHT_M, \
     AMP_LOC_X_M, AMP_LOC_Y_M, SPEAKER_LOC_X_M, SPEAKER_LOC_Y_M
 from utils.signalLogging import log
 from utils.singleton import Singleton
-from humanInterface.ledControl import LEDControl
 from singerMovement.elevatorHeightControl import ElevatorHeightControl
 class AutoDrive(metaclass=Singleton):
     def __init__(self):
@@ -35,8 +34,6 @@ class AutoDrive(metaclass=Singleton):
         self.ampX = transformX(AMP_LOC_X_M)
         self.ampY = AMP_LOC_Y_M
 
-        self.ledCtrl = LEDControl()
-
         self.desiredAngle = 0
 
     def setSpeakerAutoAlignCmd(self, shouldAutoAlign: bool):
@@ -47,12 +44,9 @@ class AutoDrive(metaclass=Singleton):
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.speakerAlignActive:
-            self.ledCtrl.setAmpAutoAlignActive(False)
-            self.ledCtrl.setSpeakerAutoAlignActive(True)
             self.getDesiredSingerAngle(curPose)
             return self.calcSpeakerDrivetrainCommand(curPose, cmdIn)
         else:
-            self.ledCtrl.setSpeakerAutoAlignActive(False)
             return cmdIn
 
     def getDesiredSingerAngle(self, curPose: Pose2d):

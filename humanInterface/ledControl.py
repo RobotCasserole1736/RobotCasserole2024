@@ -16,7 +16,7 @@ class LEDControl(metaclass=Singleton):
     def update(self):
         if self.noteInIntake and not self._noteInIntakePrev:
             self._noteInIntakeCounter = int(
-                1.0 / self.sampleTime
+                3.0 / self.sampleTime
             )  # Set LED's to blink for 1 second
         if self._noteInIntakeCounter > 0:
             pwmVal = -0.35  # Green Blink
