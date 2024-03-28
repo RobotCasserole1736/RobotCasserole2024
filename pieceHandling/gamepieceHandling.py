@@ -14,7 +14,6 @@ from utils.singleton import Singleton
 from utils.units import RPM2RadPerSec, m2in, radPerSec2RPM
 from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
-from humanInterface.ledControl import LEDControl
 
 class GamePieceHandling(metaclass=Singleton):
     def __init__(self):
@@ -75,9 +74,6 @@ class GamePieceHandling(metaclass=Singleton):
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
-        # LED Controll
-        self.ledCtrl = LEDControl()
-
     def updateShooter(self, shouldRun):
         if(shouldRun):
             desVel = RPM2RadPerSec(self.shooterVel.get())
@@ -127,10 +123,8 @@ class GamePieceHandling(metaclass=Singleton):
             # Gampiece sensor ok - normal operation
             if gamepieceDistSensorMeas < self.gamePiecePresentCal.get():
                 self.hasGamePiece = True
-                self.ledCtrl.setNoteInIntake(True)
             elif gamepieceDistSensorMeas > self.gamePieceAbsentCal.get():
                 self.hasGamePiece = False
-                self.ledCtrl.setNoteInIntake(False)
             else:
                 # Hystersis - hold state
                 pass
@@ -139,7 +133,6 @@ class GamePieceHandling(metaclass=Singleton):
         if self.intakeOnCmd:
             # Intake desired - run if we don't yet have a gamepiece
             if self.hasGamePiece:
-                self.ledCtrl.setNoteInIntake(True)
                 self.updateIntake(False)
                 self.updateFloorRoller(False)
                 if gamepieceDistSensorMeas > self.gamePieceInPlaceLowCal.get() and \
@@ -150,7 +143,6 @@ class GamePieceHandling(metaclass=Singleton):
                     self.feedBackSlow(True)
                     self.noteInPlace = False
             else:
-                self.ledCtrl.setNoteInIntake(False)
                 self.updateIntake(True)
                 self.updateFloorRoller(True)
 
