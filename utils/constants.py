@@ -64,8 +64,8 @@ SHOOTER_MOTOR_LEFT_CANID = 23
 # Unused = 5
 # Unused = 6
 # Unused = 7
-# Unused = 8
-LED_CTRL_PWM = 9
+LED_STIPS_CTRL_PWM = 8
+LED_BLOCK_CTRL_PWM = 9
 
 
 #######################################################################################

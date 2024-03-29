@@ -1,5 +1,5 @@
 from wpilib import PWMMotorController
-from utils.constants import LED_CTRL_PWM
+from utils.constants import LED_BLOCK_CTRL_PWM, LED_STRIPS_CTRL_PWM
 from utils.singleton import Singleton
 
 class LEDControl(metaclass=Singleton):
@@ -10,7 +10,8 @@ class LEDControl(metaclass=Singleton):
         self.noteInIntake = False
         self._noteInIntakePrev = False
         self._noteInIntakeCounter = 0
-        self.ctrl = PWMMotorController("LEDCtrl", LED_CTRL_PWM)
+        self.ctrlBlock = PWMMotorController("LEDBlockCtrl", LED_BLOCK_CTRL_PWM)
+        self.ctrlStrips = PWMMotorController("LEDStripsCtrl", LED_STRIPS_CTRL_PWM)
         self.sampleTime = 0.1
 
     def update(self):
@@ -26,7 +27,8 @@ class LEDControl(metaclass=Singleton):
         else:
             pwmVal = 0.0  # default = off
 
-        self.ctrl.set(pwmVal)
+        self.ctrlBlock.set(pwmVal)
+        self.ctrlStrips.set(pwmVal)
         self._noteInIntakePrev = self.noteInIntake
 
     # def setSpeakerAutoAlignActive(self, isActive):
