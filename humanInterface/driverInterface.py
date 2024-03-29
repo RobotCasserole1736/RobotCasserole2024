@@ -60,7 +60,7 @@ class DriverInterface:
             self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw) 
 
             # Climber Winch Cmd
-            self.velWinchCmdUp = self.ctrl.getRightTriggerAxis() > 0.5
+            self.velWinchCmdUp = self.ctrl.getRightTriggerAxis() * -12.0
             self.velWinchCmdDown = self.ctrl.getLeftTriggerAxis() * 12.0
             self.allowWinchCmd = self.ctrl.getLeftBumper()
 
@@ -102,7 +102,7 @@ class DriverInterface:
             if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
                 return self.velWinchCmdDown
             elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
-                return -4.0
+                return self.velWinchCmdUp
             else:
                 return 0
         else:
