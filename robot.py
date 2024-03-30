@@ -19,7 +19,7 @@ from utils.singleton import destroyAllSingletonInstances
 from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
-from climbControl.climberControl import ClimberControl
+# from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
 
 class MyRobot(wpilib.TimedRobot):
@@ -42,7 +42,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
-        self.climbCtrl = ClimberControl()
+        # self.climbCtrl = ClimberControl()
 
         self.gph = GamePieceHandling()
 
@@ -69,7 +69,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driveTrain.update()
 
-        self.climbCtrl.update()
+        # self.climbCtrl.update()
 
         self.gph.update()
 
@@ -131,7 +131,7 @@ class MyRobot(wpilib.TimedRobot):
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
-        self.climbCtrl.ctrlWinch(self.dInt.getWinchCmd())
+        # self.climbCtrl.ctrlWinch(self.dInt.getWinchCmd())
 
     #########################################################
     ## Disabled-Specific init and update

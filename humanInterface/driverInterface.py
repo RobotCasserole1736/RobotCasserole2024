@@ -60,8 +60,8 @@ class DriverInterface:
             self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw) 
 
             # Climber Winch Cmd
-            self.velWinchCmdUp = self.ctrl.getRightTriggerAxis() * -12.0
-            self.velWinchCmdDown = self.ctrl.getLeftTriggerAxis() * 12.0
+            # self.velWinchCmdUp = applyDeadband(self.ctrl.getRightTriggerAxis(),0.1) * -12.0
+            # self.velWinchCmdDown = applyDeadband(self.ctrl.getLeftTriggerAxis(),0.1) * 12.0
             self.allowWinchCmd = self.ctrl.getLeftBumper()
 
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
@@ -97,16 +97,16 @@ class DriverInterface:
         retval.velT = self.velTCmd
         return retval
 
-    def getWinchCmd(self):
-        if self.allowWinchCmd:
-            if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
-                return self.velWinchCmdDown
-            elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
-                return self.velWinchCmdUp
-            else:
-                return 0
-        else:
-            return 0
+    # def getWinchCmd(self):
+    #     if self.allowWinchCmd:
+    #         if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
+    #             return self.velWinchCmdDown
+    #         elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
+    #             return self.velWinchCmdUp
+    #         else:
+    #             return 0
+    #     else:
+    #         return 0
 
     def getGyroResetCmd(self):
         return self.gyroResetCmd
