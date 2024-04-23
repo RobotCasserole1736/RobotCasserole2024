@@ -13,10 +13,10 @@ _StatusFramePeriodConfigs = [
         20,
     ],  # Status 1 = Motor velocity & electrical data
     [CANSparkMax.PeriodicFrame.kStatus2, 20],  # Status 2 = Motor Position
-    [CANSparkMax.PeriodicFrame.kStatus3, 65500],  # Status 3 = Analog Sensor Input
-    [CANSparkMax.PeriodicFrame.kStatus4, 65500],  # Status 4 = Alternate Encoder Stats
-    [CANSparkMax.PeriodicFrame.kStatus5, 65500],  # Status 5 = Duty Cycle Encoder pt1
-    [CANSparkMax.PeriodicFrame.kStatus6, 65500],  # Status 5 = Duty Cycle Encoder pt2
+    [CANSparkMax.PeriodicFrame.kStatus3, 32767],  # Status 3 = Analog Sensor Input
+    [CANSparkMax.PeriodicFrame.kStatus4, 32767],  # Status 4 = Alternate Encoder Stats
+    [CANSparkMax.PeriodicFrame.kStatus5, 32767],  # Status 5 = Duty Cycle Encoder pt1
+    [CANSparkMax.PeriodicFrame.kStatus6, 32767],  # Status 5 = Duty Cycle Encoder pt2
 ]
 
 
