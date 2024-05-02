@@ -49,7 +49,7 @@ class GamePieceHandling(metaclass=Singleton):
         # Shooter Calibrations (PID Controller)
         self.shooterkFCal = Calibration("ShooterRightkF", 0.0024, "V/RPM")
         self.shooterkPCal = Calibration("ShooterkP", 0.0002)
-        self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
+        self.shooterVel = Calibration("Shooter Velocity", 1736, "RPM")
         self._updateCals()
 
         # Intake Voltage Calibration
