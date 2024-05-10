@@ -9,6 +9,7 @@ from pieceHandling.gamepieceHandling import GamePieceHandling
 from humanInterface.operatorInterface import OperatorInterface
 from humanInterface.driverInterface import DriverInterface
 from humanInterface.ledControl import LEDControl
+from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -38,6 +39,8 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain = DrivetrainControl()
 
         self.stt = SegmentTimeTracker()
+        
+        self.cc = CarriageControl()
 
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
@@ -70,6 +73,8 @@ class MyRobot(wpilib.TimedRobot):
         self.driveTrain.update()
 
         # self.climbCtrl.update()
+        
+        self.cc.update()
 
         self.gph.update()
 
@@ -114,6 +119,13 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
+            
+        if self.oInt.getCarriageAmpPosCmd():
+            self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
+        elif self.oInt.getCarriageAmpPosCmd():
+            self.cc.setPositionCmd(CarriageControlCmd.AMP)
+        elif self.oInt.getCarriageAmpPosCmd():
+            self.cc.setPositionCmd(CarriageControlCmd.TRAP)
 
         # Gamepiece handling input
         self.gph.setInput(
