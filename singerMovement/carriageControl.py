@@ -30,7 +30,6 @@ class CarriageControlCmd(IntEnum):
     AUTO_ALIGN = 2
     AMP = 3
     TRAP = 4
-    SUB_SHOT = 5
 
 # Class to control the Carriage (elevator height + singer angle)
 # Handles sequencing the two axes to prevent crashing the robot into itself
@@ -110,8 +109,7 @@ class CarriageControl(metaclass=Singleton):
     def _getUnprofiledElevHeightCmd(self):
         if(self.curPosCmd == CarriageControlCmd.HOLD):
             return self.desElevHeight
-        elif(self.curPosCmd == CarriageControlCmd.INTAKE
-             or self.curPosCmd == CarriageControlCmd.SUB_SHOT):
+        elif(self.curPosCmd == CarriageControlCmd.INTAKE):
             return self.elevatorHeightIntake.get()
         elif(self.curPosCmd == CarriageControlCmd.AMP):
             return self.elevatorHeightAmp.get()
@@ -133,8 +131,6 @@ class CarriageControl(metaclass=Singleton):
             return deg2Rad(self.singerRotAmp.get())
         elif(self.curPosCmd == CarriageControlCmd.TRAP):
             return deg2Rad(self.singerRotTrap.get())
-        elif(self.curPosCmd == CarriageControlCmd.SUB_SHOT):
-            return deg2Rad(self.singerRotSub.get())
         elif(self.curPosCmd == CarriageControlCmd.AUTO_ALIGN):
             return self.curSingerRot # No motion commanded (already in rads)
         else:
