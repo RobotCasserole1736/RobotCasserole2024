@@ -126,11 +126,11 @@ class MyRobot(wpilib.TimedRobot):
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
             
-        if self.oInt.getCarriageAmpPosCmd():
+        if self.oInt.getCarriageIntakePosCmd():
             self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
         elif self.oInt.getCarriageAmpPosCmd():
             self.cc.setPositionCmd(CarriageControlCmd.AMP)
-        elif self.oInt.getCarriageAmpPosCmd():
+        elif self.oInt.getCarriageTrapPosCmd():
             self.cc.setPositionCmd(CarriageControlCmd.TRAP)
 
         # Gamepiece handling input
