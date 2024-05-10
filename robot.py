@@ -38,18 +38,18 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driveTrain = DrivetrainControl()
 
-        self.stt = SegmentTimeTracker()
+        #self.stt = SegmentTimeTracker()
         
-        self.cc = CarriageControl()
+        #self.cc = CarriageControl()
 
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
         # self.climbCtrl = ClimberControl()
 
-        self.gph = GamePieceHandling()
+        #self.gph = GamePieceHandling()
 
-        self.ledCtrl = LEDControl()
+        #self.ledCtrl = LEDControl()
 
         self.autoSequencer = AutoSequencer()
 
@@ -60,25 +60,25 @@ class MyRobot(wpilib.TimedRobot):
 
         # Normal robot code updates every 20ms, but not everything needs to be that fast.
         # Register slower-update periodic functions
-        self.addPeriodic(self.ledCtrl.update, self.ledCtrl.sampleTime, 0.0)
+        """self.addPeriodic(self.ledCtrl.update, self.ledCtrl.sampleTime, 0.0)
         self.addPeriodic(self.dashboard.update, 0.2, 0.0)
         self.addPeriodic(self.pwrMon.update, 0.2, 0.0)
         self.addPeriodic(self.crashLogger.update, 1.0, 0.0)
         self.addPeriodic(CalibrationWrangler().update, 0.5, 0.0)
-        self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
+        self.addPeriodic(FaultWrangler().update, 0.2, 0.0)"""
 
     def robotPeriodic(self):
-        self.stt.start()
+        #self.stt.start()
 
         self.driveTrain.update()
 
         # self.climbCtrl.update()
         
-        self.cc.update()
+        #self.cc.update()
 
-        self.gph.update()
+        #self.gph.update()
 
-        self.stt.end()
+        #self.stt.end()
 
     #########################################################
     ## Autonomous-Specific init and update
@@ -120,7 +120,7 @@ class MyRobot(wpilib.TimedRobot):
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
             
-        if self.oInt.getCarriageAmpPosCmd():
+        """if self.oInt.getCarriageAmpPosCmd():
             self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
         elif self.oInt.getCarriageAmpPosCmd():
             self.cc.setPositionCmd(CarriageControlCmd.AMP)
@@ -137,7 +137,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())
         self.ledCtrl.setNoteInIntake(self.gph.hasGamePiece)
-        self.ledCtrl.update()
+        self.ledCtrl.update()"""
 
         # No trajectory in Teleop
         Trajectory().setCmd(None)
