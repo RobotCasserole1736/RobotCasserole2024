@@ -95,14 +95,12 @@ class SingerAngleControl():
         return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6
 
     def setDesPos(self, desPos):
-        #self.stopped = False
-        self.stopped = True
-        #self.curUnprofiledPosCmd = desPos
-        self.curUnprofiledPosCmd = self.getAngleRad()
+        self.stopped = False
+        self.curUnprofiledPosCmd = desPos
         self._setProfile(self.curUnprofiledPosCmd)
 
     def setStopped(self):
-        #self.stopped = True
+        self.stopped = True
         self.curUnprofiledPosCmd = self.getAngleRad()
         #self.profiler.disable()
 

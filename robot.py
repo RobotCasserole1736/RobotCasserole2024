@@ -67,6 +67,9 @@ class MyRobot(wpilib.TimedRobot):
         self.addPeriodic(CalibrationWrangler().update, 0.5, 0.0)
         self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
 
+        # One-time init of carriage position from the absolute sensors
+        self.cc.initFromAbsoluteSensors()
+
     def robotPeriodic(self):
         self.stt.start()
 
@@ -74,7 +77,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # self.climbCtrl.update()
         
-        self.cc.update()
+        self.cc.update(useFuncGen=self.isTestEnabled())
 
         self.gph.update()
 
@@ -89,6 +92,8 @@ class MyRobot(wpilib.TimedRobot):
 
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
+
+        self.cc.onEnable(False) 
 
 
     def autonomousPeriodic(self):
@@ -107,7 +112,7 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        pass
+        self.cc.onEnable(False) 
 
     def teleopPeriodic(self):
 
@@ -116,6 +121,7 @@ class MyRobot(wpilib.TimedRobot):
         self.dInt.update()
 
         self.driveTrain.setManualCmd(self.dInt.getCmd())
+        AutoDrive().setSpeakerAutoAlignCmd(self.oInt.getSpeakerAutoAlignCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
@@ -161,6 +167,7 @@ class MyRobot(wpilib.TimedRobot):
     ## Test-Specific init and update
     def testInit(self):
         wpilib.LiveWindow.setEnabled(False)
+        self.cc.onEnable(True) # init the function generator
 
     def testPeriodic(self):
         SignalWrangler().markLoopStart()
