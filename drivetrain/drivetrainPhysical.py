@@ -104,16 +104,16 @@ MAX_ROTATE_ACCEL_RAD_PER_SEC_2 = (
 # 5 - Redeploy code, verify that the  encoder readings are correct as each module is manually rotated
 
 
-if RobotIdentification().getRobotType() == RobotTypes.Main:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 2.489
-    FR_ENCODER_MOUNT_OFFSET_RAD = 2.340
-    BL_ENCODER_MOUNT_OFFSET_RAD = -2.208
-    BR_ENCODER_MOUNT_OFFSET_RAD = -1.168
-else:
-    FL_ENCODER_MOUNT_OFFSET_RAD = 2.489
-    FR_ENCODER_MOUNT_OFFSET_RAD = 2.340
-    BL_ENCODER_MOUNT_OFFSET_RAD = -2.208
-    BR_ENCODER_MOUNT_OFFSET_RAD = -1.168
+
+#FL_ENCODER_MOUNT_OFFSET_RAD = 0.8412
+#FR_ENCODER_MOUNT_OFFSET_RAD = 0.2412
+#BL_ENCODER_MOUNT_OFFSET_RAD = 1.259
+#BR_ENCODER_MOUNT_OFFSET_RAD = 1.777
+
+FR_ENCODER_MOUNT_OFFSET_RAD = 0.8412
+FL_ENCODER_MOUNT_OFFSET_RAD = 0.2412
+BR_ENCODER_MOUNT_OFFSET_RAD = 1.259
+BL_ENCODER_MOUNT_OFFSET_RAD = 1.777
 
 
 # Module Indices (for ease of array manipulation)
@@ -127,14 +127,14 @@ BR = 3
 # which is in the center of the chassis on the ground
 ROBOT_TO_LEFT_CAM = Transform3d(
     Translation3d(
-        inchesToMeters(11.0), inchesToMeters(5.0), inchesToMeters(3.0)  # X  # Y  # Z
+        inchesToMeters(4), inchesToMeters(14.3), inchesToMeters(7.4)  # X  # Y  # Z
     ),
     Rotation3d(0.0, 0.0, 0.0),  # Roll  # Pitch  # Yaw
 )
 
 ROBOT_TO_RIGHT_CAM = Transform3d(
     Translation3d(
-        inchesToMeters(11.0), inchesToMeters(-5.0), inchesToMeters(3.0)  # X  # Y  # Z
+        inchesToMeters(4), inchesToMeters(14.3), inchesToMeters(7.4)  # X  # Y  # Z
     ),
     Rotation3d(0.0, 0.0, 0.0),  # Roll  # Pitch  # Yaw
 )
