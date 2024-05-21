@@ -27,15 +27,15 @@ Configure the vision settings (see below) for the pipeline.
 Make sure the Camera name is correct - this is what the code uses to reference which camera we're talking about (IE, the camera's name must be _exactly_ "LEFT_CAM", because that's what's in code).
 
 Overall Settings:
-Left Cam:
- * IP Address - `10.17.36.13`
- * mdns Name - `leftcam`
- * Camera name - `LEFT_CAM`
-
 Right Cam:
- * IP Address - `10.17.36.12`
+ * IP Address - `10.17.36.13`
  * mdns Name - `rightcam`
  * Camera name - `RIGHT_CAM`
+
+Left Cam:
+ * IP Address - `10.17.36.12`
+ * mdns Name - `leftcam`
+ * Camera name - `LEFT_CAM`
 
 Spare Cam:
  * IP Address - `10.17.36.11`
