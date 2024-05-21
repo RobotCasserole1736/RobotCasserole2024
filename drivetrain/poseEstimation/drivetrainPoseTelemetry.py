@@ -43,7 +43,7 @@ class DrivetrainPoseTelemetry:
     def addVisionObservations(self, observations:list[CameraPoseObservation]):
         if(len(observations) > 0):
             for obs in observations:
-                self.visionPoses.append(obs.estFieldPose())
+                self.visionPoses.append(obs.estFieldPose)
 
     def clearVisionObservations(self):
         self.visionPoses = []

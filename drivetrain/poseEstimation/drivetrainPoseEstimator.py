@@ -13,6 +13,7 @@ from drivetrain.poseEstimation.drivetrainPoseTelemetry import DrivetrainPoseTele
 from utils.faults import Fault
 from utils.signalLogging import log
 from wrappers.wrapperedPhotonCamera import WrapperedPhotonCamera
+from wpilib import Timer
 
 
 class DrivetrainPoseEstimator:
@@ -68,15 +69,17 @@ class DrivetrainPoseEstimator:
         self.camTargetsVisible = False
 
         if(self.useAprilTags):
+            self.telemetry.clearVisionObservations()
             for cam in self.cams:
                 cam.update(self.curEstPose)
                 observations = cam.getPoseEstimates()
                 for observation in observations:
                     self.poseEst.addVisionMeasurement(
-                        observation.estFieldPose, observation.time
+                        observation.estFieldPose, Timer.getFPGATimestamp()
                     )
                     self.camTargetsVisible = True
                 self.telemetry.addVisionObservations(observations)
+
 
         log("PE Vision Targets Seen", self.camTargetsVisible, "bool")
 
