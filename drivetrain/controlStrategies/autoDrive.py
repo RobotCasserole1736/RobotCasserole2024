@@ -44,7 +44,7 @@ class AutoDrive(metaclass=Singleton):
 
     def update(self, cmdIn: DrivetrainCommand, curPose: Pose2d) -> DrivetrainCommand:
         if self.speakerAlignActive:
-            self.getDesiredSingerAngle(curPose)
+           # self.getDesiredSingerAngle(curPose)
             return self.calcSpeakerDrivetrainCommand(curPose, cmdIn)
         else:
             return cmdIn

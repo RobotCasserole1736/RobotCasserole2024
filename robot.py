@@ -120,6 +120,11 @@ class MyRobot(wpilib.TimedRobot):
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
             
+        if self.oInt.getSpeakerAutoAlignCmd():
+            AutoDrive().setSpeakerAutoAlignCmd(True)
+        else:
+            AutoDrive().setSpeakerAutoAlignCmd(False)
+            
         """if self.oInt.getCarriageAmpPosCmd():
             self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
         elif self.oInt.getCarriageAmpPosCmd():
