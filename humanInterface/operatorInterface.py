@@ -28,6 +28,7 @@ class OperatorInterface(metaclass=Singleton):
         self.carriageTrapPos = False
         self.carriagePodiumPos = False
         self.carriageSpeakerSubwooferPos = False
+        self.tunerPos = False
 
         # if the operator wants the auto align desired
         self.speakerAutoAlignDesired = False
@@ -64,6 +65,7 @@ class OperatorInterface(metaclass=Singleton):
             self.carriageIntakePos = self.ctrl.getAButton()
             self.carriageAmpPos = self.ctrl.getBButton()
             self.carriageTrapPos = self.ctrl.getYButton()
+            self.tunerPos = self.ctrl.getBButton()
             self.carriageSpeakerSubwooferPos = 225 < self.ctrl.getPOV() < 315
             # Above is basically the left side of the D pad
             self.carriagePodiumPos = 45 < self.ctrl.getPOV() < 135
@@ -104,6 +106,7 @@ class OperatorInterface(metaclass=Singleton):
             self.carriageTrapPos = False
             self.carriageSpeakerSubwooferPos = False
             self.carriagePodiumPos = False
+            self.tunerPos = False
 
             # if the operator wants the auto align desired
             self.speakerAutoAlignDesired = False
@@ -126,6 +129,7 @@ class OperatorInterface(metaclass=Singleton):
             "bool",
         )
         log("OI Carriage Podium Pos Cmd", self.carriagePodiumPos, "bool")
+        log("OI Tuner Pos Cmd", self.tunerPos, "bool")
         log("OI Manual Singer Up/Down Cmd", self.manualSingerUpDown, "mps")
         log("OI Manual Singer Rot Cmd", self.manualSingerRot, "deg/s")
 
@@ -174,3 +178,6 @@ class OperatorInterface(metaclass=Singleton):
     def getCarriagePodiumPosCmd(self):
         # returns whether the singer is being commanded go to the position it will need to shoot from the podium
         return self.carriagePodiumPos
+    
+    def getTunerPosCmd(self):
+        return self.tunerPos

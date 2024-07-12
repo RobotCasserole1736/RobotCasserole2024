@@ -40,7 +40,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.stt = SegmentTimeTracker()
         
-        self.cc = CarriageControl()
+        #self.cc = CarriageControl()
 
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
@@ -68,7 +68,7 @@ class MyRobot(wpilib.TimedRobot):
         self.addPeriodic(FaultWrangler().update, 0.2, 0.0)
 
         # One-time init of carriage position from the absolute sensors
-        self.cc.initFromAbsoluteSensors()
+        #self.cc.initFromAbsoluteSensors()
 
     def robotPeriodic(self):
         self.stt.start()
@@ -77,7 +77,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # self.climbCtrl.update()
         
-        self.cc.update(useFuncGen=self.isTestEnabled())
+        #self.cc.update(useFuncGen=self.isTestEnabled())
 
         self.gph.update()
 
@@ -93,7 +93,7 @@ class MyRobot(wpilib.TimedRobot):
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
-        self.cc.onEnable(False) 
+        #self.cc.onEnable(False) 
 
 
     def autonomousPeriodic(self):
@@ -112,8 +112,8 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        self.cc.onEnable(False) 
-
+        #self.cc.onEnable(False) 
+        pass
     def teleopPeriodic(self):
 
         SignalWrangler().markLoopStart()
@@ -126,12 +126,12 @@ class MyRobot(wpilib.TimedRobot):
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
             
-        if self.oInt.getCarriageIntakePosCmd():
-            self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
-        elif self.oInt.getCarriageAmpPosCmd():
-            self.cc.setPositionCmd(CarriageControlCmd.AMP)
-        elif self.oInt.getCarriageTrapPosCmd():
-            self.cc.setPositionCmd(CarriageControlCmd.TRAP)
+        #if self.oInt.getCarriageIntakePosCmd():
+            #self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
+        #elif self.oInt.getCarriageAmpPosCmd():
+            #self.cc.setPositionCmd(CarriageControlCmd.AMP)
+        #elif self.oInt.getCarriageTrapPosCmd():
+        #    self.cc.setPositionCmd(CarriageControlCmd.TRAP)
 
         # Gamepiece handling input
         self.gph.setInput(
@@ -167,7 +167,7 @@ class MyRobot(wpilib.TimedRobot):
     ## Test-Specific init and update
     def testInit(self):
         wpilib.LiveWindow.setEnabled(False)
-        self.cc.onEnable(True) # init the function generator
+        #self.cc.onEnable(True) # init the function generator
 
     def testPeriodic(self):
         SignalWrangler().markLoopStart()
