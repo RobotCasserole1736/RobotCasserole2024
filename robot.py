@@ -10,6 +10,7 @@ from humanInterface.operatorInterface import OperatorInterface
 from humanInterface.driverInterface import DriverInterface
 from humanInterface.ledControl import LEDControl
 from singerMovement.carriageControl import CarriageControl, CarriageControlCmd
+from singerMovement.tunerAngleControl import TunerAngleControl
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.signalLogging import SignalWrangler
 from utils.calibration import CalibrationWrangler
@@ -41,6 +42,8 @@ class MyRobot(wpilib.TimedRobot):
         self.stt = SegmentTimeTracker()
         
         #self.cc = CarriageControl()
+        
+        self.tc = TunerAngleControl()
 
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
@@ -78,6 +81,8 @@ class MyRobot(wpilib.TimedRobot):
         # self.climbCtrl.update()
         
         #self.cc.update(useFuncGen=self.isTestEnabled())
+        
+        self.tc.update()
 
         self.gph.update()
 

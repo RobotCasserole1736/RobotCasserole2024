@@ -63,7 +63,6 @@ class OperatorInterface(metaclass=Singleton):
 
             # element of the elevator. Goes up, down, and rotates into position
             self.carriageIntakePos = self.ctrl.getAButton()
-            self.carriageAmpPos = self.ctrl.getBButton()
             self.carriageTrapPos = self.ctrl.getYButton()
             self.tunerPos = self.ctrl.getBButton()
             self.carriageSpeakerSubwooferPos = 225 < self.ctrl.getPOV() < 315
@@ -87,9 +86,9 @@ class OperatorInterface(metaclass=Singleton):
             self.connectedFault.setNoFault()
 
             if GamePieceHandling().getHasGamePiece():
-                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0.5)
+               self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0.5)
             else:
-                self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
+               self.ctrl.setRumble(self.ctrl.RumbleType.kBothRumble,0)
 
         else:
             self.connectedFault.setFaulted()
@@ -174,10 +173,6 @@ class OperatorInterface(metaclass=Singleton):
         # returns whether the singer is being commanded go to the position it will need to shoot
         # from the subwoofer of the speaker
         return self.carriageSpeakerSubwooferPos
-
-    def getCarriagePodiumPosCmd(self):
-        # returns whether the singer is being commanded go to the position it will need to shoot from the podium
-        return self.carriagePodiumPos
     
     def getTunerPosCmd(self):
         return self.tunerPos

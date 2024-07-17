@@ -3,7 +3,7 @@ from singerMovement.profiledAxis import ProfiledAxis
 from singerMovement.singerConstants import (ELEVATOR_GEARBOX_GEAR_RATIO, MAX_TUNER_ROT_ACCEL_DEGPS2, MAX_TUNER_ROT_VEL_DEG_PER_SEC, TUNER_ABS_ENC_OFF_DEG)
 from utils.calibration import Calibration
 from utils.constants import ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, TUNER_ANGLE_ABS_POS_ENC
-from utils.units import deg2Rad, rad2Deg, sign
+from utils.units import RPM2RadPerSec, deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
@@ -21,14 +21,15 @@ class TunerAngleControl():
         self.motorLeft = WrapperedSparkMax(ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
         self.motorRight.setInverted(True)
         self.motorLeft.setInverted(True)
-        self.maxV = Calibration(name="Singer Max Rot Vel", default=MAX_TUNER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
-        self.maxA = Calibration(name="Singer Max Rot Accel", default=MAX_TUNER_ROT_ACCEL_DEGPS2, units="degPerSec2")
+        self.maxV = Calibration(name="Tuner Max Rot Vel", default=MAX_TUNER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
+        self.maxA = Calibration(name="Tuner Max Rot Accel", default=MAX_TUNER_ROT_ACCEL_DEGPS2, units="degPerSec2")
         self.profiler = ProfiledAxis()
 
-        self.kV = Calibration(name="Singer kV", default=0.045, units="V/rps")
-        self.kS = Calibration(name="Singer kS", default=0.4, units="V")
-        self.kG = Calibration(name="Singer kG", default=0.6, units="V/cos(deg)")
-        self.kP = Calibration(name="Singer kP", default=0.15, units="V/RadErr")
+        self.kV = Calibration(name="Tuner kV", default=0.045, units="V/rps")
+        self.kS = Calibration(name="Tuner kS", default=1.0, units="V")
+        self.kG = Calibration(name="Tuner kG", default=0.6, units="V/cos(deg)")
+        self.kP = Calibration(name="Tuner kP", default=0.15, units="V/RadErr")
+        self.tunerVel = Calibration(name="Tuner Velocity", default=30, units="degPerSec")
         self.motorVelCmd = 0
 
         #Absolute position sensors
@@ -109,19 +110,27 @@ class TunerAngleControl():
 
     def getProfiledDesPos(self):
         return self.profiledPos
-    
-    def manualCtrl(self,cmdIn):
-        self.motorRight.setVoltage(cmdIn)
-        self.motorLeft.setVoltage(cmdIn)
 
     def update(self):
         actualPos = self.getAngleRad()
         self.tunerAngleAbsSen.update()
         
-        if self.Tuner.getTunerPosCmd():
-            pass
+        if self.Tuner.getTunerPosCmd() and self.tunerAngleAbsSen.curAngleRad < 1.5:
+            desVel = RPM2RadPerSec(self.tunerVel.get())
+            self.motorRight.setVelCmd(desVel,self.tunerVel.get()*self.kS.get())
+            self.motorLeft.setVelCmd(desVel,self.tunerVel.get()*self.kS.get())
+            #print("Tuner is tuning for amp")
+            
+        elif not self.Tuner.getTunerPosCmd() and self.tunerAngleAbsSen.curAngleRad > 0:
+            desVel = RPM2RadPerSec(self.tunerVel.get())
+            self.motorRight.setVelCmd(desVel,self.tunerVel.get()*self.kS.get()*-1)
+            self.motorLeft.setVelCmd(desVel,self.tunerVel.get()*self.kS.get()*-1)
+            #print("Tuner is tuning for speaker")
+            
         else:
-            pass
+            self.motorRight.setVoltage(0.0)
+            self.motorLeft.setVoltage(0.0)
+            #print("Tuner is not tuning")
         
         # Update motor closed-loop calibration
         if(self.kP.isChanged()):
@@ -147,6 +156,6 @@ class TunerAngleControl():
 
         log("Tuner Pos Des", rad2Deg(self.curUnprofiledPosCmd),"deg")
         log("Tuner Pos Profiled", rad2Deg(self.profiledPos) ,"deg")
-        log("Tuner Pos Act", rad2Deg(actualPos) ,"deg")
+        log("Tuner Pos Act", rad2Deg(self.tunerAngleAbsSen.curAngleRad) ,"deg")
         log("Tuner Motor Vel Cmd", self.motorVelCmd)
         log("Tuner Abs Sensor",rad2Deg(self.tunerAngleAbsSen.getAngleRad()))
