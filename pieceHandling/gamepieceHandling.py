@@ -14,9 +14,15 @@ from utils.singleton import Singleton
 from utils.units import RPM2RadPerSec, m2in, radPerSec2RPM
 from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
+from humanInterface.operatorInterface import OperatorInterface
+
 
 class GamePieceHandling(metaclass=Singleton):
+    
+    Tuner = OperatorInterface()
+    
     def __init__(self):
+
         # Booleans
         self.spoolUpCmd = False
         self.shooterSpooledUp = False
@@ -49,7 +55,8 @@ class GamePieceHandling(metaclass=Singleton):
         # Shooter Calibrations (PID Controller)
         self.shooterkFCal = Calibration("ShooterRightkF", 0.0024, "V/RPM")
         self.shooterkPCal = Calibration("ShooterkP", 0.0002)
-        self.shooterVel = Calibration("Shooter Velocity", 4700, "RPM")
+        self.shooterVel = Calibration("Shooter Speaker Velocity", 4700, "RPM")
+        self.shooterAmpVel = Calibration("Shooter Amp Velocity", 1736, "RPM")
         self._updateCals()
 
         # Intake Voltage Calibration
@@ -75,13 +82,20 @@ class GamePieceHandling(metaclass=Singleton):
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
     def updateShooter(self, shouldRun):
-        if(shouldRun):
+        if(shouldRun) and not self.Tuner.getTunerPosCmd():
             desVel = RPM2RadPerSec(self.shooterVel.get())
             self.shooterMotorLeft.setVelCmd(desVel,self.shooterVel.get()*self.shooterkFCal.get())
             self.shooterMotorRight.setVelCmd(desVel,self.shooterVel.get()*self.shooterkFCal.get())
+            
+        elif(shouldRun) and self.Tuner.getTunerPosCmd:
+            desVel = RPM2RadPerSec(self.shooterAmpVel.get())
+            self.shooterMotorLeft.setVelCmd(desVel,self.shooterAmpVel.get()*self.shooterkFCal.get())
+            self.shooterMotorRight.setVelCmd(desVel,self.shooterAmpVel.get()*self.shooterkFCal.get())
+        
         else:
             self.shooterMotorLeft.setVoltage(0.0)
             self.shooterMotorRight.setVoltage(0.0)
+            
 
     def feedBackSlow(self, shouldRun):
         voltage = self.feedBackSlowCal.get() if shouldRun else 0.0
