@@ -7,13 +7,13 @@ from utils.units import RPM2RadPerSec, deg2Rad, rad2Deg, sign
 from utils.signalLogging import log
 from wrappers.wrapperedSparkMax import WrapperedSparkMax
 from wrappers.wrapperedThroughBoreHexEncoder import WrapperedThroughBoreHexEncoder
-from humanInterface.operatorInterface import OperatorInterface
+
 
 # Controls the singer angle motor, including rezeroing from absolute sensors
 # and motion profiling
 class TunerAngleControl():
     
-    Tuner = OperatorInterface()
+    
     
     def __init__(self):
         # Singer Rotation Control
@@ -24,8 +24,7 @@ class TunerAngleControl():
         #self.motorLeft.setInverted(True) - Mech. removed this motor from tuner. 
         self.maxV = Calibration(name="Tuner Max Rot Vel", default=MAX_TUNER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Tuner Max Rot Accel", default=MAX_TUNER_ROT_ACCEL_DEGPS2, units="degPerSec2")
-        self.profiler = ProfiledAxis() 
-
+        
         self.kV = Calibration(name="Tuner kV", default=0.045, units="V/rps")
         self.kS = Calibration(name="Tuner kS", default=1.0, units="V")
         self.kG = Calibration(name="Tuner kG", default=0.6, units="V/cos(deg)")
@@ -79,26 +78,15 @@ class TunerAngleControl():
     # Uses displacement under constant acceleration equations
     # see https://www.ck12.org/book/ck-12-physics-concepts-intermediate/r3/section/2.6/ 
     # equation 3
-    def getStoppingDistanceRad(self): # Uses profiler, nothing calls
-        if(self.profiler.isFinished()):
-            return 0.0
 
     def atTarget(self):
         #return self.profiler.isFinished()
         return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6
 
-    def setDesPos(self, desPos): #Calls _setProfile
-        self.stopped = False
-        self.curUnprofiledPosCmd = desPos
-        self._setProfile(self.curUnprofiledPosCmd)
-
     def setStopped(self):
         self.stopped = True
         self.curUnprofiledPosCmd = self.getAngleRad()
         #self.profiler.disable()
-
-    def _setProfile(self, desPos): #Uses Profiler, called by setDesPos which is called by nothing
-        self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngleRad())
 
     def getProfiledDesPos(self):
         return self.profiledPos
@@ -134,17 +122,9 @@ class TunerAngleControl():
             self.motorLeft.setVoltage(0.0)
             self.profiledPos = actualPos
         else:
-            curState = self.profiler.getCurState()
-
-            self.profiledPos = curState.position
-
-            motorPosCmd = self._angleRadToMotorRad(curState.position)
 
             vFF = self.kV.get() * self.motorVelCmd + self.kS.get() * sign(self.motorVelCmd) \
                 - self.kG.get() * sin(actualPos + deg2Rad(15))
-
-            self.motorRight.setPosCmd(motorPosCmd, vFF)
-            self.motorLeft.setPosCmd(motorPosCmd, vFF)
 
         log("Tuner Pos Des", rad2Deg(self.curUnprofiledPosCmd),"deg")
         log("Tuner Pos Profiled", rad2Deg(self.profiledPos) ,"deg")
