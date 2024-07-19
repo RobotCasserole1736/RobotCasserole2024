@@ -19,11 +19,12 @@ class TunerAngleControl():
         # Singer Rotation Control
         self.motorRight = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
         self.motorLeft = WrapperedSparkMax(ELEVATOR_HEIGHT_LEFT_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
+        #Might need to switch inverted to false.
         self.motorRight.setInverted(True)
-        self.motorLeft.setInverted(True)
+        #self.motorLeft.setInverted(True) - Mech. removed this motor from tuner. 
         self.maxV = Calibration(name="Tuner Max Rot Vel", default=MAX_TUNER_ROT_VEL_DEG_PER_SEC, units="degPerSec")
         self.maxA = Calibration(name="Tuner Max Rot Accel", default=MAX_TUNER_ROT_ACCEL_DEGPS2, units="degPerSec2")
-        self.profiler = ProfiledAxis()
+        self.profiler = ProfiledAxis() 
 
         self.kV = Calibration(name="Tuner kV", default=0.045, units="V/rps")
         self.kS = Calibration(name="Tuner kS", default=1.0, units="V")
@@ -41,21 +42,12 @@ class TunerAngleControl():
         # of the mechanism
         self.absEncOffsetDeg = TUNER_ABS_ENC_OFF_DEG
 
-        # Relative Encoder Offsets
-        # Releative encoders always start at 0 at power-on
-        # However, we may or may not have the mechanism at the "zero" position when we powered on
-        # These variables store an offset which is calculated from the absolute sensors
-        # to make sure the relative sensors inside the encoders accurately reflect
-        # the actual position of the mechanism
-        self.relEncOffsetRad = 0.0
-
+        
         self.stopped = True
         self.profiledPos = self.absEncOffsetDeg
         self.curUnprofiledPosCmd = self.absEncOffsetDeg
 
-        self.motorLeft.setPID(self.kP.get(), 0.0, 0.0)
-        self.motorRight.setPID(self.kP.get(), 0.0, 0.0)
-
+        
 
     # Return the rotation of the signer as measured by the absolute sensor in radians
     def _getAbsRot(self):
@@ -87,7 +79,7 @@ class TunerAngleControl():
     # Uses displacement under constant acceleration equations
     # see https://www.ck12.org/book/ck-12-physics-concepts-intermediate/r3/section/2.6/ 
     # equation 3
-    def getStoppingDistanceRad(self):
+    def getStoppingDistanceRad(self): # Uses profiler, nothing calls
         if(self.profiler.isFinished()):
             return 0.0
 
@@ -95,7 +87,7 @@ class TunerAngleControl():
         #return self.profiler.isFinished()
         return abs(rad2Deg(self.curUnprofiledPosCmd - self.getAngleRad())) <= 6
 
-    def setDesPos(self, desPos):
+    def setDesPos(self, desPos): #Calls _setProfile
         self.stopped = False
         self.curUnprofiledPosCmd = desPos
         self._setProfile(self.curUnprofiledPosCmd)
@@ -105,23 +97,23 @@ class TunerAngleControl():
         self.curUnprofiledPosCmd = self.getAngleRad()
         #self.profiler.disable()
 
-    def _setProfile(self, desPos):
+    def _setProfile(self, desPos): #Uses Profiler, called by setDesPos which is called by nothing
         self.profiler.set(desPos, deg2Rad(self.maxV.get()), deg2Rad(self.maxA.get()), self.getAngleRad())
 
     def getProfiledDesPos(self):
         return self.profiledPos
 
-    def update(self):
+    def update(self, getTunerPosCmd):
         actualPos = self.getAngleRad()
         self.tunerAngleAbsSen.update()
         
-        if self.Tuner.getTunerPosCmd() and self.tunerAngleAbsSen.curAngleRad < 1.5:
+        if getTunerPosCmd and self.tunerAngleAbsSen.curAngleRad < 1.5:
             desVel = RPM2RadPerSec(self.tunerVel.get())
             self.motorRight.setVelCmd(desVel,self.tunerVel.get()*self.kS.get())
             self.motorLeft.setVelCmd(desVel,self.tunerVel.get()*self.kS.get())
             #print("Tuner is tuning for amp")
             
-        elif not self.Tuner.getTunerPosCmd() and self.tunerAngleAbsSen.curAngleRad > 0:
+        elif not getTunerPosCmd and self.tunerAngleAbsSen.curAngleRad > 0:
             desVel = RPM2RadPerSec(self.tunerVel.get())
             self.motorRight.setVelCmd(desVel,self.tunerVel.get()*self.kS.get()*-1)
             self.motorLeft.setVelCmd(desVel,self.tunerVel.get()*self.kS.get()*-1)

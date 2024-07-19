@@ -82,9 +82,9 @@ class MyRobot(wpilib.TimedRobot):
         
         #self.cc.update(useFuncGen=self.isTestEnabled())
         
-        self.tc.update()
+        self.tc.update(self.oInt.getTunerPosCmd())
 
-        self.gph.update()
+        self.gph.update(self.oInt.getTunerPosCmd())
 
         self.stt.end()
 

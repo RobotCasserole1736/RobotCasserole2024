@@ -29,7 +29,7 @@ def test_topLevel():
     dut = AutoSequencer()
     dut.addMode(CountingMode())
     dut.updateMode()
-    dut.initiaize()
+    dut.initialize()
     dut.update()
     dut.end()
 
