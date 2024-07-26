@@ -15,9 +15,9 @@ class TunerAngleControl():
 
 
     def __init__(self):
-        self.NORMAL_POS_DEG = 0.0
-        self.AMP_SHOT_POS = 55.0
-        self.MOUNT_OFFSET_DEG = -60.0
+        self.NORMAL_POS_DEG = -90.0
+        self.AMP_SHOT_POS = 112
+        self.MOUNT_OFFSET_DEG = 0.0
 
         # Singer Rotation Control
         self.motorRight = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)

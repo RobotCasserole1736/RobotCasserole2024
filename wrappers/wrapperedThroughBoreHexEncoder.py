@@ -11,5 +11,5 @@ class WrapperedThroughBoreHexEncoder(WrapperedPulseWidthEncoder):
 
     def __init__(self, port, name, mountOffsetRad=0.0, dirInverted=False):
         WrapperedPulseWidthEncoder.__init__(
-            self, port, name, mountOffsetRad, dirInverted, 1e-6, 4.096e-3, 10.0
+            self, port, name, mountOffsetRad, dirInverted, 1e-6, 1.018e-3, 10.0
         )
