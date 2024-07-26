@@ -60,8 +60,8 @@ class DriverInterface:
             self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw) 
 
             # Climber Winch Cmd
-            # self.velWinchCmdUp = applyDeadband(self.ctrl.getRightTriggerAxis(),0.1) * -12.0
-            # self.velWinchCmdDown = applyDeadband(self.ctrl.getLeftTriggerAxis(),0.1) * 12.0
+            self.velWinchCmdUp = applyDeadband(self.ctrl.getRightTriggerAxis(),0.1) * -12.0
+            self.velWinchCmdDown = applyDeadband(self.ctrl.getLeftTriggerAxis(),0.1) * 12.0
             self.allowWinchCmd = self.ctrl.getLeftBumper()
 
             self.gyroResetCmd = self.ctrl.getAButtonPressed()

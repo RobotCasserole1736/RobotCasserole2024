@@ -21,10 +21,10 @@ class TunerAngleControl():
 
         # Singer Rotation Control
         self.motorRight = WrapperedSparkMax(ELEVATOR_HEIGHT_RIGHT_MOTOR_CANID, "SingerRotMotor", brakeMode=False, currentLimitA=20.0)
-        self.motorRight.setInverted(True)
+        self.motorRight.setInverted(False)
 
         self.kP = Calibration(name="Tuner kP", default=0.1, units="V/degErr")
-        self.maxOutputV = Calibration(name="Tuner Max Voltage", default=4.0, units="V")
+        self.maxOutputV = Calibration(name="Tuner Max Voltage", default=2.0, units="V")
 
         #Absolute position sensors
         self.tunerAngleAbsSen = WrapperedThroughBoreHexEncoder(name="tunerAngleAbsPosSen", port=TUNER_ANGLE_ABS_POS_ENC, mountOffsetRad=deg2Rad(-self.MOUNT_OFFSET_DEG))
