@@ -15,7 +15,7 @@ class TunerAngleControl():
 
 
     def __init__(self):
-        self.NORMAL_POS_DEG = -90.0
+        self.NORMAL_POS_DEG = -53.0
         self.AMP_SHOT_POS = 112
         self.MOUNT_OFFSET_DEG = 0.0
 
