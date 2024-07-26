@@ -97,16 +97,16 @@ class DriverInterface:
         retval.velT = self.velTCmd
         return retval
 
-    # def getWinchCmd(self):
-    #     if self.allowWinchCmd:
-    #         if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
-    #             return self.velWinchCmdDown
-    #         elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
-    #             return self.velWinchCmdUp
-    #         else:
-    #             return 0
-    #     else:
-    #         return 0
+    def getWinchCmd(self):
+        if self.allowWinchCmd:
+            if not self.velWinchCmdDown == 0 and not self.velWinchCmdUp:
+                return self.velWinchCmdDown
+            elif self.velWinchCmdUp and self.velWinchCmdDown == 0:
+                return self.velWinchCmdUp
+            else:
+                return 0
+        else:
+            return 0
 
     def getGyroResetCmd(self):
         return self.gyroResetCmd

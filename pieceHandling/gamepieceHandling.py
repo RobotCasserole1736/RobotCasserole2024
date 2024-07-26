@@ -77,17 +77,18 @@ class GamePieceHandling(metaclass=Singleton):
 
         self.hasGamePiece = False
         self.noteInPlace = False
+        self.isAmpShot = False
 
         # TOF Disconnected Fault
         self.disconTOFFault = faults.Fault("Singer TOF Sensor is Disconnected")
 
-    def updateShooter(self, shouldRun, tunerPosCmd):
-        if (shouldRun) and not tunerPosCmd:
+    def updateShooter(self, shouldRun):
+        if (shouldRun) and not self.isAmpShot:
             desVel = RPM2RadPerSec(self.shooterVel.get())
             self.shooterMotorLeft.setVelCmd(desVel,self.shooterVel.get()*self.shooterkFCal.get())
             self.shooterMotorRight.setVelCmd(desVel,self.shooterVel.get()*self.shooterkFCal.get())
             
-        elif(shouldRun) and tunerPosCmd:
+        elif(shouldRun) and self.isAmpShot:
             desVel = RPM2RadPerSec(self.shooterAmpVel.get())
             self.shooterMotorLeft.setVelCmd(desVel,self.shooterAmpVel.get()*self.shooterkFCal.get())
             self.shooterMotorRight.setVelCmd(desVel,self.shooterAmpVel.get()*self.shooterkFCal.get())
@@ -121,7 +122,10 @@ class GamePieceHandling(metaclass=Singleton):
         self.shooterMotorLeft.setPID(self.shooterkPCal.get(),0.0,0.0)
         self.shooterMotorRight.setPID(self.shooterkPCal.get(),0.0,0.0)
 
-    def update(self, tunerPosCmd):
+    def setIsAmpShot(self, isAmpShot):
+        self.isAmpShot = isAmpShot
+
+    def update(self):
         # Update PID Gains if needed
         if self.shooterkPCal.isChanged():
             self._updateCals()
@@ -161,11 +165,11 @@ class GamePieceHandling(metaclass=Singleton):
                 self.updateFloorRoller(True)
 
             # And don't shoot
-            self.updateShooter(False, tunerPosCmd)
+            self.updateShooter(False)
 
         elif self.spoolUpCmd:
             # Shooting Commanded
-            self.updateShooter(True, tunerPosCmd)
+            self.updateShooter(True)
             self.updateFloorRoller(False)
             self.feedBackSlow(False)
             self.curShooterVel = (max(abs(self.shooterMotorLeft.getMotorVelocityRadPerSec()),
@@ -183,7 +187,7 @@ class GamePieceHandling(metaclass=Singleton):
 
         else:
             # Nothing commanded
-            self.updateShooter(False, False)
+            self.updateShooter(False)
             self.updateFloorRoller(False)
             self.updateIntake(False)
             self.updateEject(False)

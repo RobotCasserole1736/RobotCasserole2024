@@ -21,7 +21,7 @@ from utils.singleton import destroyAllSingletonInstances
 from utils.powerMonitor import PowerMonitor
 from webserver.webserver import Webserver
 from AutoSequencerV2.autoSequencer import AutoSequencer
-# from climbControl.climberControl import ClimberControl
+from climbControl.climberControl import ClimberControl
 from utils.powerMonitor import PowerMonitor
 
 class MyRobot(wpilib.TimedRobot):
@@ -48,7 +48,7 @@ class MyRobot(wpilib.TimedRobot):
         self.oInt = OperatorInterface()
         self.dInt = DriverInterface()
 
-        # self.climbCtrl = ClimberControl()
+        self.climbCtrl = ClimberControl()
 
         self.gph = GamePieceHandling()
 
@@ -78,13 +78,13 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driveTrain.update()
 
-        # self.climbCtrl.update()
+        self.climbCtrl.update()
         
         #self.cc.update(useFuncGen=self.isTestEnabled())
         
-        self.tc.update(self.oInt.getTunerPosCmd())
+        self.tc.update()
 
-        self.gph.update(self.oInt.getTunerPosCmd())
+        self.gph.update()
 
         self.stt.end()
 
@@ -98,7 +98,9 @@ class MyRobot(wpilib.TimedRobot):
         # Use the autonomous rouines starting pose to init the pose estimator
         self.driveTrain.poseEst.setKnownPose(self.autoSequencer.getStartingPose())
 
-        #self.cc.onEnable(False) 
+        # TODO - remove these if we're going to attmept amp shots in auto
+        self.gph.setIsAmpShot(False)
+        self.tc.setIsAmpShot(False)
 
 
     def autonomousPeriodic(self):
@@ -109,7 +111,7 @@ class MyRobot(wpilib.TimedRobot):
         # Operators cannot control in autonomous
         self.driveTrain.setManualCmd(DrivetrainCommand())
 
-        # self.climbCtrl.ctrlWinch(0.0)
+        self.climbCtrl.ctrlWinch(0.0)
 
     def autonomousExit(self):
         self.autoSequencer.end()
@@ -117,26 +119,23 @@ class MyRobot(wpilib.TimedRobot):
     #########################################################
     ## Teleop-Specific init and update
     def teleopInit(self):
-        #self.cc.onEnable(False) 
         pass
+
     def teleopPeriodic(self):
 
         SignalWrangler().markLoopStart()
         self.oInt.update()
         self.dInt.update()
 
+        ampShot = self.oInt.getTunerPosCmd()
+        self.tc.setIsAmpShot(ampShot)
+        self.gph.setIsAmpShot(ampShot)
+
         self.driveTrain.setManualCmd(self.dInt.getCmd())
         AutoDrive().setSpeakerAutoAlignCmd(self.oInt.getSpeakerAutoAlignCmd())
 
         if self.dInt.getGyroResetCmd():
             self.driveTrain.resetGyro()
-            
-        #if self.oInt.getCarriageIntakePosCmd():
-            #self.cc.setPositionCmd(CarriageControlCmd.INTAKE)
-        #elif self.oInt.getCarriageAmpPosCmd():
-            #self.cc.setPositionCmd(CarriageControlCmd.AMP)
-        #elif self.oInt.getCarriageTrapPosCmd():
-        #    self.cc.setPositionCmd(CarriageControlCmd.TRAP)
 
         # Gamepiece handling input
         self.gph.setInput(
@@ -154,7 +153,7 @@ class MyRobot(wpilib.TimedRobot):
         Trajectory().setCmd(None)
         self.driveTrain.poseEst.telemetry.setTrajectory(None)
 
-        # self.climbCtrl.ctrlWinch(self.dInt.getWinchCmd())
+        self.climbCtrl.ctrlWinch(self.dInt.getWinchCmd())
 
     #########################################################
     ## Disabled-Specific init and update
