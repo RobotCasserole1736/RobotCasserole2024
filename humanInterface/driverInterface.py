@@ -33,14 +33,14 @@ class DriverInterface:
 
         if self.ctrl.isConnected():
             # Convert from  joystic sign/axis conventions to robot velocity conventions
-            vXJoyRaw = self.ctrl.getLeftY() * -1
-            vYJoyRaw = self.ctrl.getLeftX() * -1
-            vRotJoyRaw = self.ctrl.getRightX() * -1
+            vXJoyRaw = self.ctrl.getLeftY() * -0.25
+            vYJoyRaw = self.ctrl.getLeftX() * -0.25
+            vRotJoyRaw = self.ctrl.getRightX() * -0.25
 
             # Correct for alliance
             if onRed():
-                vXJoyRaw *= -1.0
-                vYJoyRaw *= -1.0
+                vXJoyRaw *= -0.25
+                vYJoyRaw *= -0.25
 
             # deadband
             vXJoyWithDeadband = applyDeadband(vXJoyRaw, 0.15)
