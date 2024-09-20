@@ -28,6 +28,12 @@ class DriverInterface:
         self.velYSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_TRANSLATE_ACCEL_MPS2)
         self.velTSlewRateLimiter = SlewRateLimiter(rateLimit=MAX_ROTATE_ACCEL_RAD_PER_SEC_2)
 
+        # Shooter commands
+        self.singerIntake = False
+        self.singerShoot = False
+        self.singerEject = False
+        self.singerSpool = False 
+
     def update(self):
         # value of contoller buttons
 
@@ -47,7 +53,8 @@ class DriverInterface:
             vYJoyWithDeadband = applyDeadband(vYJoyRaw, 0.15)
             vRotJoyWithDeadband = applyDeadband(vRotJoyRaw, 0.2)
 
-            slowMult = 1.0 if (self.ctrl.getRightBumper()) else 0.75
+            #slowMult = 1.0 if (self.ctrl.getRightBumper()) else 0.75
+            slowMult = 1.0
 
             # velocity cmd
             velCmdXRaw = vXJoyWithDeadband * MAX_STRAFE_SPEED_MPS * slowMult
@@ -60,9 +67,20 @@ class DriverInterface:
             self.velTCmd = self.velTSlewRateLimiter.calculate(velCmdRotRaw) 
 
             # Climber Winch Cmd
-            self.velWinchCmdUp = applyDeadband(self.ctrl.getRightTriggerAxis(),0.1) * -12.0
-            self.velWinchCmdDown = applyDeadband(self.ctrl.getLeftTriggerAxis(),0.1) * 12.0
-            self.allowWinchCmd = self.ctrl.getLeftBumper()
+            #self.velWinchCmdUp = applyDeadband(self.ctrl.getRightTriggerAxis(),0.1) * -12.0
+            #self.velWinchCmdDown = applyDeadband(self.ctrl.getLeftTriggerAxis(),0.1) * 12.0
+            #self.allowWinchCmd = self.ctrl.getLeftBumper()
+
+            self.velWinchCmdUp = 0
+            self.velWinchCmdDown = 0
+            self.allowWinchCmd = False
+
+            # Singer commands
+            self.singerIntake = self.ctrl.getRightBumper()
+            self.singerShoot = self.ctrl.getRightTriggerAxis() > 0.5
+            self.singerEject = self.ctrl.getLeftBumper()
+            self.singerSpool = self.ctrl.getLeftTriggerAxis() > 0.5
+
 
             self.gyroResetCmd = self.ctrl.getAButtonPressed()
 
@@ -81,6 +99,11 @@ class DriverInterface:
             self.velTCmd = 0.0
             self.gyroResetCmd = False
             self.connectedFault.setFaulted()
+            # Singer commands
+            self.singerIntake = False
+            self.singerShoot = False
+            self.singerEject = False
+            self.singerSpool = False
 
         log("DI FwdRev Cmd", self.velXCmd, "mps")
         log("DI Strafe Cmd", self.velYCmd, "mps")
@@ -110,3 +133,23 @@ class DriverInterface:
 
     def getGyroResetCmd(self):
         return self.gyroResetCmd
+
+
+    def singerIsCmdd(self):
+        return self.singerIntake or self.singerShoot or self.singerEject or self.singerSpool
+
+    def getSingerIntakeCmd(self):
+        # returns whether the singer is being commanded to intake
+        return self.singerIntake
+
+    def getSingerShootCmd(self):
+        # returns whether the singer is being commanded to shoot
+        return self.singerShoot
+
+    def getSingerEjectCmd(self):
+        # returns whether the singer is being commanded to eject
+        return self.singerEject
+    
+    def getSingerSpoolUpCmd(self):
+        # returns whether the singer is being commanded to spool up 
+        return self.singerSpool

@@ -139,10 +139,10 @@ class MyRobot(wpilib.TimedRobot):
 
         # Gamepiece handling input
         self.gph.setInput(
-            self.oInt.getSingerSpoolUpCmd(),
-            self.oInt.getSingerIntakeCmd(),
-            self.oInt.getSingerEjectCmd(),
-            self.oInt.getSingerShootCmd()
+            self.dInt.getSingerSpoolUpCmd(),
+            self.dInt.getSingerIntakeCmd(),
+            self.dInt.getSingerEjectCmd(),
+            self.dInt.getSingerShootCmd()
         )
 
         # self.ledCtrl.setSpeakerAutoAlignActive(self.oInt.getSpeakerAutoAlignCmd())
